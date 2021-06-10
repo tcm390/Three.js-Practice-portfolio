@@ -5,7 +5,7 @@ import { FBXLoader } from './libs/three/jsm/FBXLoader.js';
 import { OrbitControls } from './libs/three/jsm/OrbitControls.js';
 import { LoadingBar } from './libs/LoadingBar.js';
 import './libs/cannon.min.js';
-import Stats from '/libs/stats.js/src/Stats.js'
+import Stats from './libs/stats.js/src/Stats.js'
 //import { PointerLockControls } from './libs/three/jsm/PointerLockControls.js'
 
 //import CANNON from './libs/cannon.min.js'
