@@ -5,15 +5,15 @@ import { FBXLoader } from './libs/three/jsm/FBXLoader.js';
 import { OrbitControls } from './libs/three/jsm/OrbitControls.js';
 import { LoadingBar } from './libs/LoadingBar.js';
 import './libs/cannon.min.js';
-import Stats from '/libs/stats.js/src/Stats.js'
+//import Stats from '/libs/stats.js/src/Stats.js'
 //import CANNON from './libs/cannon.min.js'
 //import * as CANNON from './libs/cannon-es'
 class App {
 
     constructor() {
-        this.stats = new Stats()
-        this.stats.showPanel(0) // 0: fps, 1: ms, 2: mb, 3+: custom
-        document.body.appendChild(this.stats.dom)
+        // this.stats = new Stats()
+        // this.stats.showPanel(0) // 0: fps, 1: ms, 2: mb, 3+: custom
+        // document.body.appendChild(this.stats.dom)
         const self = this
 
 
@@ -322,7 +322,7 @@ class App {
     render() {
 
 
-        this.stats.begin()
+        //this.stats.begin()
 
         const elapsedTime = this.clock.getElapsedTime()
         const deltaTime = elapsedTime - this.previousTime
@@ -446,7 +446,7 @@ class App {
 
         this.renderer.render(this.scene, this.camera);
 
-        this.stats.end()
+        //this.stats.end()
     }
 }
 
