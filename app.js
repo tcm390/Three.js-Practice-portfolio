@@ -5,15 +5,56 @@ import { FBXLoader } from './libs/three/jsm/FBXLoader.js';
 import { OrbitControls } from './libs/three/jsm/OrbitControls.js';
 import { LoadingBar } from './libs/LoadingBar.js';
 import './libs/cannon.min.js';
-//import Stats from '/libs/stats.js/src/Stats.js'
+import Stats from '/libs/stats.js/src/Stats.js'
+//import { PointerLockControls } from './libs/three/jsm/PointerLockControls.js'
+
 //import CANNON from './libs/cannon.min.js'
 //import * as CANNON from './libs/cannon-es'
 class App {
 
     constructor() {
-        // this.stats = new Stats()
-        // this.stats.showPanel(0) // 0: fps, 1: ms, 2: mb, 3+: custom
-        // document.body.appendChild(this.stats.dom)
+
+        const container = document.createElement('div');
+        document.body.appendChild(container);
+
+        // const canvas = document.querySelector('div')
+        // console.log(canvas)
+
+        // canvas.requestPointerLock = canvas.requestPointerLock ||
+        //     canvas.mozRequestPointerLock;
+
+        // document.exitPointerLock = document.exitPointerLock ||
+        //     document.mozExitPointerLock;
+
+        // canvas.onclick = function () {
+        //     canvas.requestPointerLock();
+        // };
+        // document.addEventListener('pointerlockchange', lockChangeAlert, false);
+        // document.addEventListener('mozpointerlockchange', lockChangeAlert, false);
+        // function lockChangeAlert() {
+        //     if (document.pointerLockElement === canvas ||
+        //         document.mozPointerLockElement === canvas) {
+        //         console.log('The pointer lock status is now locked');
+        //         // window.addEventListener('keydown', move_function);
+        //         // window.addEventListener('keyup', remove_function);
+
+        //     } else {
+        //         console.log('The pointer lock status is now unlocked');
+        //         // window.removeEventListener("keydown", move_function);
+        //         // window.removeEventListener('keyup', remove_function)
+        //         // moveForward = false;
+        //         // moveBackward = false;
+        //         // moveLeft = false;
+        //         // moveRight = false;
+
+        //     }
+        // }
+
+
+
+        this.stats = new Stats()
+        this.stats.showPanel(0) // 0: fps, 1: ms, 2: mb, 3+: custom
+        document.body.appendChild(this.stats.dom)
         const self = this
 
 
@@ -69,16 +110,19 @@ class App {
         this.left_sw = 0;
         this.move_sw = 0;
         this.back_sw = 0;
+        this.shoot_sw = 0;
 
         this.objectsToUpdate = [];
         this.bulletToUpdate = [];
 
 
-        const container = document.createElement('div');
-        document.body.appendChild(container);
+
 
         this.camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 1, 150);
         this.camera.position.set(0, 8, -14);
+        this.camera.rotation.x += Math.PI * 2
+
+
 
 
         this.scene = new THREE.Scene();
@@ -156,21 +200,43 @@ class App {
 
         this.loadingBar = new LoadingBar();
 
-
+        // this.controls2 = new PointerLockControls(this.camera, canvas);
+        // this.controls2.maxPolarAngle = 1.9
+        // this.controls2.minPolarAngle = 1.7
 
         this.controls = new OrbitControls(this.camera, this.renderer.domElement);
         this.controls.target.set(0, 3.5, 0);
         this.controls.enableRotate = false;
         this.controls.enableZoom = false;
         this.controls.enablePan = false;
-        // this.controls.enablePan = false;
-        // this.controls.enableZoom = false;
         // this.controls.update();
 
         window.addEventListener('resize', this.resize.bind(this));
 
 
+        this.mouse = new THREE.Vector2()
+        window.addEventListener('mousemove', e => {
+            this.mouse.x = event.clientX / window.innerWidth * 2 - 1
+            this.mouse.y = - (event.clientY / window.innerHeight) * 2 + 1
+            //console.log(this.mouse.x, this.mouse.y);
+            if (this.fox) {
+                if (Math.abs(this.mouse.x) < 0.5) {
+                    this.camera.rotation.y = this.mouse.x;
+                    if (Math.abs(this.mouse.x) < 0.2)
+                        this.fox.rotation.y = this.true_fox_ry - this.mouse.x * 2.8;
+                }
+            }
 
+            // if (this.mouse.y > 0 && this.mouse.y < 0.5) {
+            //     this.camera.rotation.x = 0 - (this.mouse.y - 0.4) / 2;
+            //     this.camera.rotation.x += Math.PI;
+            // }
+
+
+        });
+        window.addEventListener("click", () => {
+            this.shoot();
+        })
         window.addEventListener('keydown', (e) => {
             if (e.keyCode === 87 || e.key === 'ArrowUp')
                 this.move_sw = 1;
@@ -181,7 +247,7 @@ class App {
             if (e.keyCode === 65 || e.key === 'ArrowLeft')
                 this.left_sw = 1;
             if (e.key === ' ' || e.keyCode === 32)
-                this.shoot();
+                this.shoot_sw = 1;
 
 
         });
@@ -194,6 +260,8 @@ class App {
                 this.right_sw = 0;
             if (e.keyCode === 65 || e.key === 'ArrowLeft')
                 this.left_sw = 0;
+            if (e.key === ' ' || e.keyCode === 32)
+                this.shoot_sw = 0;
         });
         this.loadFox();
         this.loadEnvironment();
@@ -253,7 +321,8 @@ class App {
             './assets/glTF/Fox.gltf',
             (gltf) => {
                 self.fox = gltf.scene;
-                console.log(gltf);
+                this.true_fox_ry = self.fox.rotation.y;
+                //console.log(gltf);
                 gltf.scene.scale.set(0.025, 0.025, 0.025)
                 gltf.scene.traverse(function (child) {
                     if (child.isMesh) {
@@ -311,7 +380,13 @@ class App {
                 this.fox.getWorldDirection(dum).x * 100,
                 this.fox.getWorldDirection(dum).y * 100,
                 this.fox.getWorldDirection(dum).z * 100);
-            body.position.y += 1;
+            body.position.y += 0;
+            if (this.mouse.y > 0.2 && this.mouse.y < 1)
+                body.position.y = 1 + (0.4 / this.mouse.y);
+            else if (this.mouse.y < 0.2)
+                body.position.y = 2.3;
+
+            //console.log(body.position.y, this.mouse.y)
             this.world.addBody(body)
             this.bulletToUpdate.push({
                 mesh: mesh,
@@ -322,7 +397,7 @@ class App {
     render() {
 
 
-        //this.stats.begin()
+        this.stats.begin()
 
         const elapsedTime = this.clock.getElapsedTime()
         const deltaTime = elapsedTime - this.previousTime
@@ -351,6 +426,13 @@ class App {
                 }
 
             }
+            if (this.shoot_sw === 1) {
+                this.shoot();
+            }
+
+
+
+
         }
         if (this.move_sw) {
 
@@ -427,26 +509,35 @@ class App {
         }
 
         if (this.right_sw) {
-            this.fox.rotation.y -= 0.03;
+            this.true_fox_ry -= 0.03
+            this.fox.rotation.y = this.true_fox_ry;
+            //this.fox.rotation.y -= 0.03;
             this.test.rotation.y -= 0.03;
             if (this.world.bodies.length > 1)
                 this.world.bodies[1].quaternion.setFromAxisAngle(new CANNON.Vec3(0, 1, 0), this.fox.rotation.y)
-
-
+            if (Math.abs(this.mouse.x) < 0.4) {
+                this.camera.rotation.y = this.mouse.x;
+                this.fox.rotation.y = this.true_fox_ry - this.mouse.x * 2.8;
+            }
         }
 
         if (this.left_sw) {
-            this.fox.rotation.y += 0.03;
+            this.true_fox_ry += 0.03
+            this.fox.rotation.y = this.true_fox_ry;
+            //this.fox.rotation.y += 0.03;
             this.test.rotation.y += 0.03;
             if (this.world.bodies.length > 1)
                 this.world.bodies[1].quaternion.setFromAxisAngle(new CANNON.Vec3(0, 1, 0), this.fox.rotation.y)
-
+            if (Math.abs(this.mouse.x) < 0.4) {
+                this.camera.rotation.y = this.mouse.x;
+                this.fox.rotation.y = this.true_fox_ry - this.mouse.x * 2.8;
+            }
         }
 
 
         this.renderer.render(this.scene, this.camera);
 
-        //this.stats.end()
+        this.stats.end()
     }
 }
 
