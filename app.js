@@ -362,6 +362,7 @@ class App {
         if (this.world) {
             const sphereGeometry = new THREE.SphereGeometry(0.2)
             const sphereMaterial = new THREE.MeshStandardMaterial()
+            sphereMaterial.color = new THREE.Color(Math.random(), Math.random(), Math.random());
             const mesh = new THREE.Mesh(sphereGeometry, sphereMaterial)
             mesh.castShadow = true
             mesh.position.copy(this.fox.position)
@@ -433,6 +434,8 @@ class App {
                 if (this.bulletToUpdate[i].body.position.y <= 1) {
                     this.scene.remove(this.bulletToUpdate[i].mesh)
                     this.world.removeBody(this.bulletToUpdate[i].body)
+                    this.bulletToUpdate.splice(i, 1)
+
                 }
 
             }
