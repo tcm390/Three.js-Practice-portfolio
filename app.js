@@ -227,10 +227,10 @@ class App {
                 }
             }
 
-            // if (this.mouse.y > 0 && this.mouse.y < 0.5) {
-            //     this.camera.rotation.x = 0 - (this.mouse.y - 0.4) / 2;
-            //     this.camera.rotation.x += Math.PI;
-            // }
+            if (this.mouse.y > 0 && this.mouse.y < 0.5) {
+                this.camera.rotation.x = 0 - (this.mouse.y - 0.4) / 2;
+                this.camera.rotation.x += Math.PI;
+            }
 
 
         });
@@ -376,17 +376,27 @@ class App {
 
             body.position.copy(this.fox.position)
             let dum = new THREE.Vector3();
-            body.velocity.set(
-                this.fox.getWorldDirection(dum).x * 100,
-                this.fox.getWorldDirection(dum).y * 100,
-                this.fox.getWorldDirection(dum).z * 100);
-            body.position.y += 0;
-            if (this.mouse.y > 0.2 && this.mouse.y < 1)
-                body.position.y = 1 + (0.4 / this.mouse.y);
-            else if (this.mouse.y < 0.2)
-                body.position.y = 2.3;
+            let dum2 = new THREE.Vector3();
+            if (this.mouse.y >= 0.3)
+                body.velocity.set(
+                    this.fox.getWorldDirection(dum).x * 100,
+                    (1 / 0.048) * 2,
+                    this.fox.getWorldDirection(dum).z * 100);
+            if (this.mouse.y > 0.1 && this.mouse.y < 0.3)
+                body.velocity.set(
+                    this.fox.getWorldDirection(dum).x * 100,
+                    (1 / (this.camera.getWorldDirection(dum2).y)) * 2,
+                    this.fox.getWorldDirection(dum).z * 100);
+            else if (this.mouse.y < 0.1)
+                body.velocity.set(
+                    this.fox.getWorldDirection(dum).x * 100,
+                    this.fox.getWorldDirection(dum).y * 100,
+                    this.fox.getWorldDirection(dum).z * 100);
 
-            //console.log(body.position.y, this.mouse.y)
+
+            body.position.y += 1;
+            //console.log(this.camera.getWorldDirection(dum2).y);
+
             this.world.addBody(body)
             this.bulletToUpdate.push({
                 mesh: mesh,
