@@ -197,49 +197,18 @@ class App {
         this.renderer.shadowMap.type = THREE.PCFSoftShadowMap
         this.renderer.setClearColor('#262837')
         container.appendChild(this.renderer.domElement);
-        //this.setEnvironment();
+
 
         this.loadingBar = new LoadingBar();
 
-        // this.controls2 = new PointerLockControls(this.camera, canvas);
-        // this.controls2.maxPolarAngle = 1.9
-        // this.controls2.minPolarAngle = 1.7
-
-        // this.controls = new OrbitControls(this.camera, this.renderer.domElement);
-        // //this.controls.target.set(0, 3.5, 0);
-        // this.controls.enableRotate = false;
-        // this.controls.enableZoom = false;
-        // this.controls.enablePan = false;
-        // this.controls.update();
 
         window.addEventListener('resize', this.resize.bind(this));
 
 
         this.mouse = new THREE.Vector2()
-        this.temp_camera_rotatey = this.camera.rotation.y;
         window.addEventListener('mousemove', e => {
             this.mouse.x = event.clientX / window.innerWidth * 2 - 1
             this.mouse.y = - (event.clientY / window.innerHeight) * 2 + 1
-            //console.log(this.mouse.x, this.mouse.y);
-            if (this.fox) {
-
-
-                //this.fox.rotation.y += (0 - this.mouse.x) * .3;
-                //this.camera.rotation.y += (0 - this.mouse.x + Math.PI) * .3;
-                // if (Math.abs(this.mouse.x) < 0.5) {
-                //     this.camera.rotation.y = this.mouse.x;
-                //     if (Math.abs(this.mouse.x) < 0.2)
-                //         this.fox.rotation.y = Math.PI + (this.true_fox_ry - this.mouse.x * 2.8);
-                // }
-                // if (this.mouse.y > 0 && this.mouse.y < 0.5) {
-                //     this.camera.rotation.x = 0 - (this.mouse.y - 0.4) / 2;
-                //     //this.camera.rotation.x += Math.PI;
-                // }
-                //this.camera.rotation.y += Math.PI;
-            }
-
-
-
 
         });
         window.addEventListener("click", () => {
@@ -388,29 +357,20 @@ class App {
 
             body.position.copy(this.fox.position)
             let dum = new THREE.Vector3();
-            let dum2 = new THREE.Vector3();
-            // if (this.mouse.y >= 0.7)
-            //     body.velocity.set(
-            //         this.fox.getWorldDirection(dum).x * 100,
-            //         (1 / 0.05) * 2,
-            //         this.fox.getWorldDirection(dum).z * 100);
-            // else if (this.mouse.y > 0 && this.mouse.y < 0.7)
-            //     body.velocity.set(
-            //         this.fox.getWorldDirection(dum).x * 100,
-            //         (this.mouse.y) * 2,
-            //         this.fox.getWorldDirection(dum).z * 100);
-            // else
-            //     body.velocity.set(
-            //         this.fox.getWorldDirection(dum).x * 100,
-            //         this.fox.getWorldDirection(dum).y * 100,
-            //         this.fox.getWorldDirection(dum).z * 100);
 
-            body.velocity.set(
-                this.fox.getWorldDirection(dum).x * 100,
-                (this.fox.position.y + this.mouse.y) * 15,
-                this.fox.getWorldDirection(dum).z * 100);
-            body.position.y += 0.5;
-            console.log(this.mouse.y);
+            if (this.mouse.y >= -0.13)
+                body.velocity.set(
+                    this.fox.getWorldDirection(dum).x * 100,
+                    (1 + this.mouse.y * 1.2) * 13,
+                    this.fox.getWorldDirection(dum).z * 100);
+            else {
+                body.velocity.set(
+                    this.fox.getWorldDirection(dum).x * 100,
+                    this.fox.getWorldDirection(dum).y * 100,
+                    this.fox.getWorldDirection(dum).z * 100);
+            }
+            body.position.y += 1;
+
 
             this.world.addBody(body)
             this.bulletToUpdate.push({
