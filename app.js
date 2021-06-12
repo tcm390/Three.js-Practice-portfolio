@@ -259,22 +259,37 @@ class App {
 
     }
     loadEnvironment() {
-        const dracoLoader = new DRACOLoader('./assets/glTF2/draco')
-        const gltfLoader = new GLTFLoader();
-        gltfLoader.setDRACOLoader(dracoLoader)
         let self = this;
+        const textureLoader = new THREE.TextureLoader()
+        const bakedTexture = textureLoader.load('./assets/glTF2/baked.jpg')
+        const bakedMaterial = new THREE.MeshBasicMaterial({ map: bakedTexture })
+        const portalLightMaterial = new THREE.MeshBasicMaterial({ color: 0xffffff })
+        const poleLightMaterial = new THREE.MeshBasicMaterial({ color: 0xffffe5 })
+        bakedTexture.flipY = false
+        bakedTexture.encoding = THREE.sRGBEncoding
+        const dracoLoader = new DRACOLoader()
+        //dracoLoader.setDecoderPath('draco/')
+
+        // GLTF loader
+        const gltfLoader = new GLTFLoader()
+        gltfLoader.setDRACOLoader(dracoLoader)
+
+
 
         gltfLoader.load(
             './assets/glTF2/portal.glb',
             (gltf) => {
-                self.env = gltf.scene;
-                //self.objectsToUpdate.push(self.env);
+                const bakedMesh = gltf.scene.children.find((child) => child.name === 'baked')
+                const portalLightMesh = gltf.scene.children.find((child) => child.name === 'Circle')
+                const poleLightAMesh = gltf.scene.children.find((child) => child.name === 'Cube011')
+                const poleLightBMesh = gltf.scene.children.find((child) => child.name === 'Cube014')
+                bakedMesh.material = bakedMaterial
+                portalLightMesh.material = portalLightMaterial
+                poleLightAMesh.material = poleLightMaterial
+                poleLightBMesh.material = poleLightMaterial
                 gltf.scene.scale.set(5, 5, 5)
-                gltf.scene.position.set(10, 0, 10);
+                gltf.scene.position.set(10, 0, 10)
                 self.scene.add(gltf.scene)
-
-                self.loadingBar.visible = false;
-                self.renderer.setAnimationLoop(self.render.bind(self));
             },
             (xhr) => {
 
