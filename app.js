@@ -336,10 +336,7 @@ class App {
                 gltf.scene.scale.set(0.025, 0.025, 0.025)
                 gltf.scene.traverse(function (child) {
                     if (child.isMesh) {
-
                         child.castShadow = true;
-
-
                     }
                 });
 
@@ -350,10 +347,12 @@ class App {
                 action.play()
                 const action2 = self.mixer[1].clipAction(gltf.animations[0])
                 action2.play()
+
                 self.loadingBar.visible = false;
 
                 self.renderer.setAnimationLoop(self.render.bind(self));
-                self.world.gravity.set(0, -9.82, 0)
+                setTimeout(() => { self.world.gravity.set(0, -9.82, 0) }, 1000);
+
             },
             function (xhr) {
 
@@ -378,8 +377,8 @@ class App {
             const mesh = new THREE.Mesh(sphereGeometry, sphereMaterial)
             mesh.castShadow = true
             mesh.position.copy(this.fox.position)
-            mesh.position.y += 1;
-            this.scene.add(mesh)
+
+
 
             const shape = new CANNON.Sphere(0.2)
             const body = new CANNON.Body({
@@ -390,31 +389,35 @@ class App {
             body.position.copy(this.fox.position)
             let dum = new THREE.Vector3();
             let dum2 = new THREE.Vector3();
-            if (this.mouse.y >= 0.3)
-                body.velocity.set(
-                    this.fox.getWorldDirection(dum).x * 100,
-                    (1 / 0.048) * 2,
-                    this.fox.getWorldDirection(dum).z * 100);
-            if (this.mouse.y > 0.1 && this.mouse.y < 0.3)
-                body.velocity.set(
-                    this.fox.getWorldDirection(dum).x * 100,
-                    (1 / (this.camera.getWorldDirection(dum2).y)) * 2,
-                    this.fox.getWorldDirection(dum).z * 100);
-            else if (this.mouse.y < 0.1)
-                body.velocity.set(
-                    this.fox.getWorldDirection(dum).x * 100,
-                    this.fox.getWorldDirection(dum).y * 100,
-                    this.fox.getWorldDirection(dum).z * 100);
+            // if (this.mouse.y >= 0.7)
+            //     body.velocity.set(
+            //         this.fox.getWorldDirection(dum).x * 100,
+            //         (1 / 0.05) * 2,
+            //         this.fox.getWorldDirection(dum).z * 100);
+            // else if (this.mouse.y > 0 && this.mouse.y < 0.7)
+            //     body.velocity.set(
+            //         this.fox.getWorldDirection(dum).x * 100,
+            //         (this.mouse.y) * 2,
+            //         this.fox.getWorldDirection(dum).z * 100);
+            // else
+            //     body.velocity.set(
+            //         this.fox.getWorldDirection(dum).x * 100,
+            //         this.fox.getWorldDirection(dum).y * 100,
+            //         this.fox.getWorldDirection(dum).z * 100);
 
-
-            body.position.y += 1;
-            //console.log(this.camera.getWorldDirection(dum2).y);
+            body.velocity.set(
+                this.fox.getWorldDirection(dum).x * 100,
+                (this.fox.position.y + this.mouse.y) * 15,
+                this.fox.getWorldDirection(dum).z * 100);
+            body.position.y += 0.5;
+            console.log(this.mouse.y);
 
             this.world.addBody(body)
             this.bulletToUpdate.push({
                 mesh: mesh,
                 body: body
             })
+            this.scene.add(mesh)
         }
     }
     render() {
@@ -429,13 +432,7 @@ class App {
         let block = 0;
         if (this.fox && this.world.bodies.length >= 2) {
             this.fox.position.copy(this.world.bodies[1].position);
-            //this.test.position.copy(this.world.bodies[1].position);
-            // this.test.quaternion.copy(this.world.bodies[1].quaternion)
-            //this.fox.quaternion.copy(this.world.bodies[1].quaternion)
-            //this.env.position.copy(this.world.bodies[0].position);
-            //this.env.quaternion.copy(this.world.bodies[0].quaternion);
-            // this.test.position.copy(this.world.bodies[0].position);
-            // this.test.quaternion.copy(this.world.bodies[0].quaternion)
+
             for (let i = 0; i < this.objectsToUpdate.length; i++) {
                 this.objectsToUpdate[i].mesh.position.copy(this.objectsToUpdate[i].body.position)
                 this.objectsToUpdate[i].mesh.quaternion.copy(this.objectsToUpdate[i].body.quaternion)
@@ -487,17 +484,8 @@ class App {
             // }
             if (block === 0) {
 
-                //this.fox.position.z += Math.cos(this.fox.rotation.y) * 0.1;
                 this.world.bodies[1].position.z += Math.cos(this.fox.rotation.y) * 0.2;
-                //this.camera.position.z += Math.cos(this.fox.rotation.y) * 0.2;
-                //this.fox.position.x += Math.sin(this.fox.rotation.y) * 0.1;
                 this.world.bodies[1].position.x += Math.sin(this.fox.rotation.y) * 0.2;
-
-
-                //this.camera.position.x += Math.sin(this.fox.rotation.y) * 0.2;
-                //this.controls.target.set(this.fox.position.x, 3.5, this.fox.position.z);
-                //this.controls.target.set(this.world.bodies[1].position.x, 3.5, this.world.bodies[1].position.z);
-                //this.controls.update();
             }
 
             if (this.mixer[0]) {
@@ -525,15 +513,9 @@ class App {
             // }
             if (block === 0) {
 
-                //this.fox.position.z += Math.cos(this.fox.rotation.y) * 0.1;
+
                 this.world.bodies[1].position.z -= Math.cos(this.fox.rotation.y) * 0.2;
-                //this.camera.position.z -= Math.cos(this.fox.rotation.y) * 0.2;
-                //this.fox.position.x += Math.sin(this.fox.rotation.y) * 0.1;
                 this.world.bodies[1].position.x -= Math.sin(this.fox.rotation.y) * 0.2;
-                //this.camera.position.x -= Math.sin(this.fox.rotation.y) * 0.2;
-                //this.controls.target.set(this.fox.position.x, 3.5, this.fox.position.z);
-                //this.controls.target.set(this.world.bodies[1].position.x, 3.5, this.world.bodies[1].position.z);
-                //this.controls.update();
             }
 
             if (this.mixer[0]) {
@@ -550,32 +532,13 @@ class App {
 
             this.world.bodies[1].position.z -= Math.cos(this.fox.rotation.y + Math.PI / 2) * 0.2;
             this.world.bodies[1].position.x -= Math.sin(this.fox.rotation.y + Math.PI / 2) * 0.2;
-            //this.fox.rotation.y = this.true_fox_ry;
-            //this.fox.rotation.y -= 0.03;
-            //this.camera.rotation.y -= 0.03
-            //this.test.rotation.y = this.true_fox_ry;
-            // if (this.world.bodies.length > 1)
-            //     this.world.bodies[1].quaternion.setFromAxisAngle(new CANNON.Vec3(0, 1, 0), this.fox.rotation.y)
-            // if (Math.abs(this.mouse.x) < 0.4) {
-            //     this.camera.rotation.y = this.mouse.x;
-            //     //this.fox.rotation.y = this.true_fox_ry - this.mouse.x * 2.8;
-            // }
+
         }
 
         if (this.left_sw) {
             this.world.bodies[1].position.z -= Math.cos(this.fox.rotation.y - Math.PI / 2) * 0.2;
             this.world.bodies[1].position.x -= Math.sin(this.fox.rotation.y - Math.PI / 2) * 0.2;
-            //this.true_fox_ry += 0.03
-            //this.fox.rotation.y = this.true_fox_ry;
-            //this.fox.rotation.y += 0.03;
-            //this.camera.rotation.y += 0.03
-            //this.test.rotation.y = this.true_fox_ry;
-            // if (this.world.bodies.length > 1)
-            //     this.world.bodies[1].quaternion.setFromAxisAngle(new CANNON.Vec3(0, 1, 0), this.fox.rotation.y)
-            // if (Math.abs(this.mouse.x) < 0.4) {
-            //     this.camera.rotation.y = this.mouse.x;
-            //     //this.fox.rotation.y = this.true_fox_ry - this.mouse.x * 2.8;
-            // }
+
         }
 
 
