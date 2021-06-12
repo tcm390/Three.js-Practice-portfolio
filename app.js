@@ -1,5 +1,6 @@
 import * as THREE from './libs/three/three.module.js';
 import { GLTFLoader } from './libs/three/jsm/GLTFLoader.js';
+import { DRACOLoader } from './libs/three/jsm/DRACOLoader.js'
 import { RGBELoader } from './libs/three/jsm/RGBELoader.js';
 import { FBXLoader } from './libs/three/jsm/FBXLoader.js';
 import { OrbitControls } from './libs/three/jsm/OrbitControls.js';
@@ -120,7 +121,7 @@ class App {
 
         this.camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 1, 150);
         this.camera.position.set(0, 8, -14);
-        this.camera.rotation.x += Math.PI * 2
+        this.camera.rotation.y += Math.PI
 
 
 
@@ -160,32 +161,32 @@ class App {
         grid.material.transparent = true;
         this.scene.add(grid);
 
-        const fog = new THREE.Fog('#262837', 1, 50)
+        //const fog = new THREE.Fog('#262837', 1, 50)
         //this.scene.fog = fog
 
-        for (let i = 0; i < 100; i++) {
-            const geometry = new THREE.BoxBufferGeometry(3, 3, 3);
-            const material = new THREE.MeshStandardMaterial({ color: 0xFF0000 });
-            const cubeMesh = new THREE.Mesh(geometry, material);
-            cubeMesh.position.set(Math.random() * 200 - 100, 0, Math.random() * 200 - 100);
-            cubeMesh.castShadow = true;
-            this.scene.add(cubeMesh);
+        // for (let i = 0; i < 100; i++) {
+        //     const geometry = new THREE.BoxBufferGeometry(3, 3, 3);
+        //     const material = new THREE.MeshStandardMaterial({ color: 0xFF0000 });
+        //     const cubeMesh = new THREE.Mesh(geometry, material);
+        //     cubeMesh.position.set(Math.random() * 200 - 100, 0, Math.random() * 200 - 100);
+        //     cubeMesh.castShadow = true;
+        //     this.scene.add(cubeMesh);
 
 
-            const shape = new CANNON.Box(new CANNON.Vec3(3 / 2, 3 / 2, 3 / 2))
-            const body = new CANNON.Body({
-                mass: 10,
-                shape: shape,
-                material: defaultMaterial
-            })
-            body.position.copy(cubeMesh.position)
-            this.world.addBody(body)
+        //     const shape = new CANNON.Box(new CANNON.Vec3(3 / 2, 3 / 2, 3 / 2))
+        //     const body = new CANNON.Body({
+        //         mass: 10,
+        //         shape: shape,
+        //         material: defaultMaterial
+        //     })
+        //     body.position.copy(cubeMesh.position)
+        //     this.world.addBody(body)
 
-            this.objectsToUpdate.push({
-                mesh: cubeMesh,
-                body: body
-            });
-        }
+        //     this.objectsToUpdate.push({
+        //         mesh: cubeMesh,
+        //         body: body
+        //     });
+        // }
 
         this.renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
         this.renderer.setPixelRatio(window.devicePixelRatio);
@@ -204,33 +205,40 @@ class App {
         // this.controls2.maxPolarAngle = 1.9
         // this.controls2.minPolarAngle = 1.7
 
-        this.controls = new OrbitControls(this.camera, this.renderer.domElement);
-        this.controls.target.set(0, 3.5, 0);
-        this.controls.enableRotate = false;
-        this.controls.enableZoom = false;
-        this.controls.enablePan = false;
+        // this.controls = new OrbitControls(this.camera, this.renderer.domElement);
+        // //this.controls.target.set(0, 3.5, 0);
+        // this.controls.enableRotate = false;
+        // this.controls.enableZoom = false;
+        // this.controls.enablePan = false;
         // this.controls.update();
 
         window.addEventListener('resize', this.resize.bind(this));
 
 
         this.mouse = new THREE.Vector2()
+        this.temp_camera_rotatey = this.camera.rotation.y;
         window.addEventListener('mousemove', e => {
             this.mouse.x = event.clientX / window.innerWidth * 2 - 1
             this.mouse.y = - (event.clientY / window.innerHeight) * 2 + 1
             //console.log(this.mouse.x, this.mouse.y);
             if (this.fox) {
-                if (Math.abs(this.mouse.x) < 0.5) {
-                    this.camera.rotation.y = this.mouse.x;
-                    if (Math.abs(this.mouse.x) < 0.2)
-                        this.fox.rotation.y = this.true_fox_ry - this.mouse.x * 2.8;
-                }
+
+
+                //this.fox.rotation.y += (0 - this.mouse.x) * .3;
+                //this.camera.rotation.y += (0 - this.mouse.x + Math.PI) * .3;
+                // if (Math.abs(this.mouse.x) < 0.5) {
+                //     this.camera.rotation.y = this.mouse.x;
+                //     if (Math.abs(this.mouse.x) < 0.2)
+                //         this.fox.rotation.y = Math.PI + (this.true_fox_ry - this.mouse.x * 2.8);
+                // }
+                // if (this.mouse.y > 0 && this.mouse.y < 0.5) {
+                //     this.camera.rotation.x = 0 - (this.mouse.y - 0.4) / 2;
+                //     //this.camera.rotation.x += Math.PI;
+                // }
+                //this.camera.rotation.y += Math.PI;
             }
 
-            if (this.mouse.y > 0 && this.mouse.y < 0.5) {
-                this.camera.rotation.x = 0 - (this.mouse.y - 0.4) / 2;
-                this.camera.rotation.x += Math.PI;
-            }
+
 
 
         });
@@ -267,26 +275,28 @@ class App {
         this.loadEnvironment();
 
         //###### prevent ########
-        window.setTimeout(function () {
-            self.world.gravity.set(0, -9.82, 0)
-        }, 1000);
+
+
+
 
         //test
-        const tgeometry = new THREE.BoxBufferGeometry(0.01, .01, .02);
-        const tmaterial = new THREE.MeshStandardMaterial();
-        const tcubeMesh = new THREE.Mesh(tgeometry, tmaterial);
-        tcubeMesh.position.set(0, 0, 0);
-        this.test = tcubeMesh;
-        this.scene.add(tcubeMesh);
-        tcubeMesh.add(this.camera);
+        // const tgeometry = new THREE.BoxBufferGeometry(0.01, .01, .02);
+        // const tmaterial = new THREE.MeshStandardMaterial();
+        // const tcubeMesh = new THREE.Mesh(tgeometry, tmaterial);
+        // tcubeMesh.position.set(0, 0, 0);
+        // this.test = tcubeMesh;
+        // this.scene.add(tcubeMesh);
+        //tcubeMesh.add(this.camera);
 
     }
     loadEnvironment() {
+        const dracoLoader = new DRACOLoader('./assets/glTF2/draco')
         const gltfLoader = new GLTFLoader();
+        gltfLoader.setDRACOLoader(dracoLoader)
         let self = this;
 
         gltfLoader.load(
-            './assets/glTF4/Duck.gltf',
+            './assets/glTF2/portal.glb',
             (gltf) => {
                 self.env = gltf.scene;
                 //self.objectsToUpdate.push(self.env);
@@ -332,6 +342,7 @@ class App {
 
                     }
                 });
+
                 self.scene.add(gltf.scene)
                 self.mixer.push(new THREE.AnimationMixer(gltf.scene))
                 self.mixer.push(new THREE.AnimationMixer(gltf.scene))
@@ -342,6 +353,7 @@ class App {
                 self.loadingBar.visible = false;
 
                 self.renderer.setAnimationLoop(self.render.bind(self));
+                self.world.gravity.set(0, -9.82, 0)
             },
             function (xhr) {
 
@@ -417,7 +429,7 @@ class App {
         let block = 0;
         if (this.fox && this.world.bodies.length >= 2) {
             this.fox.position.copy(this.world.bodies[1].position);
-            this.test.position.copy(this.world.bodies[1].position);
+            //this.test.position.copy(this.world.bodies[1].position);
             // this.test.quaternion.copy(this.world.bodies[1].quaternion)
             //this.fox.quaternion.copy(this.world.bodies[1].quaternion)
             //this.env.position.copy(this.world.bodies[0].position);
@@ -437,14 +449,23 @@ class App {
                     this.bulletToUpdate.splice(i, 1)
 
                 }
-
             }
             if (this.shoot_sw === 1) {
                 this.shoot();
             }
-
-
-
+            if (this.mouse.x > 0.3 && this.mouse.y < 0.3) {
+                this.fox.rotation.y -= 0.05 * Math.abs(this.mouse.x);
+                this.camera.rotation.y -= 0.05 * Math.abs(this.mouse.x);
+            }
+            else if (this.mouse.x < -0.3 && this.mouse.y < 0.3) {
+                this.fox.rotation.y += 0.05 * Math.abs(this.mouse.x);
+                this.camera.rotation.y += 0.05 * Math.abs(this.mouse.x);
+            }
+            let fox_direction = new THREE.Vector3(); this.fox.getWorldDirection(fox_direction);
+            fox_direction = fox_direction.normalize();
+            this.camera.position.x = (this.fox.position.x - fox_direction.x * 20);
+            this.camera.position.z = (this.fox.position.z - fox_direction.z * 20);
+            this.world.bodies[1].quaternion.setFromAxisAngle(new CANNON.Vec3(0, 1, 0), this.fox.rotation.y)
 
         }
         if (this.move_sw) {
@@ -465,11 +486,14 @@ class App {
 
             // }
             if (block === 0) {
+
                 //this.fox.position.z += Math.cos(this.fox.rotation.y) * 0.1;
                 this.world.bodies[1].position.z += Math.cos(this.fox.rotation.y) * 0.2;
                 //this.camera.position.z += Math.cos(this.fox.rotation.y) * 0.2;
                 //this.fox.position.x += Math.sin(this.fox.rotation.y) * 0.1;
                 this.world.bodies[1].position.x += Math.sin(this.fox.rotation.y) * 0.2;
+
+
                 //this.camera.position.x += Math.sin(this.fox.rotation.y) * 0.2;
                 //this.controls.target.set(this.fox.position.x, 3.5, this.fox.position.z);
                 //this.controls.target.set(this.world.bodies[1].position.x, 3.5, this.world.bodies[1].position.z);
@@ -481,25 +505,26 @@ class App {
             }
         }
         else if (this.back_sw) {
-            const raycaster = new THREE.Raycaster();
-            let pos = new THREE.Vector3();
-            let rayDirection = new THREE.Vector3();
-            this.fox.getWorldPosition(pos);
-            this.fox.getWorldDirection(rayDirection);
-            rayDirection.x = 0 - rayDirection.x;
-            rayDirection.y = 0 - rayDirection.y;
-            rayDirection.z = 0 - rayDirection.z;
-            raycaster.set(pos, rayDirection.normalize());
-            const intersects = raycaster.intersectObjects(this.env.children[0].children);
+            // const raycaster = new THREE.Raycaster();
+            // let pos = new THREE.Vector3();
+            // let rayDirection = new THREE.Vector3();
+            // this.fox.getWorldPosition(pos);
+            // this.fox.getWorldDirection(rayDirection);
+            // rayDirection.x = 0 - rayDirection.x;
+            // rayDirection.y = 0 - rayDirection.y;
+            // rayDirection.z = 0 - rayDirection.z;
+            // raycaster.set(pos, rayDirection.normalize());
+            // const intersects = raycaster.intersectObjects(this.env.children[0].children);
 
-            for (const intersect of intersects) {
-                if (intersect.distance < 1.6) {
-                    block = 1;
-                    break;
-                }
+            // for (const intersect of intersects) {
+            //     if (intersect.distance < 1.6) {
+            //         block = 1;
+            //         break;
+            //     }
 
-            }
+            // }
             if (block === 0) {
+
                 //this.fox.position.z += Math.cos(this.fox.rotation.y) * 0.1;
                 this.world.bodies[1].position.z -= Math.cos(this.fox.rotation.y) * 0.2;
                 //this.camera.position.z -= Math.cos(this.fox.rotation.y) * 0.2;
@@ -522,29 +547,35 @@ class App {
         }
 
         if (this.right_sw) {
-            this.true_fox_ry -= 0.03
-            this.fox.rotation.y = this.true_fox_ry;
+
+            this.world.bodies[1].position.z -= Math.cos(this.fox.rotation.y + Math.PI / 2) * 0.2;
+            this.world.bodies[1].position.x -= Math.sin(this.fox.rotation.y + Math.PI / 2) * 0.2;
+            //this.fox.rotation.y = this.true_fox_ry;
             //this.fox.rotation.y -= 0.03;
-            this.test.rotation.y -= 0.03;
-            if (this.world.bodies.length > 1)
-                this.world.bodies[1].quaternion.setFromAxisAngle(new CANNON.Vec3(0, 1, 0), this.fox.rotation.y)
-            if (Math.abs(this.mouse.x) < 0.4) {
-                this.camera.rotation.y = this.mouse.x;
-                this.fox.rotation.y = this.true_fox_ry - this.mouse.x * 2.8;
-            }
+            //this.camera.rotation.y -= 0.03
+            //this.test.rotation.y = this.true_fox_ry;
+            // if (this.world.bodies.length > 1)
+            //     this.world.bodies[1].quaternion.setFromAxisAngle(new CANNON.Vec3(0, 1, 0), this.fox.rotation.y)
+            // if (Math.abs(this.mouse.x) < 0.4) {
+            //     this.camera.rotation.y = this.mouse.x;
+            //     //this.fox.rotation.y = this.true_fox_ry - this.mouse.x * 2.8;
+            // }
         }
 
         if (this.left_sw) {
-            this.true_fox_ry += 0.03
-            this.fox.rotation.y = this.true_fox_ry;
+            this.world.bodies[1].position.z -= Math.cos(this.fox.rotation.y - Math.PI / 2) * 0.2;
+            this.world.bodies[1].position.x -= Math.sin(this.fox.rotation.y - Math.PI / 2) * 0.2;
+            //this.true_fox_ry += 0.03
+            //this.fox.rotation.y = this.true_fox_ry;
             //this.fox.rotation.y += 0.03;
-            this.test.rotation.y += 0.03;
-            if (this.world.bodies.length > 1)
-                this.world.bodies[1].quaternion.setFromAxisAngle(new CANNON.Vec3(0, 1, 0), this.fox.rotation.y)
-            if (Math.abs(this.mouse.x) < 0.4) {
-                this.camera.rotation.y = this.mouse.x;
-                this.fox.rotation.y = this.true_fox_ry - this.mouse.x * 2.8;
-            }
+            //this.camera.rotation.y += 0.03
+            //this.test.rotation.y = this.true_fox_ry;
+            // if (this.world.bodies.length > 1)
+            //     this.world.bodies[1].quaternion.setFromAxisAngle(new CANNON.Vec3(0, 1, 0), this.fox.rotation.y)
+            // if (Math.abs(this.mouse.x) < 0.4) {
+            //     this.camera.rotation.y = this.mouse.x;
+            //     //this.fox.rotation.y = this.true_fox_ry - this.mouse.x * 2.8;
+            // }
         }
 
 
