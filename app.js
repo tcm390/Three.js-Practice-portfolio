@@ -7,6 +7,12 @@ import { OrbitControls } from './libs/three/jsm/OrbitControls.js';
 import { LoadingBar } from './libs/LoadingBar.js';
 import './libs/cannon.min.js';
 import Stats from './libs/stats.js/src/Stats.js'
+// import flagVertexShader from './shader/flagvertex.glsl'
+// import flagFragmentShader from './shader/flagfragment.glsl'
+
+
+
+
 //import { PointerLockControls } from './libs/three/jsm/PointerLockControls.js'
 
 //import CANNON from './libs/cannon.min.js'
@@ -17,6 +23,17 @@ class App {
 
         const container = document.createElement('div');
         document.body.appendChild(container);
+
+        const cubeTextureLoader = new THREE.CubeTextureLoader()
+        const environmentMap = cubeTextureLoader.load([
+            './assets/textures/environmentMaps/12/px.jpg',
+            './assets/textures/environmentMaps/12/nx.jpg',
+            './assets/textures/environmentMaps/12/py.jpg',
+            './assets/textures/environmentMaps/12/ny.jpg',
+            './assets/textures/environmentMaps/12/pz.jpg',
+            './assets/textures/environmentMaps/12/nz.jpg'
+        ])
+
 
         // const canvas = document.querySelector('div')
         // console.log(canvas)
@@ -119,33 +136,37 @@ class App {
 
 
 
-        this.camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 1, 150);
-        this.camera.position.set(0, 8, -14);
+        this.camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 1, 500);
+        this.camera.position.set(0, 12, 0);
         this.camera.rotation.y += Math.PI
 
 
 
 
         this.scene = new THREE.Scene();
+        this.scene.background = environmentMap
+
+
         //this.scene.background = new THREE.Color(0xaaaaaa);
 
-        const ambient = new THREE.HemisphereLight(0xffffff, 0xbbbbff, 0.5);
+        const ambient = new THREE.HemisphereLight(0xffffff, 0xbbbbff, .5);
         this.scene.add(ambient);
 
-        const light = new THREE.DirectionalLight(0xFFFFFF, 1.5);
-        light.position.set(100, 100, 100);
-        light.shadow.camera.top = 50
-        light.shadow.camera.right = 100
-        light.shadow.camera.bottom = - 50
-        light.shadow.camera.left = - 100
-        //light.shadow.camera.near = 1
-        light.shadow.camera.far = 300
-        light.shadow.mapSize.width = 1024 * 4
-        light.shadow.mapSize.height = 1024 * 4
-        light.castShadow = true
+        const light = new THREE.DirectionalLight(0xFFFFFF, 1);
+        light.position.set(0, 0.1, -1)
+        //light.position.set(-200, 200, -200);
+        // light.shadow.camera.top = 100
+        // light.shadow.camera.right = 100
+        // light.shadow.camera.bottom = -100
+        // light.shadow.camera.left = - 100
+        // light.shadow.camera.near = 1
+        // light.shadow.camera.far = 900
+        // light.shadow.mapSize.width = 1024 * 4
+        // light.shadow.mapSize.height = 1024 * 4
+        // light.castShadow = true
         this.scene.add(light);
-        //const directionalLightCameraHelper = new THREE.CameraHelper(light.shadow.camera)
-        //this.scene.add(directionalLightCameraHelper)
+        // const directionalLightCameraHelper = new THREE.CameraHelper(light.shadow.camera)
+        // this.scene.add(directionalLightCameraHelper)
 
         var mesh = new THREE.Mesh(
             new THREE.PlaneBufferGeometry(2000, 2000),
@@ -192,10 +213,10 @@ class App {
         this.renderer.setPixelRatio(window.devicePixelRatio);
         this.renderer.setSize(window.innerWidth, window.innerHeight);
         this.renderer.outputEncoding = THREE.sRGBEncoding;
-        this.renderer.physicallyCorrectLights = true;
-        this.renderer.shadowMap.enabled = true
-        this.renderer.shadowMap.type = THREE.PCFSoftShadowMap
-        this.renderer.setClearColor('#262837')
+        //this.renderer.physicallyCorrectLights = true;
+        // this.renderer.shadowMap.enabled = true
+        // this.renderer.shadowMap.type = THREE.PCFSoftShadowMap
+        //this.renderer.setClearColor('#262837')
         container.appendChild(this.renderer.domElement);
 
 
@@ -242,6 +263,7 @@ class App {
         });
         this.loadFox();
         this.loadEnvironment();
+        this.renderer.setAnimationLoop(this.render.bind(this));
 
         //###### prevent ########
 
@@ -249,47 +271,204 @@ class App {
 
 
         //test
-        // const tgeometry = new THREE.BoxBufferGeometry(0.01, .01, .02);
-        // const tmaterial = new THREE.MeshStandardMaterial();
-        // const tcubeMesh = new THREE.Mesh(tgeometry, tmaterial);
-        // tcubeMesh.position.set(0, 0, 0);
-        // this.test = tcubeMesh;
-        // this.scene.add(tcubeMesh);
-        //tcubeMesh.add(this.camera);
+
+        const tgeometry = new THREE.BoxBufferGeometry(1, 50, 25);
+        const tmaterial = new THREE.MeshBasicMaterial({
+            color: "grey"
+        })
+        tmaterial.transparent = true;
+        tmaterial.opacity = .9;
+        tmaterial.envMap = environmentMap
+        tmaterial.envMapIntensity = 1
+        tmaterial.metalness = 0.5
+        tmaterial.roughness = 0.4
+        const tcubeMesh = new THREE.Mesh(tgeometry, tmaterial);
+        tcubeMesh.position.set(-100, 20, 55);
+        this.scene.add(tcubeMesh);
+
+
+        const tgeometry2 = new THREE.PlaneGeometry(20, 10, 10);
+        const flagmaterial = new THREE.RawShaderMaterial({
+            vertexShader: `
+                uniform mat4 projectionMatrix;
+                uniform mat4 viewMatrix;
+                uniform mat4 modelMatrix;
+        
+                attribute vec3 position;
+                float rand(vec2 co){
+                    return fract(sin(dot(co.xy ,vec2(12.9898,78.233))) * 43758.5453);
+                }
+                void main()
+                {
+                    vec4 modelPosition = modelMatrix * vec4(position, 1.0);
+                    modelPosition.z += rand(vec2(modelPosition.y,modelPosition.x));
+                    vec4 viewPosition = viewMatrix * modelPosition;
+                    vec4 projectedPosition = projectionMatrix * viewPosition;
+
+                    gl_Position = projectedPosition;
+                }
+            `,
+            fragmentShader: `
+                precision mediump float;
+        
+                void main()
+                {
+                    gl_FragColor = vec4(1.0, 1.0, 0.0, 1.0);
+                }
+            `
+        })
+
+        flagmaterial.side = THREE.DoubleSide;
+        const tplane2 = new THREE.Mesh(tgeometry2, flagmaterial);
+        tplane2.position.set(0, 10, 0)
+        //this.scene.add(tplane2);
 
     }
+
+    // loadEnvironment() {
+    //     let self = this;
+    //     const textureLoader = new THREE.TextureLoader()
+    //     const bakedTexture = textureLoader.load('./assets/glTF2/baked.jpg')
+    //     const bakedMaterial = new THREE.MeshBasicMaterial({ map: bakedTexture })
+    //     const portalLightMaterial = new THREE.MeshBasicMaterial({ color: 0xffffff })
+    //     const poleLightMaterial = new THREE.MeshBasicMaterial({ color: 0xffffe5 })
+    //     bakedTexture.flipY = false
+    //     bakedTexture.encoding = THREE.sRGBEncoding
+    //     const dracoLoader = new DRACOLoader()
+    //     //dracoLoader.setDecoderPath('draco/')
+
+    //     // GLTF loader
+    //     const gltfLoader = new GLTFLoader()
+    //     gltfLoader.setDRACOLoader(dracoLoader)
+
+
+
+    //     gltfLoader.load(
+    //         './assets/glTF2/portal.glb',
+    //         (gltf) => {
+    //             const bakedMesh = gltf.scene.children.find((child) => child.name === 'baked')
+    //             const portalLightMesh = gltf.scene.children.find((child) => child.name === 'Circle')
+    //             const poleLightAMesh = gltf.scene.children.find((child) => child.name === 'Cube011')
+    //             const poleLightBMesh = gltf.scene.children.find((child) => child.name === 'Cube014')
+    //             bakedMesh.material = bakedMaterial
+    //             portalLightMesh.material = portalLightMaterial
+    //             poleLightAMesh.material = poleLightMaterial
+    //             poleLightBMesh.material = poleLightMaterial
+    //             gltf.scene.scale.set(5, 5, 5)
+    //             gltf.scene.position.set(10, 0, 10)
+    //             self.scene.add(gltf.scene)
+    //         },
+    //         (xhr) => {
+
+    //             self.loadingBar.progress = (xhr.loaded / xhr.total);
+
+    //         },
+    //         // called when loading has errors
+    //         (error) => {
+
+    //             console.log('An error happened');
+    //             console.log(error);
+
+    //         }
+    //     );
+    // }
     loadEnvironment() {
         let self = this;
-        const textureLoader = new THREE.TextureLoader()
-        const bakedTexture = textureLoader.load('./assets/glTF2/baked.jpg')
-        const bakedMaterial = new THREE.MeshBasicMaterial({ map: bakedTexture })
-        const portalLightMaterial = new THREE.MeshBasicMaterial({ color: 0xffffff })
-        const poleLightMaterial = new THREE.MeshBasicMaterial({ color: 0xffffe5 })
-        bakedTexture.flipY = false
-        bakedTexture.encoding = THREE.sRGBEncoding
-        const dracoLoader = new DRACOLoader()
-        //dracoLoader.setDecoderPath('draco/')
-
+        // const cubeTextureLoader = new THREE.CubeTextureLoader()
+        // const environmentMap = cubeTextureLoader.load([
+        //     './assets/textures/environmentMaps/0/px.jpg',
+        //     './assets/textures/environmentMaps/0/nx.jpg',
+        //     './assets/textures/environmentMaps/0/py.jpg',
+        //     './assets/textures/environmentMaps/0/ny.jpg',
+        //     './assets/textures/environmentMaps/0/pz.jpg',
+        //     './assets/textures/environmentMaps/0/nz.jpg'
+        // ])
         // GLTF loader
         const gltfLoader = new GLTFLoader()
-        gltfLoader.setDRACOLoader(dracoLoader)
-
-
-
         gltfLoader.load(
-            './assets/glTF2/portal.glb',
+            './assets/glTF100/untitled.glb',
             (gltf) => {
-                const bakedMesh = gltf.scene.children.find((child) => child.name === 'baked')
-                const portalLightMesh = gltf.scene.children.find((child) => child.name === 'Circle')
-                const poleLightAMesh = gltf.scene.children.find((child) => child.name === 'Cube011')
-                const poleLightBMesh = gltf.scene.children.find((child) => child.name === 'Cube014')
-                bakedMesh.material = bakedMaterial
-                portalLightMesh.material = portalLightMaterial
-                poleLightAMesh.material = poleLightMaterial
-                poleLightBMesh.material = poleLightMaterial
-                gltf.scene.scale.set(5, 5, 5)
-                gltf.scene.position.set(10, 0, 10)
+
+                gltf.scene.scale.set(10, 10, 10)
+                gltf.scene.position.set(10, 2, 10)
+                gltf.scene.traverse(function (child) {
+                    if (child.isMesh) {
+                        //child.receiveShadow = true;
+                    }
+                    if (child.isMesh && child.name === 'Cube001') {
+                        console.log(child.position)
+                    }
+                    if (child.isMesh && child.name === 'Plane001') {
+                        const textureLoader = new THREE.TextureLoader()
+                        const flagTexture = textureLoader.load('./assets/textures/nyu_logo/nyu.png')
+                        self.flagmaterial = new THREE.RawShaderMaterial({
+                            vertexShader: `
+                                uniform mat4 projectionMatrix;
+                                uniform mat4 viewMatrix;
+                                uniform mat4 modelMatrix;
+                                uniform float uTime;
+
+                                
+                                attribute vec2 uv;
+                                varying vec2 vUv;
+                        
+                                attribute vec3 position;
+                                float rand(vec2 co){
+                                    return fract(sin(dot(co.xy ,vec2(12.9898,78.233))) * 43758.5453);
+                                }
+                                void main()
+                                {
+                                    vec4 modelPosition = modelMatrix * vec4(position, 1.0);
+                                    modelPosition.x -= sin(modelPosition.y - uTime*5.) * .7;
+                                    modelPosition.x -= sin(modelPosition.z - uTime*5.) * .7;
+                                    vec4 viewPosition = viewMatrix * modelPosition;
+                                    vec4 projectedPosition = projectionMatrix * viewPosition;
+                
+                                    gl_Position = projectedPosition;
+                                    vUv = uv;
+                                }
+                            `,
+                            fragmentShader: `
+                                precision mediump float;
+                                uniform sampler2D uTexture;
+                                
+                                varying vec2 vUv;               
+                        
+                                void main()
+                                {
+                                    vec4 textureColor = texture2D(uTexture, vUv);
+                                    gl_FragColor = textureColor;
+                                }
+                            `,
+                            uniforms: {
+                                uTime: { value: 0 },
+                                uTexture: { value: flagTexture }
+                            }
+
+                        })
+                        //console.log(self.flagmaterial.uniforms)
+                        self.flagmaterial.side = THREE.DoubleSide;
+                        const count = child.geometry.attributes.position.count
+                        //console.log(child.geometry.attributes.position.count)
+                        const randoms = new Float32Array(count)
+                        for (let i = 0; i < count; i++) {
+                            randoms[i] = Math.random()
+                        }
+                        child.geometry.setAttribute('aRandom', new THREE.BufferAttribute(randoms, 1))
+
+                        child.material = self.flagmaterial
+                    }
+                    if (child instanceof THREE.Mesh && child.material instanceof THREE.MeshStandardMaterial && child.name !== 'Plane') {
+                        // child.material.envMap = environmentMap
+                        // child.material.envMapIntensity = 2
+                        // child.material.metalness = 0.8
+                        // child.material.roughness = 0.2
+                    }
+
+                });
+                self.loadingBar.visible = false;
                 self.scene.add(gltf.scene)
+                //self.renderer.setAnimationLoop(self.render.bind(self));
             },
             (xhr) => {
 
@@ -308,33 +487,59 @@ class App {
 
     loadFox() {
 
+
         const gltfLoader = new GLTFLoader();
 
         let self = this;
         gltfLoader.load(
-            './assets/glTF/Fox.gltf',
+            './assets/glTF5/craft_miner2.glb',
             (gltf) => {
+                const textureLoader = new THREE.TextureLoader()
+                const matcapTexture = textureLoader.load('./assets/textures/matcaps/3.png')
+                const material = new THREE.MeshMatcapMaterial()
+                material.matcap = matcapTexture
                 self.fox = gltf.scene;
-                this.true_fox_ry = self.fox.rotation.y;
-                //console.log(gltf);
-                gltf.scene.scale.set(0.025, 0.025, 0.025)
+                //console.log(gltf.scene)
+                gltf.scene.scale.set(2, 2, 2)
                 gltf.scene.traverse(function (child) {
                     if (child.isMesh) {
-                        child.castShadow = true;
+                        //child.castShadow = true;
+                        child.material = material
                     }
+                    if (child instanceof THREE.Mesh && child.material instanceof THREE.MeshStandardMaterial) {
+                        // child.material.envMap = environmentMap
+                        // child.material.envMapIntensity = 2
+                        // child.material.metalness = 0.9
+                        // child.material.roughness = 0.2
+                    }
+                    child.position.x = 0
+                    child.position.y = .3
+                    child.position.z = 0
+
+
+
                 });
 
                 self.scene.add(gltf.scene)
-                self.mixer.push(new THREE.AnimationMixer(gltf.scene))
-                self.mixer.push(new THREE.AnimationMixer(gltf.scene))
-                const action = self.mixer[0].clipAction(gltf.animations[2])
-                action.play()
-                const action2 = self.mixer[1].clipAction(gltf.animations[0])
-                action2.play()
+                // self.mixer.push(new THREE.AnimationMixer(gltf.scene))
+                // self.mixer.push(new THREE.AnimationMixer(gltf.scene))
+                // self.mixer.push(new THREE.AnimationMixer(gltf.scene))
+                // self.mixer.push(new THREE.AnimationMixer(gltf.scene))
+                // self.mixer.push(new THREE.AnimationMixer(gltf.scene))
+                // const action0 = self.mixer[0].clipAction(gltf.animations[3])
+                // action0.play()
+                // const action1 = self.mixer[1].clipAction(gltf.animations[1])
+                // action1.play()
+                // const action2 = self.mixer[2].clipAction(gltf.animations[2])
+                // action2.play()
+                // const action3 = self.mixer[3].clipAction(gltf.animations[3])
+                // action3.play()
+                // const action4 = self.mixer[4].clipAction(gltf.animations[4])
+                // action4.play()
 
-                self.loadingBar.visible = false;
 
-                self.renderer.setAnimationLoop(self.render.bind(self));
+
+                //self.renderer.setAnimationLoop(self.render.bind(self));
                 setTimeout(() => { self.world.gravity.set(0, -9.82, 0) }, 1000);
 
             },
@@ -357,7 +562,7 @@ class App {
         if (this.world) {
             const sphereGeometry = new THREE.SphereGeometry(0.2)
             const sphereMaterial = new THREE.MeshStandardMaterial()
-            sphereMaterial.color = new THREE.Color(Math.random(), Math.random(), Math.random());
+            sphereMaterial.color = new THREE.Color(Math.random() * 3, Math.random() * 3, Math.random() * 3);
             const mesh = new THREE.Mesh(sphereGeometry, sphereMaterial)
             mesh.castShadow = true
             mesh.position.copy(this.fox.position)
@@ -405,6 +610,9 @@ class App {
         this.previousTime = elapsedTime
         this.world.step(1 / 60, deltaTime, 3)
         let block = 0;
+        if (this.flagmaterial) {
+            this.flagmaterial.uniforms.uTime.value = elapsedTime
+        }
         if (this.fox && this.world.bodies.length >= 2) {
             this.fox.position.copy(this.world.bodies[1].position);
 
@@ -426,18 +634,19 @@ class App {
                 this.shoot();
             }
             if (this.mouse.x > 0.3 && this.mouse.y < 0.3) {
-                this.fox.rotation.y -= 0.05 * Math.abs(this.mouse.x);
-                this.camera.rotation.y -= 0.05 * Math.abs(this.mouse.x);
+                this.fox.rotation.y -= 0.02 * Math.abs(this.mouse.x);
+                this.camera.rotation.y -= 0.02 * Math.abs(this.mouse.x);
             }
             else if (this.mouse.x < -0.3 && this.mouse.y < 0.3) {
-                this.fox.rotation.y += 0.05 * Math.abs(this.mouse.x);
-                this.camera.rotation.y += 0.05 * Math.abs(this.mouse.x);
+                this.fox.rotation.y += 0.02 * Math.abs(this.mouse.x);
+                this.camera.rotation.y += 0.02 * Math.abs(this.mouse.x);
             }
             let fox_direction = new THREE.Vector3(); this.fox.getWorldDirection(fox_direction);
             fox_direction = fox_direction.normalize();
             this.camera.position.x = (this.fox.position.x - fox_direction.x * 20);
             this.camera.position.z = (this.fox.position.z - fox_direction.z * 20);
             this.world.bodies[1].quaternion.setFromAxisAngle(new CANNON.Vec3(0, 1, 0), this.fox.rotation.y)
+
 
         }
         if (this.move_sw) {
@@ -459,13 +668,13 @@ class App {
             // }
             if (block === 0) {
 
-                this.world.bodies[1].position.z += Math.cos(this.fox.rotation.y) * 0.2;
-                this.world.bodies[1].position.x += Math.sin(this.fox.rotation.y) * 0.2;
+                this.world.bodies[1].position.z += Math.cos(this.fox.rotation.y) * 0.3;
+                this.world.bodies[1].position.x += Math.sin(this.fox.rotation.y) * 0.3;
             }
 
-            if (this.mixer[0]) {
-                this.mixer[0].update(deltaTime)
-            }
+            // if (this.mixer[0]) {
+            //     this.mixer[0].update(deltaTime)
+            // }
         }
         else if (this.back_sw) {
             // const raycaster = new THREE.Raycaster();
@@ -489,30 +698,33 @@ class App {
             if (block === 0) {
 
 
-                this.world.bodies[1].position.z -= Math.cos(this.fox.rotation.y) * 0.2;
-                this.world.bodies[1].position.x -= Math.sin(this.fox.rotation.y) * 0.2;
+                this.world.bodies[1].position.z -= Math.cos(this.fox.rotation.y) * 0.3;
+                this.world.bodies[1].position.x -= Math.sin(this.fox.rotation.y) * 0.3;
             }
 
-            if (this.mixer[0]) {
-                this.mixer[0].update(deltaTime)
-            }
+            // if (this.mixer[0]) {
+            //     this.mixer[0].update(deltaTime)
+            // }
         }
         else {
-            if (this.mixer[1]) {
-                this.mixer[1].update(deltaTime)
-            }
+            // if (this.mixer[4]) {
+            //     this.mixer[4].update(deltaTime)
+            // }
         }
 
         if (this.right_sw) {
 
-            this.world.bodies[1].position.z -= Math.cos(this.fox.rotation.y + Math.PI / 2) * 0.2;
-            this.world.bodies[1].position.x -= Math.sin(this.fox.rotation.y + Math.PI / 2) * 0.2;
+            this.world.bodies[1].position.z -= Math.cos(this.fox.rotation.y + Math.PI / 2) * 0.3;
+            this.world.bodies[1].position.x -= Math.sin(this.fox.rotation.y + Math.PI / 2) * 0.3;
+
 
         }
 
         if (this.left_sw) {
-            this.world.bodies[1].position.z -= Math.cos(this.fox.rotation.y - Math.PI / 2) * 0.2;
-            this.world.bodies[1].position.x -= Math.sin(this.fox.rotation.y - Math.PI / 2) * 0.2;
+            this.world.bodies[1].position.z -= Math.cos(this.fox.rotation.y - Math.PI / 2) * 0.3;
+            this.world.bodies[1].position.x -= Math.sin(this.fox.rotation.y - Math.PI / 2) * 0.3;
+
+
 
         }
 
