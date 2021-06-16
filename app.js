@@ -137,8 +137,9 @@ class App {
 
 
         this.camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 1, 500);
-        this.camera.position.set(0, 12, 0);
+        this.camera.position.set(0, 10, 0);
         this.camera.rotation.y += Math.PI
+
 
 
 
@@ -180,7 +181,7 @@ class App {
         var grid = new THREE.GridHelper(2000, 400, 0x000000, 0x000000);
         grid.material.opacity = 0.2;
         grid.material.transparent = true;
-        this.scene.add(grid);
+        //this.scene.add(grid);
 
         //const fog = new THREE.Fog('#262837', 1, 50)
         //this.scene.fog = fog
@@ -232,8 +233,11 @@ class App {
             this.mouse.y = - (event.clientY / window.innerHeight) * 2 + 1
 
         });
+        this.start_shoot_time = -10;
         window.addEventListener("click", () => {
-            this.shoot();
+            this.shoot_sw = 1;
+            //if (this.start_shoot_time == -11)
+            //this.shoot();
         })
         window.addEventListener('keydown', (e) => {
             if (e.keyCode === 87 || e.key === 'ArrowUp')
@@ -272,56 +276,69 @@ class App {
 
         //test
 
-        const tgeometry = new THREE.BoxBufferGeometry(1, 50, 25);
-        const tmaterial = new THREE.MeshBasicMaterial({
-            color: "grey"
-        })
-        tmaterial.transparent = true;
-        tmaterial.opacity = .9;
-        tmaterial.envMap = environmentMap
-        tmaterial.envMapIntensity = 1
-        tmaterial.metalness = 0.5
-        tmaterial.roughness = 0.4
-        const tcubeMesh = new THREE.Mesh(tgeometry, tmaterial);
-        tcubeMesh.position.set(-100, 20, 55);
-        this.scene.add(tcubeMesh);
+        // const tgeometry = new THREE.BoxBufferGeometry(1, 50, 25);
+        // const tmaterial = new THREE.MeshBasicMaterial({
+        //     color: "grey"
+        // })
+        // tmaterial.transparent = true;
+        // tmaterial.opacity = .9;
+        // tmaterial.envMap = environmentMap
+        // tmaterial.envMapIntensity = 1
+        // tmaterial.metalness = 0.5
+        // tmaterial.roughness = 0.4
+        // const tcubeMesh = new THREE.Mesh(tgeometry, tmaterial);
+        // tcubeMesh.position.set(-100, 20, 55);
+        // this.scene.add(tcubeMesh);
 
 
-        const tgeometry2 = new THREE.PlaneGeometry(20, 10, 10);
-        const flagmaterial = new THREE.RawShaderMaterial({
-            vertexShader: `
-                uniform mat4 projectionMatrix;
-                uniform mat4 viewMatrix;
-                uniform mat4 modelMatrix;
-        
-                attribute vec3 position;
-                float rand(vec2 co){
-                    return fract(sin(dot(co.xy ,vec2(12.9898,78.233))) * 43758.5453);
-                }
-                void main()
-                {
-                    vec4 modelPosition = modelMatrix * vec4(position, 1.0);
-                    modelPosition.z += rand(vec2(modelPosition.y,modelPosition.x));
-                    vec4 viewPosition = viewMatrix * modelPosition;
-                    vec4 projectedPosition = projectionMatrix * viewPosition;
+        // const tgeometry2 = new THREE.CircleGeometry(22, 16);
+        // this.watermaterial = new THREE.RawShaderMaterial({
+        //     vertexShader: `
+        //         uniform mat4 projectionMatrix;
+        //         uniform mat4 viewMatrix;
+        //         uniform mat4 modelMatrix;
+        //         uniform float uTime;
 
-                    gl_Position = projectedPosition;
-                }
-            `,
-            fragmentShader: `
-                precision mediump float;
-        
-                void main()
-                {
-                    gl_FragColor = vec4(1.0, 1.0, 0.0, 1.0);
-                }
-            `
-        })
+        //         attribute vec3 position;
+        //         float rand(vec2 co){
+        //             return fract(sin(dot(co.xy ,vec2(12.9898,78.233))) * 43758.5453);
+        //         }
+        //         void main()
+        //         {
 
-        flagmaterial.side = THREE.DoubleSide;
-        const tplane2 = new THREE.Mesh(tgeometry2, flagmaterial);
-        tplane2.position.set(0, 10, 0)
-        //this.scene.add(tplane2);
+        //             vec4 modelPosition = modelMatrix * vec4(position, 1.0);
+        //             float elevation = sin(modelPosition.x * 10.+uTime) * sin(modelPosition.z * 10.+uTime) * .8;
+        //             modelPosition.y += elevation;
+        //             vec4 viewPosition = viewMatrix * modelPosition;
+        //             vec4 projectedPosition = projectionMatrix * viewPosition;
+
+        //             gl_Position = projectedPosition;
+
+        //         }
+        //     `,
+        //     fragmentShader: `
+        //         precision mediump float;
+
+
+        //         void main()
+        //         {
+        //             vec3 color = vec3(0.196,  0.690, 0.704);
+        //             gl_FragColor = vec4(color, .35);
+
+        //         }
+        //     `,
+        //     uniforms: {
+        //         uTime: { value: 0 }
+        //     }
+        // })
+
+        // this.watermaterial.side = THREE.DoubleSide;
+        // this.watermaterial.transparent = true;
+        // const fountain_water = new THREE.Mesh(tgeometry2, this.watermaterial);
+        // fountain_water.position.set(-21, 5, 90)
+        // fountain_water.rotateX(Math.PI / 2);
+
+        // this.scene.add(fountain_water);
 
     }
 
@@ -390,7 +407,7 @@ class App {
             (gltf) => {
 
                 gltf.scene.scale.set(10, 10, 10)
-                gltf.scene.position.set(10, 2, 10)
+                gltf.scene.position.set(10, 0, 10)
                 gltf.scene.traverse(function (child) {
                     if (child.isMesh) {
                         //child.receiveShadow = true;
@@ -419,8 +436,8 @@ class App {
                                 void main()
                                 {
                                     vec4 modelPosition = modelMatrix * vec4(position, 1.0);
-                                    modelPosition.x -= sin(modelPosition.y - uTime*5.) * .7;
-                                    modelPosition.x -= sin(modelPosition.z - uTime*5.) * .7;
+                                    modelPosition.z -= cos(modelPosition.y + uTime*2.)/modelPosition.y*10.;
+                                    //modelPosition.x += cos(modelPosition.z + uTime*2.) * .5;
                                     vec4 viewPosition = viewMatrix * modelPosition;
                                     vec4 projectedPosition = projectionMatrix * viewPosition;
                 
@@ -484,54 +501,66 @@ class App {
             }
         );
     }
-
     loadFox() {
 
 
-        const gltfLoader = new GLTFLoader();
-
+        const fbxfLoader = new FBXLoader();
         let self = this;
-        gltfLoader.load(
-            './assets/glTF5/craft_miner2.glb',
-            (gltf) => {
-                const textureLoader = new THREE.TextureLoader()
-                const matcapTexture = textureLoader.load('./assets/textures/matcaps/3.png')
-                const material = new THREE.MeshMatcapMaterial()
-                material.matcap = matcapTexture
-                self.fox = gltf.scene;
+        fbxfLoader.load(
+            './assets/glTF100/spaceman.fbx',
+            (object) => {
+                self.fox = object;
+                self.fox.scale.set(0.03, 0.03, 0.03)
+                console.log(object)
+                self.scene.add(object)
                 //console.log(gltf.scene)
-                gltf.scene.scale.set(2, 2, 2)
-                gltf.scene.traverse(function (child) {
-                    if (child.isMesh) {
-                        //child.castShadow = true;
-                        child.material = material
+                //gltf.scene.scale.set(2, 2, 2)
+                object.traverse(function (child) {
+                    // if (child instanceof THREE.Mesh && child.material instanceof THREE.MeshStandardMaterial) {
+                    //     console.log('hi')
+                    //     child.material.envMap = environmentMap
+                    //     child.material.envMapIntensity = 2
+                    //     child.material.metalness = 0.9
+                    //     child.material.roughness = 0.2
+                    // }
+                    if (child.isMesh && child.name == 'spaceman') {
+                        child.material.color = new THREE.Color(0x707070);
+                        child.material.shininess = 0
+                        console.log(child);
                     }
-                    if (child instanceof THREE.Mesh && child.material instanceof THREE.MeshStandardMaterial) {
-                        // child.material.envMap = environmentMap
-                        // child.material.envMapIntensity = 2
-                        // child.material.metalness = 0.9
-                        // child.material.roughness = 0.2
-                    }
-                    child.position.x = 0
-                    child.position.y = .3
-                    child.position.z = 0
-
-
-
                 });
 
-                self.scene.add(gltf.scene)
+                // gltf.scene.traverse(function (child) {
+                //     if (child.isMesh) {
+                //         //child.castShadow = true;
+                //     }
+                //     if (child instanceof THREE.Mesh && child.material instanceof THREE.MeshStandardMaterial) {
+                //         // child.material.envMap = environmentMap
+                //         // child.material.envMapIntensity = 2
+                //         // child.material.metalness = 0.9
+                //         // child.material.roughness = 0.2
+                //     }
+                //     child.position.x = 0
+                //     child.position.y = .3
+                //     child.position.z = 0
+
+                // });
+
+                self.mixer.push(new THREE.AnimationMixer(object))
+                self.mixer.push(new THREE.AnimationMixer(object))
+                self.mixer.push(new THREE.AnimationMixer(object))
+                self.mixer.push(new THREE.AnimationMixer(object))
                 // self.mixer.push(new THREE.AnimationMixer(gltf.scene))
                 // self.mixer.push(new THREE.AnimationMixer(gltf.scene))
                 // self.mixer.push(new THREE.AnimationMixer(gltf.scene))
-                // self.mixer.push(new THREE.AnimationMixer(gltf.scene))
-                // self.mixer.push(new THREE.AnimationMixer(gltf.scene))
-                // const action0 = self.mixer[0].clipAction(gltf.animations[3])
-                // action0.play()
-                // const action1 = self.mixer[1].clipAction(gltf.animations[1])
-                // action1.play()
-                // const action2 = self.mixer[2].clipAction(gltf.animations[2])
-                // action2.play()
+                const shoot = self.mixer[0].clipAction(object.animations[0])
+                shoot.play()
+                const idel = self.mixer[1].clipAction(object.animations[2])
+                idel.play()
+                const balance = self.mixer[2].clipAction(object.animations[3])
+                balance.play()
+                const move = self.mixer[3].clipAction(object.animations[4])
+                move.play()
                 // const action3 = self.mixer[3].clipAction(gltf.animations[3])
                 // action3.play()
                 // const action4 = self.mixer[4].clipAction(gltf.animations[4])
@@ -547,9 +576,82 @@ class App {
 
                 self.loadingBar.progress = (xhr.loaded / xhr.total);
 
+            },
+            // called when loading has errors
+            (error) => {
+
+                console.log('An error happened');
+                console.log(error);
+
             }
         )
     }
+
+    // loadFox() {
+
+
+    //     const gltfLoader = new GLTFLoader();
+
+    //     let self = this;
+    //     gltfLoader.load(
+    //         './assets/glTF5/craft_miner2.glb',
+    //         (gltf) => {
+    //             const textureLoader = new THREE.TextureLoader()
+    //             const matcapTexture = textureLoader.load('./assets/textures/matcaps/3.png')
+    //             const material = new THREE.MeshMatcapMaterial()
+    //             material.matcap = matcapTexture
+    //             self.fox = gltf.scene;
+    //             //console.log(gltf.scene)
+    //             gltf.scene.scale.set(2, 2, 2)
+    //             gltf.scene.traverse(function (child) {
+    //                 if (child.isMesh) {
+    //                     //child.castShadow = true;
+    //                     child.material = material
+    //                 }
+    //                 if (child instanceof THREE.Mesh && child.material instanceof THREE.MeshStandardMaterial) {
+    //                     // child.material.envMap = environmentMap
+    //                     // child.material.envMapIntensity = 2
+    //                     // child.material.metalness = 0.9
+    //                     // child.material.roughness = 0.2
+    //                 }
+    //                 child.position.x = 0
+    //                 child.position.y = .3
+    //                 child.position.z = 0
+
+
+
+    //             });
+
+    //             self.scene.add(gltf.scene)
+    //             // self.mixer.push(new THREE.AnimationMixer(gltf.scene))
+    //             // self.mixer.push(new THREE.AnimationMixer(gltf.scene))
+    //             // self.mixer.push(new THREE.AnimationMixer(gltf.scene))
+    //             // self.mixer.push(new THREE.AnimationMixer(gltf.scene))
+    //             // self.mixer.push(new THREE.AnimationMixer(gltf.scene))
+    //             // const action0 = self.mixer[0].clipAction(gltf.animations[3])
+    //             // action0.play()
+    //             // const action1 = self.mixer[1].clipAction(gltf.animations[1])
+    //             // action1.play()
+    //             // const action2 = self.mixer[2].clipAction(gltf.animations[2])
+    //             // action2.play()
+    //             // const action3 = self.mixer[3].clipAction(gltf.animations[3])
+    //             // action3.play()
+    //             // const action4 = self.mixer[4].clipAction(gltf.animations[4])
+    //             // action4.play()
+
+
+
+    //             //self.renderer.setAnimationLoop(self.render.bind(self));
+    //             setTimeout(() => { self.world.gravity.set(0, -9.82, 0) }, 1000);
+
+    //         },
+    //         function (xhr) {
+
+    //             self.loadingBar.progress = (xhr.loaded / xhr.total);
+
+    //         }
+    //     )
+    // }
 
     resize() {
 
@@ -560,6 +662,7 @@ class App {
     }
     shoot() {
         if (this.world) {
+
             const sphereGeometry = new THREE.SphereGeometry(0.2)
             const sphereMaterial = new THREE.MeshStandardMaterial()
             sphereMaterial.color = new THREE.Color(Math.random() * 3, Math.random() * 3, Math.random() * 3);
@@ -577,19 +680,19 @@ class App {
 
             body.position.copy(this.fox.position)
             let dum = new THREE.Vector3();
-
-            if (this.mouse.y >= -0.13)
-                body.velocity.set(
-                    this.fox.getWorldDirection(dum).x * 100,
-                    (1 + this.mouse.y * 1.2) * 13,
-                    this.fox.getWorldDirection(dum).z * 100);
-            else {
-                body.velocity.set(
-                    this.fox.getWorldDirection(dum).x * 100,
-                    this.fox.getWorldDirection(dum).y * 100,
-                    this.fox.getWorldDirection(dum).z * 100);
-            }
-            body.position.y += 1;
+            this.fox.getWorldDirection(dum)
+            //if (this.mouse.y >= -0.13)
+            body.velocity.set(
+                dum.x * 100,
+                (1 + this.mouse.y * 1.2) * 13,
+                dum.z * 100);
+            // else {
+            //     body.velocity.set(
+            //         this.fox.getWorldDirection(dum).x * 100,
+            //         this.fox.getWorldDirection(dum).y * 100,
+            //         this.fox.getWorldDirection(dum).z * 100);
+            // }
+            body.position.y += 2;
 
 
             this.world.addBody(body)
@@ -598,6 +701,8 @@ class App {
                 body: body
             })
             this.scene.add(mesh)
+
+            this.shoot_sw = 0;
         }
     }
     render() {
@@ -612,6 +717,7 @@ class App {
         let block = 0;
         if (this.flagmaterial) {
             this.flagmaterial.uniforms.uTime.value = elapsedTime
+            //this.watermaterial.uniforms.uTime.value = elapsedTime
         }
         if (this.fox && this.world.bodies.length >= 2) {
             this.fox.position.copy(this.world.bodies[1].position);
@@ -630,9 +736,7 @@ class App {
 
                 }
             }
-            if (this.shoot_sw === 1) {
-                this.shoot();
-            }
+
             if (this.mouse.x > 0.3 && this.mouse.y < 0.3) {
                 this.fox.rotation.y -= 0.02 * Math.abs(this.mouse.x);
                 this.camera.rotation.y -= 0.02 * Math.abs(this.mouse.x);
@@ -668,13 +772,13 @@ class App {
             // }
             if (block === 0) {
 
-                this.world.bodies[1].position.z += Math.cos(this.fox.rotation.y) * 0.3;
-                this.world.bodies[1].position.x += Math.sin(this.fox.rotation.y) * 0.3;
+                this.world.bodies[1].position.z += Math.cos(this.fox.rotation.y) * 0.5;
+                this.world.bodies[1].position.x += Math.sin(this.fox.rotation.y) * 0.5;
             }
 
-            // if (this.mixer[0]) {
-            //     this.mixer[0].update(deltaTime)
-            // }
+            if (this.mixer[3]) {
+                this.mixer[3].update(deltaTime)
+            }
         }
         else if (this.back_sw) {
             // const raycaster = new THREE.Raycaster();
@@ -698,35 +802,50 @@ class App {
             if (block === 0) {
 
 
-                this.world.bodies[1].position.z -= Math.cos(this.fox.rotation.y) * 0.3;
-                this.world.bodies[1].position.x -= Math.sin(this.fox.rotation.y) * 0.3;
+                this.world.bodies[1].position.z -= Math.cos(this.fox.rotation.y) * 0.5;
+                this.world.bodies[1].position.x -= Math.sin(this.fox.rotation.y) * 0.5;
             }
 
-            // if (this.mixer[0]) {
-            //     this.mixer[0].update(deltaTime)
-            // }
+            if (this.mixer[2]) {
+                this.mixer[2].update(deltaTime)
+            }
         }
         else {
-            // if (this.mixer[4]) {
-            //     this.mixer[4].update(deltaTime)
-            // }
+            if (this.mixer[1]) {
+                this.mixer[1].update(deltaTime)
+
+            }
         }
 
         if (this.right_sw) {
 
-            this.world.bodies[1].position.z -= Math.cos(this.fox.rotation.y + Math.PI / 2) * 0.3;
-            this.world.bodies[1].position.x -= Math.sin(this.fox.rotation.y + Math.PI / 2) * 0.3;
-
+            this.world.bodies[1].position.z -= Math.cos(this.fox.rotation.y + Math.PI / 2) * 0.5;
+            this.world.bodies[1].position.x -= Math.sin(this.fox.rotation.y + Math.PI / 2) * 0.5;
+            if (this.mixer[2] && !this.move_sw) {
+                this.mixer[2].update(deltaTime)
+            }
 
         }
 
         if (this.left_sw) {
-            this.world.bodies[1].position.z -= Math.cos(this.fox.rotation.y - Math.PI / 2) * 0.3;
-            this.world.bodies[1].position.x -= Math.sin(this.fox.rotation.y - Math.PI / 2) * 0.3;
-
+            this.world.bodies[1].position.z -= Math.cos(this.fox.rotation.y - Math.PI / 2) * 0.5;
+            this.world.bodies[1].position.x -= Math.sin(this.fox.rotation.y - Math.PI / 2) * 0.5;
+            if (this.mixer[2] && !this.move_sw) {
+                this.mixer[2].update(deltaTime)
+            }
 
 
         }
+        if (this.shoot_sw) {
+            this.start_shoot_time = elapsedTime;
+            this.shoot();
+        }
+        if (elapsedTime - this.start_shoot_time < 1) {
+            if (this.mixer[0]) {
+                this.mixer[0].update(deltaTime);
+            }
+        }
+
 
 
         this.renderer.render(this.scene, this.camera);
