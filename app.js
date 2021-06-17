@@ -20,11 +20,24 @@ import Stats from './libs/stats.js/src/Stats.js'
 class App {
 
     constructor() {
+        //######### LoadingBar ###########
+        this.loadingManager = new THREE.LoadingManager()
+        this.loadingManager.onLoad = () => {
+            this.loadingBar.visible = false;
+            this.world.gravity.set(0, -9.82, 0);
+            this.load_ready_sw = 1
+        }
+        this.loadingManager.onProgress = (url, itemsLoaded, itemsTotal) => {
+            this.loadingBar.progress = (itemsLoaded / itemsTotal);
+        }
+
+
 
         const container = document.createElement('div');
         document.body.appendChild(container);
 
-        const cubeTextureLoader = new THREE.CubeTextureLoader()
+
+        const cubeTextureLoader = new THREE.CubeTextureLoader(this.loadingManager)
         const environmentMap = cubeTextureLoader.load([
             './assets/textures/environmentMaps/12/px.jpg',
             './assets/textures/environmentMaps/12/nx.jpg',
@@ -35,47 +48,127 @@ class App {
         ])
 
 
-        // const canvas = document.querySelector('div')
-        // console.log(canvas)
-
-        // canvas.requestPointerLock = canvas.requestPointerLock ||
-        //     canvas.mozRequestPointerLock;
-
-        // document.exitPointerLock = document.exitPointerLock ||
-        //     document.mozExitPointerLock;
-
-        // canvas.onclick = function () {
-        //     canvas.requestPointerLock();
-        // };
-        // document.addEventListener('pointerlockchange', lockChangeAlert, false);
-        // document.addEventListener('mozpointerlockchange', lockChangeAlert, false);
-        // function lockChangeAlert() {
-        //     if (document.pointerLockElement === canvas ||
-        //         document.mozPointerLockElement === canvas) {
-        //         console.log('The pointer lock status is now locked');
-        //         // window.addEventListener('keydown', move_function);
-        //         // window.addEventListener('keyup', remove_function);
-
-        //     } else {
-        //         console.log('The pointer lock status is now unlocked');
-        //         // window.removeEventListener("keydown", move_function);
-        //         // window.removeEventListener('keyup', remove_function)
-        //         // moveForward = false;
-        //         // moveBackward = false;
-        //         // moveLeft = false;
-        //         // moveRight = false;
-
-        //     }
-        // }
-
-
-
         this.stats = new Stats()
         this.stats.showPanel(0) // 0: fps, 1: ms, 2: mb, 3+: custom
         document.body.appendChild(this.stats.dom)
-        const self = this
+
+        //########## variable #######
+        this.load_ready_sw = 0;
+
+        this.start_shoot_time = -10;
+
+        this.clock = new THREE.Clock();
+        this.previousTime = 0;
+        this.mixer = [];
+        this.right_sw = 0;
+        this.left_sw = 0;
+        this.move_sw = 0;
+        this.back_sw = 0;
+        this.shoot_sw = 0;
+
+        this.objectsToUpdate = [];
+        this.bulletToUpdate = [];
+
+        this.loadingBar = new LoadingBar();
+
+        this.mouse = new THREE.Vector2()
 
 
+        //####### camera ########
+        this.camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 1, 500);
+        this.camera.position.set(0, 10, 0);
+        this.camera.rotation.y += Math.PI
+
+
+        //######## scene #########
+        this.scene = new THREE.Scene();
+        this.scene.background = environmentMap
+        //this.scene.background = new THREE.Color(0xaaaaaa);
+
+
+        //########## LIGHT ###########
+        const ambient = new THREE.HemisphereLight(0xffffff, 0xbbbbff, .5);
+        this.scene.add(ambient);
+
+        const light = new THREE.DirectionalLight(0xFFFFFF, 1);
+        light.position.set(0, 0.1, -1)
+        //light.position.set(-200, 200, -200);
+        // light.shadow.camera.top = 100
+        // light.shadow.camera.right = 100
+        // light.shadow.camera.bottom = -100
+        // light.shadow.camera.left = - 100
+        // light.shadow.camera.near = 1
+        // light.shadow.camera.far = 900
+        // light.shadow.mapSize.width = 1024 * 4
+        // light.shadow.mapSize.height = 1024 * 4
+        // light.castShadow = true
+        this.scene.add(light);
+        // const directionalLightCameraHelper = new THREE.CameraHelper(light.shadow.camera)
+        // this.scene.add(directionalLightCameraHelper)
+
+
+
+        //####### renderer ###########
+        this.renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+        this.renderer.setPixelRatio(window.devicePixelRatio);
+        this.renderer.setSize(window.innerWidth, window.innerHeight);
+        this.renderer.outputEncoding = THREE.sRGBEncoding;
+        //this.renderer.physicallyCorrectLights = true;
+        // this.renderer.shadowMap.enabled = true
+        // this.renderer.shadowMap.type = THREE.PCFSoftShadowMap
+        //this.renderer.setClearColor('#262837')
+        container.appendChild(this.renderer.domElement);
+
+
+
+
+        //########### Listener #########
+        window.addEventListener('resize', this.resize.bind(this));
+
+        window.addEventListener('mousemove', e => {
+            this.mouse.x = event.clientX / window.innerWidth * 2 - 1
+            this.mouse.y = - (event.clientY / window.innerHeight) * 2 + 1
+
+        });
+
+        window.addEventListener("click", () => {
+            this.shoot_sw = 1;
+        })
+
+        window.addEventListener('keydown', (e) => {
+            if (e.keyCode === 87 || e.key === 'ArrowUp')
+                this.move_sw = 1;
+            if (e.keyCode === 83 || e.key === 'ArrowDown')
+                this.back_sw = 1;
+            if (e.keyCode === 68 || e.key === 'ArrowRight')
+                this.right_sw = 1;
+            if (e.keyCode === 65 || e.key === 'ArrowLeft')
+                this.left_sw = 1;
+            if (e.key === ' ' || e.keyCode === 32)
+                this.shoot_sw = 1;
+        });
+
+        window.addEventListener('keyup', (e) => {
+            if (e.keyCode === 87 || e.key === 'ArrowUp')
+                this.move_sw = 0;
+            if (e.keyCode === 83 || e.key === 'ArrowDown')
+                this.back_sw = 0;
+            if (e.keyCode === 68 || e.key === 'ArrowRight')
+                this.right_sw = 0;
+            if (e.keyCode === 65 || e.key === 'ArrowLeft')
+                this.left_sw = 0;
+            if (e.key === ' ' || e.keyCode === 32)
+                this.shoot_sw = 0;
+        });
+
+        this.create_physics_world();
+        this.loadFox();
+        this.loadEnvironment();
+        this.renderer.setAnimationLoop(this.render.bind(this));
+
+
+    }
+    create_physics_world() {
         this.world = new CANNON.World()
         this.world.gravity.set(0, -900, 0)
 
@@ -118,74 +211,6 @@ class App {
         floorBody.quaternion.setFromAxisAngle(new CANNON.Vec3(- 1, 0, 0), Math.PI * 0.5)
         this.world.addBody(floorBody)
 
-
-
-        this.clock = new THREE.Clock();
-        this.previousTime = 0;
-        this.mixer = [];
-        this.degree_y = 0;
-        this.right_sw = 0;
-        this.left_sw = 0;
-        this.move_sw = 0;
-        this.back_sw = 0;
-        this.shoot_sw = 0;
-
-        this.objectsToUpdate = [];
-        this.bulletToUpdate = [];
-
-
-
-
-        this.camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 1, 500);
-        this.camera.position.set(0, 10, 0);
-        this.camera.rotation.y += Math.PI
-
-
-
-
-
-        this.scene = new THREE.Scene();
-        this.scene.background = environmentMap
-
-
-        //this.scene.background = new THREE.Color(0xaaaaaa);
-
-        const ambient = new THREE.HemisphereLight(0xffffff, 0xbbbbff, .5);
-        this.scene.add(ambient);
-
-        const light = new THREE.DirectionalLight(0xFFFFFF, 1);
-        light.position.set(0, 0.1, -1)
-        //light.position.set(-200, 200, -200);
-        // light.shadow.camera.top = 100
-        // light.shadow.camera.right = 100
-        // light.shadow.camera.bottom = -100
-        // light.shadow.camera.left = - 100
-        // light.shadow.camera.near = 1
-        // light.shadow.camera.far = 900
-        // light.shadow.mapSize.width = 1024 * 4
-        // light.shadow.mapSize.height = 1024 * 4
-        // light.castShadow = true
-        this.scene.add(light);
-        // const directionalLightCameraHelper = new THREE.CameraHelper(light.shadow.camera)
-        // this.scene.add(directionalLightCameraHelper)
-
-        var mesh = new THREE.Mesh(
-            new THREE.PlaneBufferGeometry(2000, 2000),
-            new THREE.MeshPhongMaterial({ color: 0xFF9999, depthWrite: false })
-        );
-        mesh.rotation.x = - Math.PI / 2;
-        mesh.receiveShadow = true;
-        mesh.position.y += 2;
-        this.scene.add(mesh);
-
-        var grid = new THREE.GridHelper(2000, 400, 0x000000, 0x000000);
-        grid.material.opacity = 0.2;
-        grid.material.transparent = true;
-        //this.scene.add(grid);
-
-        //const fog = new THREE.Fog('#262837', 1, 50)
-        //this.scene.fog = fog
-
         // for (let i = 0; i < 100; i++) {
         //     const geometry = new THREE.BoxBufferGeometry(3, 3, 3);
         //     const material = new THREE.MeshStandardMaterial({ color: 0xFF0000 });
@@ -209,137 +234,6 @@ class App {
         //         body: body
         //     });
         // }
-
-        this.renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
-        this.renderer.setPixelRatio(window.devicePixelRatio);
-        this.renderer.setSize(window.innerWidth, window.innerHeight);
-        this.renderer.outputEncoding = THREE.sRGBEncoding;
-        //this.renderer.physicallyCorrectLights = true;
-        // this.renderer.shadowMap.enabled = true
-        // this.renderer.shadowMap.type = THREE.PCFSoftShadowMap
-        //this.renderer.setClearColor('#262837')
-        container.appendChild(this.renderer.domElement);
-
-
-        this.loadingBar = new LoadingBar();
-
-
-        window.addEventListener('resize', this.resize.bind(this));
-
-
-        this.mouse = new THREE.Vector2()
-        window.addEventListener('mousemove', e => {
-            this.mouse.x = event.clientX / window.innerWidth * 2 - 1
-            this.mouse.y = - (event.clientY / window.innerHeight) * 2 + 1
-
-        });
-        this.start_shoot_time = -10;
-        window.addEventListener("click", () => {
-            this.shoot_sw = 1;
-            //if (this.start_shoot_time == -11)
-            //this.shoot();
-        })
-        window.addEventListener('keydown', (e) => {
-            if (e.keyCode === 87 || e.key === 'ArrowUp')
-                this.move_sw = 1;
-            if (e.keyCode === 83 || e.key === 'ArrowDown')
-                this.back_sw = 1;
-            if (e.keyCode === 68 || e.key === 'ArrowRight')
-                this.right_sw = 1;
-            if (e.keyCode === 65 || e.key === 'ArrowLeft')
-                this.left_sw = 1;
-            if (e.key === ' ' || e.keyCode === 32)
-                this.shoot_sw = 1;
-
-
-        });
-        window.addEventListener('keyup', (e) => {
-            if (e.keyCode === 87 || e.key === 'ArrowUp')
-                this.move_sw = 0;
-            if (e.keyCode === 83 || e.key === 'ArrowDown')
-                this.back_sw = 0;
-            if (e.keyCode === 68 || e.key === 'ArrowRight')
-                this.right_sw = 0;
-            if (e.keyCode === 65 || e.key === 'ArrowLeft')
-                this.left_sw = 0;
-            if (e.key === ' ' || e.keyCode === 32)
-                this.shoot_sw = 0;
-        });
-        this.loadFox();
-        this.loadEnvironment();
-        this.renderer.setAnimationLoop(this.render.bind(this));
-
-        //###### prevent ########
-
-
-
-
-        //test
-
-        // const tgeometry = new THREE.BoxBufferGeometry(1, 50, 25);
-        // const tmaterial = new THREE.MeshBasicMaterial({
-        //     color: "grey"
-        // })
-        // tmaterial.transparent = true;
-        // tmaterial.opacity = .9;
-        // tmaterial.envMap = environmentMap
-        // tmaterial.envMapIntensity = 1
-        // tmaterial.metalness = 0.5
-        // tmaterial.roughness = 0.4
-        // const tcubeMesh = new THREE.Mesh(tgeometry, tmaterial);
-        // tcubeMesh.position.set(-100, 20, 55);
-        // this.scene.add(tcubeMesh);
-
-
-        // const tgeometry2 = new THREE.CircleGeometry(22, 16);
-        // this.watermaterial = new THREE.RawShaderMaterial({
-        //     vertexShader: `
-        //         uniform mat4 projectionMatrix;
-        //         uniform mat4 viewMatrix;
-        //         uniform mat4 modelMatrix;
-        //         uniform float uTime;
-
-        //         attribute vec3 position;
-        //         float rand(vec2 co){
-        //             return fract(sin(dot(co.xy ,vec2(12.9898,78.233))) * 43758.5453);
-        //         }
-        //         void main()
-        //         {
-
-        //             vec4 modelPosition = modelMatrix * vec4(position, 1.0);
-        //             float elevation = sin(modelPosition.x * 10.+uTime) * sin(modelPosition.z * 10.+uTime) * .8;
-        //             modelPosition.y += elevation;
-        //             vec4 viewPosition = viewMatrix * modelPosition;
-        //             vec4 projectedPosition = projectionMatrix * viewPosition;
-
-        //             gl_Position = projectedPosition;
-
-        //         }
-        //     `,
-        //     fragmentShader: `
-        //         precision mediump float;
-
-
-        //         void main()
-        //         {
-        //             vec3 color = vec3(0.196,  0.690, 0.704);
-        //             gl_FragColor = vec4(color, .35);
-
-        //         }
-        //     `,
-        //     uniforms: {
-        //         uTime: { value: 0 }
-        //     }
-        // })
-
-        // this.watermaterial.side = THREE.DoubleSide;
-        // this.watermaterial.transparent = true;
-        // const fountain_water = new THREE.Mesh(tgeometry2, this.watermaterial);
-        // fountain_water.position.set(-21, 5, 90)
-        // fountain_water.rotateX(Math.PI / 2);
-
-        // this.scene.add(fountain_water);
-
     }
 
     // loadEnvironment() {
@@ -391,21 +285,12 @@ class App {
     // }
     loadEnvironment() {
         let self = this;
-        // const cubeTextureLoader = new THREE.CubeTextureLoader()
-        // const environmentMap = cubeTextureLoader.load([
-        //     './assets/textures/environmentMaps/0/px.jpg',
-        //     './assets/textures/environmentMaps/0/nx.jpg',
-        //     './assets/textures/environmentMaps/0/py.jpg',
-        //     './assets/textures/environmentMaps/0/ny.jpg',
-        //     './assets/textures/environmentMaps/0/pz.jpg',
-        //     './assets/textures/environmentMaps/0/nz.jpg'
-        // ])
-        // GLTF loader
-        const gltfLoader = new GLTFLoader()
+        const gltfLoader = new GLTFLoader(this.loadingManager)
         gltfLoader.load(
             './assets/glTF100/untitled.glb',
             (gltf) => {
-
+                self.env = gltf.scene;
+                //console.log(self.env)
                 gltf.scene.scale.set(10, 10, 10)
                 gltf.scene.position.set(10, 0, 10)
                 gltf.scene.traverse(function (child) {
@@ -413,7 +298,7 @@ class App {
                         //child.receiveShadow = true;
                     }
                     if (child.isMesh && child.name === 'Cube001') {
-                        console.log(child.position)
+                        //console.log(child.position)
                     }
                     if (child.isMesh && child.name === 'Plane001') {
                         const textureLoader = new THREE.TextureLoader()
@@ -483,13 +368,11 @@ class App {
                     }
 
                 });
-                self.loadingBar.visible = false;
                 self.scene.add(gltf.scene)
-                //self.renderer.setAnimationLoop(self.render.bind(self));
             },
             (xhr) => {
 
-                self.loadingBar.progress = (xhr.loaded / xhr.total);
+                //self.loadingBar.progress = (xhr.loaded / xhr.total);
 
             },
             // called when loading has errors
@@ -504,7 +387,7 @@ class App {
     loadFox() {
 
 
-        const fbxfLoader = new FBXLoader();
+        const fbxfLoader = new FBXLoader(this.loadingManager);
         let self = this;
         fbxfLoader.load(
             './assets/glTF100/spaceman.fbx',
@@ -516,36 +399,15 @@ class App {
                 //console.log(gltf.scene)
                 //gltf.scene.scale.set(2, 2, 2)
                 object.traverse(function (child) {
-                    // if (child instanceof THREE.Mesh && child.material instanceof THREE.MeshStandardMaterial) {
-                    //     console.log('hi')
-                    //     child.material.envMap = environmentMap
-                    //     child.material.envMapIntensity = 2
-                    //     child.material.metalness = 0.9
-                    //     child.material.roughness = 0.2
-                    // }
                     if (child.isMesh && child.name == 'spaceman') {
                         child.material.color = new THREE.Color(0x707070);
                         child.material.shininess = 0
-                        console.log(child);
+                        //console.log(child);
+                    }
+                    else if (child.isMesh && child.name === 'polySurface21000') {
+                        self.skateboard = child;
                     }
                 });
-
-                // gltf.scene.traverse(function (child) {
-                //     if (child.isMesh) {
-                //         //child.castShadow = true;
-                //     }
-                //     if (child instanceof THREE.Mesh && child.material instanceof THREE.MeshStandardMaterial) {
-                //         // child.material.envMap = environmentMap
-                //         // child.material.envMapIntensity = 2
-                //         // child.material.metalness = 0.9
-                //         // child.material.roughness = 0.2
-                //     }
-                //     child.position.x = 0
-                //     child.position.y = .3
-                //     child.position.z = 0
-
-                // });
-
                 self.mixer.push(new THREE.AnimationMixer(object))
                 self.mixer.push(new THREE.AnimationMixer(object))
                 self.mixer.push(new THREE.AnimationMixer(object))
@@ -566,15 +428,10 @@ class App {
                 // const action4 = self.mixer[4].clipAction(gltf.animations[4])
                 // action4.play()
 
-
-
-                //self.renderer.setAnimationLoop(self.render.bind(self));
-                setTimeout(() => { self.world.gravity.set(0, -9.82, 0) }, 1000);
-
             },
-            function (xhr) {
+            (xhr) => {
 
-                self.loadingBar.progress = (xhr.loaded / xhr.total);
+                //self.loadingBar.progress = (xhr.loaded / xhr.total);
 
             },
             // called when loading has errors
@@ -666,11 +523,10 @@ class App {
             const sphereGeometry = new THREE.SphereGeometry(0.2)
             const sphereMaterial = new THREE.MeshStandardMaterial()
             sphereMaterial.color = new THREE.Color(Math.random() * 3, Math.random() * 3, Math.random() * 3);
+
             const mesh = new THREE.Mesh(sphereGeometry, sphereMaterial)
-            mesh.castShadow = true
+            //mesh.castShadow = true
             mesh.position.copy(this.fox.position)
-
-
 
             const shape = new CANNON.Sphere(0.2)
             const body = new CANNON.Body({
@@ -716,10 +572,10 @@ class App {
         this.world.step(1 / 60, deltaTime, 3)
         let block = 0;
         if (this.flagmaterial) {
-            this.flagmaterial.uniforms.uTime.value = elapsedTime
-            //this.watermaterial.uniforms.uTime.value = elapsedTime
+            this.flagmaterial.uniforms.uTime.value = elapsedTime;
         }
-        if (this.fox && this.world.bodies.length >= 2) {
+        if (this.load_ready_sw) {
+
             this.fox.position.copy(this.world.bodies[1].position);
 
             for (let i = 0; i < this.objectsToUpdate.length; i++) {
@@ -745,7 +601,9 @@ class App {
                 this.fox.rotation.y += 0.02 * Math.abs(this.mouse.x);
                 this.camera.rotation.y += 0.02 * Math.abs(this.mouse.x);
             }
-            let fox_direction = new THREE.Vector3(); this.fox.getWorldDirection(fox_direction);
+
+            let fox_direction = new THREE.Vector3();
+            this.fox.getWorldDirection(fox_direction);
             fox_direction = fox_direction.normalize();
             this.camera.position.x = (this.fox.position.x - fox_direction.x * 20);
             this.camera.position.z = (this.fox.position.z - fox_direction.z * 20);
@@ -762,7 +620,8 @@ class App {
             // this.fox.getWorldPosition(pos);
             // this.fox.getWorldDirection(rayDirection);
             // raycaster.set(pos, rayDirection.normalize());
-            // const intersects = raycaster.intersectObjects(this.env.children[0].children);
+            // const intersects = raycaster.intersectObjects(this.env.children, true);
+
             // for (const intersect of intersects) {
             //     if (intersect.distance < 1.6) {
             //         block = 1;
@@ -824,16 +683,14 @@ class App {
             if (this.mixer[2] && !this.move_sw) {
                 this.mixer[2].update(deltaTime)
             }
-
         }
 
-        if (this.left_sw) {
+        else if (this.left_sw) {
             this.world.bodies[1].position.z -= Math.cos(this.fox.rotation.y - Math.PI / 2) * 0.5;
             this.world.bodies[1].position.x -= Math.sin(this.fox.rotation.y - Math.PI / 2) * 0.5;
             if (this.mixer[2] && !this.move_sw) {
                 this.mixer[2].update(deltaTime)
             }
-
 
         }
         if (this.shoot_sw) {
