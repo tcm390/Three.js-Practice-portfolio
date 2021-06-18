@@ -2,7 +2,7 @@
 <html lang="en">
 
 <head>
-    <title>Your first THREE.js app</title>
+    <title>Ting-Chien Meng's portfolio</title>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
     <style>
@@ -11,9 +11,11 @@
             padding: 0;
         }
     </style>
+    <link rel="stylesheet" href="style.css" />
 </head>
 
 <body>
+
     <script type="module">
         import { App } from './app.js';
 
@@ -22,6 +24,41 @@
             window.app = app;
         });
     </script>
+    <div class="modal hidden">
+        <h1 class="Name">Hello! I am Ting-Chien Meng</h1>
+        <br>
+        <h2 class="Name">This is my portfolio built with Three.js</h2>
+        <br>
+        <div class="instruction">
+            <h3>Instruction:</h3>
+            <div class="point">
+                <img class=" keyboard_icon" src="./assets/glTF100/keyboard.png" alt="" width="70" height="40">&nbsp
+                move around <br><br>
+                <div class="text">Icons made by <a href="https://www.flaticon.com/authors/smashicons"
+                        title="Smashicons">Smashicons</a> from <a href="https://www.flaticon.com/"
+                        title="Flaticon">www.flaticon.com</a></div>
+            </div>
+            <div class="point2">
+                <img class="keyboard_icon" src="./assets/glTF100/move_mouse.png" alt="" width="70" height="40">&nbsp
+                rotate
+                the character <br><br>
+                <div class="text">Icons made by <a href="https://www.freepik.com" title="Freepik">Freepik</a> from <a
+                        href="https://www.flaticon.com/" title="Flaticon">www.flaticon.com</a></div>
+            </div>
+            <div class="point3">
+                <img class="keyboard_icon" src="./assets/glTF100/click.png" alt="" width="70" height="40">&nbsp shoot
+                <div class="text">Icons made by <a href="https://www.flaticon.com/authors/pixel-perfect"
+                        title="Pixel perfect">Pixel perfect</a> from <a href="https://www.flaticon.com/"
+                        title="Flaticon">www.flaticon.com</a></div>
+            </div>
+        </div>
+        <br><br><br>
+        <button class="close-modal">
+            <img src="./assets/glTF100/strat_icon.png" alt="strat icon" width="300" height="200">
+        </button>
+    </div>
+    <div class="overlay hidden"></div>
+
 </body>
 
 </html>

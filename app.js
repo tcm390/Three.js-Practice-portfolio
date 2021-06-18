@@ -20,12 +20,23 @@ import Stats from './libs/stats.js/src/Stats.js'
 class App {
 
     constructor() {
-        //######### LoadingBar ###########
+        //###### close instruction #########
+        const modal = document.querySelector('.modal');
+        const overlay = document.querySelector('.overlay');
+        const btnCloseModal = document.querySelector('.close-modal');
+        btnCloseModal.addEventListener('click', () => {
+            modal.classList.add('hidden');
+            overlay.classList.add('hidden');
+            this.load_ready_sw = 1;
+            this.window_listener();
+            this.world.gravity.set(0, -9.82, 0);
+        });
+        //######### LoadingManager ###########
         this.loadingManager = new THREE.LoadingManager()
         this.loadingManager.onLoad = () => {
+            modal.classList.remove('hidden');
+            overlay.classList.remove('hidden');
             this.loadingBar.visible = false;
-            this.world.gravity.set(0, -9.82, 0);
-            this.load_ready_sw = 1
         }
         this.loadingManager.onProgress = (url, itemsLoaded, itemsTotal) => {
             this.loadingBar.progress = (itemsLoaded / itemsTotal);
@@ -77,12 +88,12 @@ class App {
         //####### camera ########
         this.camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 1, 500);
         this.camera.position.set(0, 10, 0);
-        this.camera.rotation.y += Math.PI
+        this.camera.rotation.y += Math.PI;
 
 
         //######## scene #########
         this.scene = new THREE.Scene();
-        this.scene.background = environmentMap
+        this.scene.background = environmentMap;
         //this.scene.background = new THREE.Color(0xaaaaaa);
 
 
@@ -122,6 +133,15 @@ class App {
 
 
 
+
+        this.create_physics_world();
+        this.loadFox();
+        this.loadEnvironment();
+        this.renderer.setAnimationLoop(this.render.bind(this));
+
+
+    }
+    window_listener() {
         //########### Listener #########
         window.addEventListener('resize', this.resize.bind(this));
 
@@ -160,12 +180,6 @@ class App {
             if (e.key === ' ' || e.keyCode === 32)
                 this.shoot_sw = 0;
         });
-
-        this.create_physics_world();
-        this.loadFox();
-        this.loadEnvironment();
-        this.renderer.setAnimationLoop(this.render.bind(this));
-
 
     }
     create_physics_world() {
