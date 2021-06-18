@@ -49,7 +49,7 @@ class App {
 
 
         const cubeTextureLoader = new THREE.CubeTextureLoader(this.loadingManager)
-        const environmentMap = cubeTextureLoader.load([
+        this.environmentMap = cubeTextureLoader.load([
             './assets/textures/environmentMaps/12/px.jpg',
             './assets/textures/environmentMaps/12/nx.jpg',
             './assets/textures/environmentMaps/12/py.jpg',
@@ -64,6 +64,8 @@ class App {
         document.body.appendChild(this.stats.dom)
 
         //########## variable #######
+        this.shoot_audio = document.getElementById("shootMusic");
+
         this.load_ready_sw = 0;
 
         this.start_shoot_time = -10;
@@ -93,13 +95,14 @@ class App {
 
         //######## scene #########
         this.scene = new THREE.Scene();
-        this.scene.background = environmentMap;
+        this.scene.background = this.environmentMap;
         //this.scene.background = new THREE.Color(0xaaaaaa);
 
 
         //########## LIGHT ###########
-        const ambient = new THREE.HemisphereLight(0xffffff, 0xbbbbff, .5);
-        this.scene.add(ambient);
+        const hemisphereLight = new THREE.HemisphereLight(0xffffff, 0xbbbbff, .5);
+        this.scene.add(hemisphereLight);
+
 
         const light = new THREE.DirectionalLight(0xFFFFFF, 1);
         light.position.set(0, 0.1, -1)
@@ -375,10 +378,10 @@ class App {
                         child.material = self.flagmaterial
                     }
                     if (child instanceof THREE.Mesh && child.material instanceof THREE.MeshStandardMaterial && child.name !== 'Plane') {
-                        // child.material.envMap = environmentMap
-                        // child.material.envMapIntensity = 2
+                        // child.material.envMap = self.environmentMap
+                        // child.material.envMapIntensity = 1.5
                         // child.material.metalness = 0.8
-                        // child.material.roughness = 0.2
+                        // child.material.roughness = 0.3
                     }
 
                 });
@@ -414,12 +417,13 @@ class App {
                 //gltf.scene.scale.set(2, 2, 2)
                 object.traverse(function (child) {
                     if (child.isMesh && child.name == 'spaceman') {
-                        child.material.color = new THREE.Color(0x707070);
+                        child.material.color = new THREE.Color(0x505050);
                         child.material.shininess = 0
                         //console.log(child);
                     }
                     else if (child.isMesh && child.name === 'polySurface21000') {
                         self.skateboard = child;
+
                     }
                 });
                 self.mixer.push(new THREE.AnimationMixer(object))
@@ -532,7 +536,11 @@ class App {
         this.renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2))
     }
     shoot() {
-        if (this.world) {
+        if (this.load_ready_sw) {
+
+
+            this.shoot_audio.play();
+
 
             const sphereGeometry = new THREE.SphereGeometry(0.2)
             const sphereMaterial = new THREE.MeshStandardMaterial()
@@ -708,6 +716,11 @@ class App {
 
         }
         if (this.shoot_sw) {
+
+            this.shoot_audio.pause();
+            this.shoot_audio.currentTime = 0;
+
+
             this.start_shoot_time = elapsedTime;
             this.shoot();
         }
