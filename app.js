@@ -34,6 +34,7 @@ class App {
         //######### LoadingManager ###########
         this.loadingManager = new THREE.LoadingManager()
         this.loadingManager.onLoad = () => {
+
             modal.classList.remove('hidden');
             overlay.classList.remove('hidden');
             this.loadingBar.visible = false;
@@ -47,6 +48,7 @@ class App {
         const container = document.createElement('div');
         document.body.appendChild(container);
 
+        window.addEventListener('resize', this.resize.bind(this));
 
         const cubeTextureLoader = new THREE.CubeTextureLoader(this.loadingManager)
         this.environmentMap = cubeTextureLoader.load([
@@ -81,6 +83,7 @@ class App {
 
         this.objectsToUpdate = [];
         this.bulletToUpdate = [];
+        this.directionToUpdate = [];
 
         this.loadingBar = new LoadingBar();
 
@@ -102,6 +105,7 @@ class App {
         //########## LIGHT ###########
         const hemisphereLight = new THREE.HemisphereLight(0xffffff, 0xbbbbff, .5);
         this.scene.add(hemisphereLight);
+
 
 
         const light = new THREE.DirectionalLight(0xFFFFFF, 1);
@@ -136,7 +140,7 @@ class App {
 
 
 
-
+        this.loadPointer();
         this.create_physics_world();
         this.loadFox();
         this.loadEnvironment();
@@ -146,7 +150,7 @@ class App {
     }
     window_listener() {
         //########### Listener #########
-        window.addEventListener('resize', this.resize.bind(this));
+
 
         window.addEventListener('mousemove', e => {
             this.mouse.x = event.clientX / window.innerWidth * 2 - 1
@@ -231,16 +235,16 @@ class App {
         //     const geometry = new THREE.BoxBufferGeometry(3, 3, 3);
         //     const material = new THREE.MeshStandardMaterial({ color: 0xFF0000 });
         //     const cubeMesh = new THREE.Mesh(geometry, material);
-        //     cubeMesh.position.set(Math.random() * 200 - 100, 0, Math.random() * 200 - 100);
-        //     cubeMesh.castShadow = true;
+        //     cubeMesh.position.set(Math.random() * 200 - 100, 1, Math.random() * 200 - 100);
+        //     // cubeMesh.castShadow = true;
         //     this.scene.add(cubeMesh);
 
 
         //     const shape = new CANNON.Box(new CANNON.Vec3(3 / 2, 3 / 2, 3 / 2))
         //     const body = new CANNON.Body({
-        //         mass: 10,
+        //         mass: 1,
         //         shape: shape,
-        //         material: defaultMaterial
+        //         material: this.defaultMaterial
         //     })
         //     body.position.copy(cubeMesh.position)
         //     this.world.addBody(body)
@@ -299,6 +303,28 @@ class App {
     //         }
     //     );
     // }
+    loadPointer() {
+        let self = this;
+        const gltfLoader = new GLTFLoader(this.loadingManager)
+        gltfLoader.load(
+            './assets/glTF100/pointer.glb',
+            (gltf) => {
+                self.pointer = gltf.scene;
+                self.pointer.scale.set(2, 2, 2)
+                self.scene.add(gltf.scene)
+            },
+            (x) => {
+            },
+            // called when loading has errors
+            (error) => {
+
+                console.log('An error happened');
+                console.log(error);
+
+            }
+        )
+
+    }
     loadEnvironment() {
         let self = this;
         const gltfLoader = new GLTFLoader(this.loadingManager)
@@ -313,6 +339,19 @@ class App {
                     if (child.isMesh) {
                         //child.receiveShadow = true;
                     }
+                    if (child.name === 'Plane003')
+                        self.directionToUpdate.push(child)
+                    if (child.name === 'Cube007')
+                        self.directionToUpdate.push(child)
+                    if (child.name === 'Cube009')
+                        self.directionToUpdate.push(child)
+                    if (child.name === 'Cube010')
+                        self.directionToUpdate.push(child)
+                    if (child.name === 'Cube028')
+                        self.directionToUpdate.push(child)
+                    if (child.name === 'Cube011')
+                        self.directionToUpdate.push(child)
+
                     if (child.name.substring(0, 12) === 'Smalldustbin') {
 
                         //this.objectsToUpdate.
@@ -327,8 +366,6 @@ class App {
                         // self.cubeMesh = new THREE.Mesh(geometry, material);
                         // self.cubeMesh.position.set(child.position.x * 10 + 10, child.position.y * 10, child.position.z * 10 + 10);
                         // self.scene.add(self.cubeMesh);
-
-
                         const shape = new CANNON.Box(new CANNON.Vec3(size.x * 5, size.y * 2.5, size.z * 5))
                         const body = new CANNON.Body({
                             mass: 5,
@@ -427,6 +464,7 @@ class App {
             }
         );
     }
+
     loadFox() {
 
 
@@ -560,6 +598,7 @@ class App {
         this.camera.updateProjectionMatrix();
         this.renderer.setSize(window.innerWidth, window.innerHeight);
         this.renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2))
+
     }
     shoot() {
         if (this.load_ready_sw) {
@@ -578,7 +617,7 @@ class App {
 
             const shape = new CANNON.Sphere(0.2)
             const body = new CANNON.Body({
-                mass: 1,
+                mass: 2,
                 shape: shape
             })
 
@@ -628,6 +667,7 @@ class App {
             this.fox.position.copy(this.world.bodies[0].position);
             this.fox.position.y = 0
 
+
             for (let i = 0; i < this.objectsToUpdate.length; i++) {
                 // this.objectsToUpdate[i].mesh.position.copy(this.objectsToUpdate[i].body.position)
                 // this.objectsToUpdate[i].mesh.quaternion.copy(this.objectsToUpdate[i].body.quaternion)
@@ -648,6 +688,19 @@ class App {
 
                 }
             }
+            let min = 9999;
+            for (let i = 0; i < this.directionToUpdate.length; i++) {
+                let pointer_position = new THREE.Vector3();
+                pointer_position.copy(this.directionToUpdate[i].position);
+                pointer_position.x = pointer_position.x * 10 + 10;
+                pointer_position.y = pointer_position.y * 10 + 7;
+                pointer_position.z = pointer_position.z * 10 + 10;
+                if (this.fox.position.distanceTo(pointer_position) < min) {
+                    min = this.fox.position.distanceTo(pointer_position);
+                    this.pointer.position.copy(pointer_position);
+                }
+
+            }
 
             if (this.mouse.x > 0.3 && this.mouse.y < 0.3) {
                 this.fox.rotation.y -= 0.02 * Math.abs(this.mouse.x);
@@ -664,7 +717,8 @@ class App {
             this.camera.position.x = (this.fox.position.x - fox_direction.x * 20);
             this.camera.position.z = (this.fox.position.z - fox_direction.z * 20);
             this.world.bodies[0].quaternion.setFromAxisAngle(new CANNON.Vec3(0, 1, 0), this.fox.rotation.y)
-
+            this.pointer.position.y += Math.sin(elapsedTime * 4)
+            this.pointer.rotation.y = elapsedTime * 2
 
         }
         if (this.move_sw) {
