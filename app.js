@@ -151,7 +151,7 @@ class App {
         window.addEventListener('mousemove', e => {
             this.mouse.x = event.clientX / window.innerWidth * 2 - 1
             this.mouse.y = - (event.clientY / window.innerHeight) * 2 + 1
-
+            //this.fox.rotation.x = 0 - this.mouse.y
         });
 
         window.addEventListener("click", () => {
@@ -189,11 +189,10 @@ class App {
         this.world = new CANNON.World()
         this.world.gravity.set(0, -900, 0)
 
-        const defaultMaterial = new CANNON.Material('default')
         this.defaultMaterial = new CANNON.Material('default')
         const defaultContactMaterial = new CANNON.ContactMaterial(
-            defaultMaterial,
-            defaultMaterial,
+            this.defaultMaterial,
+            this.defaultMaterial,
             {
                 friction: .1,
                 restitution: .7
@@ -202,22 +201,22 @@ class App {
         this.world.defaultContactMaterial = defaultContactMaterial
 
 
-        const duckBodyShape = new CANNON.Box(new CANNON.Vec3(4, 4, 2));
-        const duckBody = new CANNON.Body({
-            mass: 0,
-            position: new CANNON.Vec3(10, 0, 10),
-            shape: duckBodyShape,
-            material: defaultMaterial
-        });
-        this.world.addBody(duckBody)
+        // const duckBodyShape = new CANNON.Box(new CANNON.Vec3(4, 4, 2));
+        // const duckBody = new CANNON.Body({
+        //     mass: 0,
+        //     position: new CANNON.Vec3(10, 0, 10),
+        //     shape: duckBodyShape,
+        //     material: this.defaultMaterial
+        // });
+        // this.world.addBody(duckBody)
 
 
-        const foxShape = new CANNON.Box(new CANNON.Vec3(0.7, 1, 2.2))
+        const foxShape = new CANNON.Box(new CANNON.Vec3(0.9, 1.2, 2.4))
         const foxBody = new CANNON.Body({
-            mass: 150,
+            mass: 10,
             position: new CANNON.Vec3(0, 0, 0),
             shape: foxShape,
-            material: defaultMaterial
+            material: this.defaultMaterial
         })
         this.world.addBody(foxBody)
 
@@ -307,15 +306,42 @@ class App {
             './assets/glTF100/untitled.glb',
             (gltf) => {
                 self.env = gltf.scene;
-                //console.log(self.env)
+                //console.log(gltf)
                 gltf.scene.scale.set(10, 10, 10)
                 gltf.scene.position.set(10, 0, 10)
                 gltf.scene.traverse(function (child) {
                     if (child.isMesh) {
                         //child.receiveShadow = true;
                     }
-                    if (child.isMesh && child.name === 'Cube001') {
-                        //console.log(child.position)
+                    if (child.name.substring(0, 12) === 'Smalldustbin') {
+
+                        //this.objectsToUpdate.
+                        self.trashcan = child;
+                        console.log(child)
+                        const size = new THREE.Vector3()
+                        const box = new THREE.Box3().setFromObject(child);
+                        console.log(box.min, box.max, box.getSize(size));
+
+                        // const geometry = new THREE.BoxGeometry(box.getSize().x * 10, box.getSize().y * 5, box.getSize().z * 10);
+                        // const material = new THREE.MeshStandardMaterial({ color: 0xFF0000 });
+                        // self.cubeMesh = new THREE.Mesh(geometry, material);
+                        // self.cubeMesh.position.set(child.position.x * 10 + 10, child.position.y * 10, child.position.z * 10 + 10);
+                        // self.scene.add(self.cubeMesh);
+
+
+                        const shape = new CANNON.Box(new CANNON.Vec3(size.x * 5, size.y * 2.5, size.z * 5))
+                        const body = new CANNON.Body({
+                            mass: 5,
+                            shape: shape,
+                            material: self.defaultMaterial
+                        })
+                        body.position.set(child.position.x * 10 + 10, child.position.y * 10, child.position.z * 10 + 10);
+                        self.world.addBody(body)
+
+                        self.objectsToUpdate.push({
+                            mesh: child,
+                            body: body
+                        });
                     }
                     if (child.isMesh && child.name === 'Plane001') {
                         const textureLoader = new THREE.TextureLoader()
@@ -411,7 +437,7 @@ class App {
             (object) => {
                 self.fox = object;
                 self.fox.scale.set(0.03, 0.03, 0.03)
-                console.log(object)
+                //console.log(object)
                 self.scene.add(object)
                 //console.log(gltf.scene)
                 //gltf.scene.scale.set(2, 2, 2)
@@ -558,11 +584,12 @@ class App {
 
             body.position.copy(this.fox.position)
             let dum = new THREE.Vector3();
+            //let dum = new THREE.Vector3();
             this.fox.getWorldDirection(dum)
-            //if (this.mouse.y >= -0.13)
+            //if (this.mouse.y >= -0.28)
             body.velocity.set(
                 dum.x * 100,
-                (1 + this.mouse.y * 1.2) * 13,
+                ((Math.sin(this.mouse.y + 0.15) * Math.abs(dum.z)) + (Math.sin(this.mouse.y + 0.15) * Math.abs(dum.x))) * 50,
                 dum.z * 100);
             // else {
             //     body.velocity.set(
@@ -570,8 +597,8 @@ class App {
             //         this.fox.getWorldDirection(dum).y * 100,
             //         this.fox.getWorldDirection(dum).z * 100);
             // }
-            body.position.y += 2;
-
+            body.position.y += 5;
+            //console.log(this.mouse.y)
 
             this.world.addBody(body)
             this.bulletToUpdate.push({
@@ -598,11 +625,18 @@ class App {
         }
         if (this.load_ready_sw) {
 
-            this.fox.position.copy(this.world.bodies[1].position);
+            this.fox.position.copy(this.world.bodies[0].position);
+            this.fox.position.y = 0
 
             for (let i = 0; i < this.objectsToUpdate.length; i++) {
+                // this.objectsToUpdate[i].mesh.position.copy(this.objectsToUpdate[i].body.position)
+                // this.objectsToUpdate[i].mesh.quaternion.copy(this.objectsToUpdate[i].body.quaternion)
                 this.objectsToUpdate[i].mesh.position.copy(this.objectsToUpdate[i].body.position)
                 this.objectsToUpdate[i].mesh.quaternion.copy(this.objectsToUpdate[i].body.quaternion)
+                this.objectsToUpdate[i].mesh.position.x = (this.objectsToUpdate[i].mesh.position.x - 10) / 10
+                this.objectsToUpdate[i].mesh.position.z = (this.objectsToUpdate[i].mesh.position.z - 10) / 10
+                this.objectsToUpdate[i].mesh.position.y = this.objectsToUpdate[i].mesh.position.y / 10
+
             }
             for (let i = 0; i < this.bulletToUpdate.length; i++) {
                 this.bulletToUpdate[i].mesh.position.copy(this.bulletToUpdate[i].body.position)
@@ -629,7 +663,7 @@ class App {
             fox_direction = fox_direction.normalize();
             this.camera.position.x = (this.fox.position.x - fox_direction.x * 20);
             this.camera.position.z = (this.fox.position.z - fox_direction.z * 20);
-            this.world.bodies[1].quaternion.setFromAxisAngle(new CANNON.Vec3(0, 1, 0), this.fox.rotation.y)
+            this.world.bodies[0].quaternion.setFromAxisAngle(new CANNON.Vec3(0, 1, 0), this.fox.rotation.y)
 
 
         }
@@ -653,8 +687,8 @@ class App {
             // }
             if (block === 0) {
 
-                this.world.bodies[1].position.z += Math.cos(this.fox.rotation.y) * 0.5;
-                this.world.bodies[1].position.x += Math.sin(this.fox.rotation.y) * 0.5;
+                this.world.bodies[0].position.z += Math.cos(this.fox.rotation.y) * 0.5;
+                this.world.bodies[0].position.x += Math.sin(this.fox.rotation.y) * 0.5;
             }
 
             if (this.mixer[3]) {
@@ -671,7 +705,7 @@ class App {
             // rayDirection.y = 0 - rayDirection.y;
             // rayDirection.z = 0 - rayDirection.z;
             // raycaster.set(pos, rayDirection.normalize());
-            // const intersects = raycaster.intersectObjects(this.env.children[0].children);
+            // const intersects = raycaster.intersectObjects(this.env.children, true);
 
             // for (const intersect of intersects) {
             //     if (intersect.distance < 1.6) {
@@ -683,8 +717,8 @@ class App {
             if (block === 0) {
 
 
-                this.world.bodies[1].position.z -= Math.cos(this.fox.rotation.y) * 0.5;
-                this.world.bodies[1].position.x -= Math.sin(this.fox.rotation.y) * 0.5;
+                this.world.bodies[0].position.z -= Math.cos(this.fox.rotation.y) * 0.5;
+                this.world.bodies[0].position.x -= Math.sin(this.fox.rotation.y) * 0.5;
             }
 
             if (this.mixer[2]) {
@@ -700,16 +734,16 @@ class App {
 
         if (this.right_sw) {
 
-            this.world.bodies[1].position.z -= Math.cos(this.fox.rotation.y + Math.PI / 2) * 0.5;
-            this.world.bodies[1].position.x -= Math.sin(this.fox.rotation.y + Math.PI / 2) * 0.5;
+            this.world.bodies[0].position.z -= Math.cos(this.fox.rotation.y + Math.PI / 2) * 0.5;
+            this.world.bodies[0].position.x -= Math.sin(this.fox.rotation.y + Math.PI / 2) * 0.5;
             if (this.mixer[2] && !this.move_sw) {
                 this.mixer[2].update(deltaTime)
             }
         }
 
         else if (this.left_sw) {
-            this.world.bodies[1].position.z -= Math.cos(this.fox.rotation.y - Math.PI / 2) * 0.5;
-            this.world.bodies[1].position.x -= Math.sin(this.fox.rotation.y - Math.PI / 2) * 0.5;
+            this.world.bodies[0].position.z -= Math.cos(this.fox.rotation.y - Math.PI / 2) * 0.5;
+            this.world.bodies[0].position.x -= Math.sin(this.fox.rotation.y - Math.PI / 2) * 0.5;
             if (this.mixer[2] && !this.move_sw) {
                 this.mixer[2].update(deltaTime)
             }
