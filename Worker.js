@@ -140,6 +140,18 @@ self.addEventListener('message', function (e) {
         objects_positionToUpdate.push(body.position)
         objects_quaternionToUpdate.push(body.quaternion)
     }
+    else if (e.data.type === 'basketball') {
+        let ball_shape = new CANNON.Sphere(1)
+        let body = new CANNON.Body({
+            mass: 50,
+            shape: ball_shape,
+            position: new CANNON.Vec3(e.data.positionx, e.data.positiony, e.data.positionz)
+        })
+        //body.position.set(e.data.positionx, e.data.positiony, e.data.positionz);
+        world.addBody(body)
+        objects_positionToUpdate.push(body.position)
+        objects_quaternionToUpdate.push(body.quaternion)
+    }
 
     else if (e.data === 'getshootable') {
         const test = {

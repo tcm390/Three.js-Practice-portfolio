@@ -459,9 +459,9 @@ class App {
                         //this.objectsToUpdate.
                         self.trashcan = child;
 
-                        const size = new THREE.Vector3()
+                        //wconst size = new THREE.Vector3()
                         const box = new THREE.Box3().setFromObject(child);
-                        console.log(box.min, box.max, box.getSize(size));
+                        //console.log(box.min, box.max, box.getSize(size));
 
                         // const geometry = new THREE.BoxGeometry(box.getSize().x * 10, box.getSize().y * 5, box.getSize().z * 10);
                         // const material = new THREE.MeshStandardMaterial({ color: 0xFF0000 });
@@ -490,14 +490,12 @@ class App {
                         self.objectsToUpdate.push(child);
                     }
                     else if (child.name.substring(0, 5) === 'skill') {
-                        const size = new THREE.Vector3()
-                        const box = new THREE.Box3().setFromObject(child);
-                        console.log(box.min, box.max, box.getSize(size));
 
-                        const geometry = new THREE.BoxGeometry(box.getSize().x * 10, box.getSize().y * 10, box.getSize().z * 10);
-                        const material = new THREE.MeshStandardMaterial({ color: 0xFF0000 });
-                        const cubeMesh = new THREE.Mesh(geometry, material);
-                        cubeMesh.position.set(child.position.x * 10 + 10, child.position.y * 10, child.position.z * 10 + 10);
+                        const box = new THREE.Box3().setFromObject(child);
+                        // const geometry = new THREE.BoxGeometry(box.getSize().x * 10, box.getSize().y * 10, box.getSize().z * 10);
+                        // const material = new THREE.MeshStandardMaterial({ color: 0xFF0000 });
+                        // const cubeMesh = new THREE.Mesh(geometry, material);
+                        // cubeMesh.position.set(child.position.x * 10 + 10, child.position.y * 10, child.position.z * 10 + 10);
                         //self.scene.add(cubeMesh);
                         const data = {
                             type: 'shootable',
@@ -512,9 +510,9 @@ class App {
                         self.objectsToUpdate.push(child);
                     }
                     else if (child.name.substring(0, 4) === 'Road') {
-                        const size = new THREE.Vector3()
+                        //const size = new THREE.Vector3()
                         const box = new THREE.Box3().setFromObject(child);
-                        console.log(box.min, box.max, box.getSize(size));
+                        //console.log(box.min, box.max, box.getSize(size));
 
                         // const geometry = new THREE.BoxGeometry(box.getSize().x * 5, box.getSize().y * 10, box.getSize().z * 5);
                         // const material = new THREE.MeshStandardMaterial({ color: 0xFF0000 });
@@ -523,9 +521,9 @@ class App {
                         // self.scene.add(cubeMesh);
                         const data = {
                             type: 'shootable',
-                            sizex: box.getSize().x * 5,
+                            sizex: box.getSize().x * 8,
                             sizey: box.getSize().y * 10,
-                            sizez: box.getSize().z * 5,
+                            sizez: box.getSize().z * 8,
                             positionx: child.position.x * 10 + 10,
                             positiony: child.position.y * 10,
                             positionz: child.position.z * 10 + 10
@@ -533,7 +531,45 @@ class App {
                         self.worker.postMessage(data)
                         self.objectsToUpdate.push(child);
                     }
+                    else if (child.name.substring(0, 4) === 'bike') {
 
+                        const box = new THREE.Box3().setFromObject(child);
+                        //console.log(box.min, box.max, box.getSize(size));
+
+                        // const geometry = new THREE.BoxGeometry(box.getSize().x * 10, box.getSize().y * 10, box.getSize().z * 10);
+                        // const material = new THREE.MeshStandardMaterial({ color: 0xFF0000 });
+                        // const cubeMesh = new THREE.Mesh(geometry, material);
+                        // cubeMesh.position.set(child.position.x * 10 + 10, child.position.y * 10, child.position.z * 10 + 10);
+                        // self.scene.add(cubeMesh);
+                        const data = {
+                            type: 'shootable',
+                            sizex: box.getSize().x * 20,
+                            sizey: box.getSize().y * 10,
+                            sizez: box.getSize().z * 2,
+                            positionx: child.position.x * 10 + 10,
+                            positiony: child.position.y * 10,
+                            positionz: child.position.z * 10 + 10
+                        }
+                        self.worker.postMessage(data)
+                        self.objectsToUpdate.push(child);
+                    }
+                    else if (child.name.substring(0, 11) === 'Basketball0') {
+                        const box = new THREE.Box3().setFromObject(child)
+                        // const geometry = new THREE.SphereGeometry(box.getSize() * 10, 32);
+                        // const material = new THREE.MeshStandardMaterial({ color: 0xFF0000 });
+                        // const sphereMesh = new THREE.Mesh(geometry, material);
+                        // sphereMesh.position.set(child.position.x * 10 + 10, child.position.y * 10 + 1, child.position.z * 10 + 10);
+                        // self.scene.add(sphereMesh);
+                        const data = {
+                            type: 'basketball',
+                            radius: box.getSize() * 10,
+                            positionx: child.position.x * 10 + 10,
+                            positiony: child.position.y * 10 + 1,
+                            positionz: child.position.z * 10 + 10
+                        }
+                        self.worker.postMessage(data)
+                        self.objectsToUpdate.push(child);
+                    }
 
                     if (child.isMesh && child.name === 'Plane001') {
                         const textureLoader = new THREE.TextureLoader()
@@ -885,6 +921,9 @@ class App {
                         this.objectsToUpdate[i].quaternion.copy(quaternion2[i])
                         if (this.objectsToUpdate[i].name.substring(0, 4) === 'Road') {
                             this.objectsToUpdate[i].position.y -= .3
+                        }
+                        if (this.objectsToUpdate[i].name.substring(0, 4) === 'bike') {
+                            //this.objectsToUpdate[i].rotation.y -= Math.PI / 2
                         }
                     }
 
