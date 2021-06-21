@@ -1,5 +1,4 @@
-
-.modal {
+.education{
     position: absolute;
     top: 50%;
     left: 50%;
@@ -12,7 +11,118 @@
     box-shadow: 0 30rem 5rem rgba(0, 0, 0, 0.3);
     z-index: 10;
     color: aliceblue;
+    opacity: 1;
+    
+}
+.close-modal2 {
+    position: absolute;
+    top: 1.2rem;
+    right: 2rem;
+    font-size: 5rem;
+    color: #333;
+    cursor: pointer;
+    border: none;
+    background: none;
+  }
+  .hadoop{
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 70%;
+    height: 38%;
+    background:linear-gradient(to top left, #d5e2de, #678ed6);
+    padding: 8rem;
+    border-radius: 10px;
+    box-shadow: 0 30rem 5rem rgba(0, 0, 0, 0.3);
+    z-index: 10;
+    color: aliceblue;
+    opacity: 1;
+    
+}
+.close-modal3 {
+    position: absolute;
+    top: 1.2rem;
+    right: 2rem;
+    font-size: 5rem;
+    color: #333;
+    cursor: pointer;
+    border: none;
+    background: none;
+  }
+
+  .rubber_toy{
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 70%;
+    height: 38%;
+    background:linear-gradient(to top left, #ffffff, #666666);
+    padding: 8rem;
+    border-radius: 10px;
+    box-shadow: 0 30rem 5rem rgba(0, 0, 0, 0.3);
+    z-index: 10;
+    color: aliceblue;
+    opacity: 1;
+    
+}
+.close-modal4 {
+    position: absolute;
+    top: 1.2rem;
+    right: 2rem;
+    font-size: 5rem;
+    color: #333;
+    cursor: pointer;
+    border: none;
+    background: none;
+  }
+
+
+.modal {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 70%;
+    height: 38%;
+    background:linear-gradient(to top left, #d5e2de, #5471a8);
+    padding: 8rem;
+    border-radius: 10px;
+    box-shadow: 0 30rem 5rem rgba(0, 0, 0, 0.3);
+    z-index: 10;
+    color: aliceblue;
     opacity: .8;
+    
+}
+.mparent{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+.mitem1{
+    flex:1;
+    
+}
+.mitem2{
+    flex:1; 
+    display: flex;
+    width: 120%;
+    height: 100%;
+    justify-content: space-between;
+    align-items: left;
+}
+.mitem3{
+    flex:4;
+}
+
+.mitem2_child1{
+    flex: 4;
+}
+.mitem2_child2{
+    flex:1;
+    color: rgb(3, 3, 3);
 }
 .hidden {
     display: none;
@@ -25,7 +135,7 @@
 {
     position: absolute;
     top: 30px;
-    left: -120px;
+    left: -12px;
     width: 200px;
     padding: 20px;
     border-radius: 4px;
@@ -51,7 +161,9 @@
 .point3:hover .text
 {
     opacity: 1;
+    
 }
+
 .overlay {
     position: absolute;
     top: 0;
@@ -62,27 +174,23 @@
     backdrop-filter: blur(3px);
     z-index: 5;
 }
-.close-modal {
-    display: block;
-    margin-left: auto;
-    margin-right: auto;
+.start_icon {
+    margin: 0;
+    position: absolute;
+    top: 80%;
+    left: 50%;
+    -ms-transform: translate(-50%, -50%);
+    transform: translate(-50%, -50%);
     cursor: pointer;
     border: none;
     background: none;
 }
+
+
+
 .Name{
-    margin: auto;
-    width: 50%;
-    padding: 0px;
+   
 }
 
-
-.instruction{
-    position: absolute;
-    right: 0px;
-    width: 250px;
-    padding: 10px;
-    color: #333;
-}
 
 
