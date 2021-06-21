@@ -8,13 +8,13 @@ let objects_quaternionToUpdate = []
 let world = new CANNON.World()
 let defaultMaterial = new CANNON.Material('default')
 world.gravity.set(0, -982, 0)
-//world.allowSleep = true
+
 
 const defaultContactMaterial = new CANNON.ContactMaterial(
     defaultMaterial,
     defaultMaterial,
     {
-        friction: .1,
+        friction: 1,
         restitution: .7
     }
 )
@@ -22,7 +22,7 @@ world.defaultContactMaterial = defaultContactMaterial
 
 const foxShape = new CANNON.Box(new CANNON.Vec3(0.9, 1.2, 2.4))
 const foxBody = new CANNON.Body({
-    mass: 1000,
+    mass: 1,
     position: new CANNON.Vec3(-10, 0, 0),
     shape: foxShape,
     material: defaultMaterial
@@ -133,7 +133,8 @@ self.addEventListener('message', function (e) {
         let body = new CANNON.Body({
             mass: 50,
             shape: shape,
-            material: defaultMaterial
+            material: defaultMaterial,
+            angularDamping: .4
         })
         body.position.set(e.data.positionx, e.data.positiony, e.data.positionz);
         world.addBody(body)
@@ -145,7 +146,9 @@ self.addEventListener('message', function (e) {
         let body = new CANNON.Body({
             mass: 50,
             shape: ball_shape,
-            position: new CANNON.Vec3(e.data.positionx, e.data.positiony, e.data.positionz)
+            position: new CANNON.Vec3(e.data.positionx, e.data.positiony, e.data.positionz),
+            material: defaultMaterial,
+            angularDamping: .4
         })
         //body.position.set(e.data.positionx, e.data.positiony, e.data.positionz);
         world.addBody(body)

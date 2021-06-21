@@ -109,7 +109,10 @@ class App {
 
         this.loadingBar = new LoadingBar();
 
-        this.mouse = new THREE.Vector2()
+        this.mouse = new THREE.Vector2();
+
+        this.textureLoader = new THREE.TextureLoader()
+
 
 
         //####### camera ########
@@ -124,8 +127,20 @@ class App {
         //this.scene.background = new THREE.Color(0xaaaaff);
 
 
+        const simpleShadow = this.textureLoader.load('./assets/glTF100/simpleShadow.jpg')
+        this.sphereShadow = new THREE.Mesh(
+            new THREE.PlaneGeometry(2, 7),
+            new THREE.MeshBasicMaterial({
+                color: 0x000000,
+                transparent: true,
+                alphaMap: simpleShadow
+            })
+        )
+        this.sphereShadow.rotation.x = - Math.PI * 0.5
+        this.scene.add(this.sphereShadow);
+
         //########## LIGHT ###########
-        const hemisphereLight = new THREE.HemisphereLight(0xffffff, 0xbbbbff, .5);
+        const hemisphereLight = new THREE.HemisphereLight(0xffffff, 0xbbbbff, 1.5);
         this.scene.add(hemisphereLight);
 
 
@@ -142,7 +157,7 @@ class App {
         // light.shadow.mapSize.width = 1024 * 4
         // light.shadow.mapSize.height = 1024 * 4
         // light.castShadow = true
-        this.scene.add(light);
+        //this.scene.add(light);
         // const directionalLightCameraHelper = new THREE.CameraHelper(light.shadow.camera)
         // this.scene.add(directionalLightCameraHelper)
 
@@ -572,8 +587,8 @@ class App {
                     }
 
                     if (child.isMesh && child.name === 'Plane001') {
-                        const textureLoader = new THREE.TextureLoader()
-                        const flagTexture = textureLoader.load('./assets/textures/nyu_logo/nyu.png')
+                        //const textureLoader = new THREE.TextureLoader()
+                        const flagTexture = self.textureLoader.load('./assets/textures/nyu_logo/nyu.png')
                         self.flagmaterial = new THREE.RawShaderMaterial({
                             vertexShader: `
                                 uniform mat4 projectionMatrix;
@@ -866,7 +881,12 @@ class App {
             this.flagmaterial.uniforms.uTime.value = elapsedTime;
         }
         if (this.load_ready_sw) {
-
+            this.sphereShadow.position.x = this.fox.position.x
+            this.sphereShadow.position.z = this.fox.position.z
+            this.sphereShadow.position.y = 0.1;
+            this.sphereShadow.material.opacity = (1 - this.fox.position.y / 3) * 0.4
+            this.sphereShadow.scale.set((this.fox.position.y + 1) * 1, (this.fox.position.y + 1) * 1, (this.fox.position.y + 1) * 1)
+            this.sphereShadow.rotation.z = this.fox.rotation.y;
             //this.fox.position.copy(this.world.bodies[0].position);
             //this.fox.position.y -= 1
             const dt = {
@@ -1082,6 +1102,7 @@ class App {
             //     }
 
             // }
+
             if (block === 0) {
                 let data = {
                     type: 'move_forward',
