@@ -22,7 +22,7 @@ world.defaultContactMaterial = defaultContactMaterial
 
 const foxShape = new CANNON.Box(new CANNON.Vec3(0.9, 1.2, 2.4))
 const foxBody = new CANNON.Body({
-    mass: 1,
+    mass: 100,
     position: new CANNON.Vec3(-10, 0, 0),
     shape: foxShape,
     material: defaultMaterial
