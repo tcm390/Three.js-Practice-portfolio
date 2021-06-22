@@ -127,9 +127,9 @@ class App {
         //this.scene.background = new THREE.Color(0xaaaaff);
 
 
-        const simpleShadow = this.textureLoader.load('./assets/glTF100/simpleShadow.jpg')
+        const simpleShadow = this.textureLoader.load('./assets/glTF100/simpleShadow3.jpeg')
         this.sphereShadow = new THREE.Mesh(
-            new THREE.PlaneGeometry(2, 7),
+            new THREE.PlaneGeometry(2, 5),
             new THREE.MeshBasicMaterial({
                 color: 0x000000,
                 transparent: true,
@@ -137,6 +137,7 @@ class App {
             })
         )
         this.sphereShadow.rotation.x = - Math.PI * 0.5
+
         this.scene.add(this.sphereShadow);
 
         //########## LIGHT ###########
@@ -146,7 +147,7 @@ class App {
 
 
         const light = new THREE.DirectionalLight(0xFFFFFF, 1);
-        light.position.set(1, 0.1, -1)
+        light.position.set(0, 0.1, 1)
         //light.position.set(-200, 200, -200);
         // light.shadow.camera.top = 100
         // light.shadow.camera.right = 100
@@ -181,6 +182,7 @@ class App {
         this.create_physics_world();
         this.loadFox();
         this.loadEnvironment();
+        this.loadEnvironment2();
         this.renderer.setAnimationLoop(this.render.bind(this));
 
 
@@ -344,53 +346,59 @@ class App {
         // }
     }
 
-    // loadEnvironment() {
-    //     let self = this;
-    //     const textureLoader = new THREE.TextureLoader()
-    //     const bakedTexture = textureLoader.load('./assets/glTF2/baked.jpg')
-    //     const bakedMaterial = new THREE.MeshBasicMaterial({ map: bakedTexture })
-    //     const portalLightMaterial = new THREE.MeshBasicMaterial({ color: 0xffffff })
-    //     const poleLightMaterial = new THREE.MeshBasicMaterial({ color: 0xffffe5 })
-    //     bakedTexture.flipY = false
-    //     bakedTexture.encoding = THREE.sRGBEncoding
-    //     const dracoLoader = new DRACOLoader()
-    //     //dracoLoader.setDecoderPath('draco/')
+    loadEnvironment2() {
+        let self = this;
+        const textureLoader = new THREE.TextureLoader()
+        const bakedTexture = textureLoader.load('./assets/glTF200/test.jpg')
+        const bakedMaterial = new THREE.MeshBasicMaterial({ map: bakedTexture })
+        // const portalLightMaterial = new THREE.MeshBasicMaterial({ color: 0xffffff })
+        // const poleLightMaterial = new THREE.MeshBasicMaterial({ color: 0xffffe5 })
+        bakedTexture.flipY = false
+        bakedTexture.encoding = THREE.sRGBEncoding
+        const dracoLoader = new DRACOLoader()
+        //dracoLoader.setDecoderPath('draco/')
 
-    //     // GLTF loader
-    //     const gltfLoader = new GLTFLoader()
-    //     gltfLoader.setDRACOLoader(dracoLoader)
+        // GLTF loader
+        const gltfLoader = new GLTFLoader()
+        gltfLoader.setDRACOLoader(dracoLoader)
 
 
 
-    //     gltfLoader.load(
-    //         './assets/glTF2/portal.glb',
-    //         (gltf) => {
-    //             const bakedMesh = gltf.scene.children.find((child) => child.name === 'baked')
-    //             const portalLightMesh = gltf.scene.children.find((child) => child.name === 'Circle')
-    //             const poleLightAMesh = gltf.scene.children.find((child) => child.name === 'Cube011')
-    //             const poleLightBMesh = gltf.scene.children.find((child) => child.name === 'Cube014')
-    //             bakedMesh.material = bakedMaterial
-    //             portalLightMesh.material = portalLightMaterial
-    //             poleLightAMesh.material = poleLightMaterial
-    //             poleLightBMesh.material = poleLightMaterial
-    //             gltf.scene.scale.set(5, 5, 5)
-    //             gltf.scene.position.set(10, 0, 10)
-    //             self.scene.add(gltf.scene)
-    //         },
-    //         (xhr) => {
+        gltfLoader.load(
+            './assets/glTF200/untitled.glb',
+            (gltf) => {
 
-    //             self.loadingBar.progress = (xhr.loaded / xhr.total);
+                gltf.scene.traverse(function (child) {
+                    if (child.isMesh) {
+                        child.material = bakedMaterial
+                    }
+                })
+                //const bakedMesh = gltf.scene.children.find((child) => child.name === 'Plane015')
+                // const portalLightMesh = gltf.scene.children.find((child) => child.name === 'Circle')
+                // const poleLightAMesh = gltf.scene.children.find((child) => child.name === 'Cube011')
+                // const poleLightBMesh = gltf.scene.children.find((child) => child.name === 'Cube014')
 
-    //         },
-    //         // called when loading has errors
-    //         (error) => {
+                // portalLightMesh.material = portalLightMaterial
+                // poleLightAMesh.material = poleLightMaterial
+                // poleLightBMesh.material = poleLightMaterial
+                gltf.scene.scale.set(10, 10, 10)
+                gltf.scene.position.set(10, 0.1, 10)
+                self.scene.add(gltf.scene)
+            },
+            (xhr) => {
 
-    //             console.log('An error happened');
-    //             console.log(error);
+                self.loadingBar.progress = (xhr.loaded / xhr.total);
 
-    //         }
-    //     );
-    // }
+            },
+            // called when loading has errors
+            (error) => {
+
+                console.log('An error happened');
+                console.log(error);
+
+            }
+        );
+    }
     loadPointer() {
         let self = this;
         const gltfLoader = new GLTFLoader(this.loadingManager)
@@ -596,10 +604,10 @@ class App {
                                 uniform mat4 modelMatrix;
                                 uniform float uTime;
 
-                                
+
                                 attribute vec2 uv;
                                 varying vec2 vUv;
-                        
+
                                 attribute vec3 position;
                                 float rand(vec2 co){
                                     return fract(sin(dot(co.xy ,vec2(12.9898,78.233))) * 43758.5453);
@@ -611,7 +619,7 @@ class App {
                                     //modelPosition.x += cos(modelPosition.z + uTime*2.) * .5;
                                     vec4 viewPosition = viewMatrix * modelPosition;
                                     vec4 projectedPosition = projectionMatrix * viewPosition;
-                
+
                                     gl_Position = projectedPosition;
                                     vUv = uv;
                                 }
@@ -619,9 +627,9 @@ class App {
                             fragmentShader: `
                                 precision mediump float;
                                 uniform sampler2D uTexture;
-                                
+
                                 varying vec2 vUv;               
-                        
+
                                 void main()
                                 {
                                     vec4 textureColor = texture2D(uTexture, vUv);
@@ -673,6 +681,10 @@ class App {
 
     loadFox() {
 
+        const textureLoader = new THREE.TextureLoader()
+        const matcapTexture = textureLoader.load('./assets/textures/matcaps/9.png')
+        const material = new THREE.MeshMatcapMaterial()
+        material.matcap = matcapTexture
 
         const fbxfLoader = new FBXLoader(this.loadingManager);
         let self = this;
@@ -680,7 +692,7 @@ class App {
             './assets/glTF100/spaceman.fbx',
             (object) => {
                 self.fox = object;
-                self.fox.scale.set(0.03, 0.03, 0.03)
+                self.fox.scale.set(0.025, 0.025, 0.025)
                 //console.log(object)
                 self.scene.add(object)
                 //console.log(gltf.scene)
@@ -688,12 +700,13 @@ class App {
                 object.traverse(function (child) {
                     if (child.isMesh && child.name == 'spaceman') {
                         child.material.color = new THREE.Color(0x505050);
-                        child.material.shininess = 0
+
+                        child.material.shininess = 5
                         //console.log(child);
                     }
                     else if (child.isMesh && child.name === 'polySurface21000') {
                         self.skateboard = child;
-
+                        child.material = material;
                     }
                 });
                 self.mixer.push(new THREE.AnimationMixer(object))
@@ -887,8 +900,12 @@ class App {
             this.sphereShadow.material.opacity = (1 - this.fox.position.y / 3) * 0.4
             this.sphereShadow.scale.set((this.fox.position.y + 1) * 1, (this.fox.position.y + 1) * 1, (this.fox.position.y + 1) * 1)
             this.sphereShadow.rotation.z = this.fox.rotation.y;
-            //this.fox.position.copy(this.world.bodies[0].position);
-            //this.fox.position.y -= 1
+            // this.sphereShadow.position.x = this.trashcan.position.x * 10 + 10
+            // this.sphereShadow.position.z = this.trashcan.position.z * 10 + 10
+            // this.sphereShadow.position.y = -.5;
+            // this.sphereShadow.material.opacity = (1 - this.trashcan.position.y * 10 / 3) * 0.4
+            // this.sphereShadow.scale.set((this.trashcan.position.y * 10 + 1) * 1, (this.trashcan.position.y * 10 + 1) * 1, (this.trashcan.position.y * 10 + 1) * 1)
+            // this.sphereShadow.rotation.z = this.trashcan.rotation.y;
             const dt = {
                 type: 'time',
                 deltaTime: deltaTime
