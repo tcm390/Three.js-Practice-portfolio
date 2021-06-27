@@ -37,6 +37,7 @@ class App {
             this.window_listener();
             //this.world.gravity.set(0, -9.82, 0);
             this.worker.postMessage('ready')
+            //console.log(this.renderer.info.render.calls);
         });
         btnCloseModal2.addEventListener('click', () => {
             this.education.classList.add('hidden');
@@ -57,7 +58,7 @@ class App {
             this.modal.classList.remove('hidden');
             this.overlay.classList.remove('hidden');
             this.loadingBar.visible = false;
-
+            //console.log(this.renderer.info.render.calls);
         }
         this.loadingManager.onProgress = (url, itemsLoaded, itemsTotal) => {
             this.loadingBar.progress = (itemsLoaded / itemsTotal);
@@ -188,6 +189,7 @@ class App {
 
 
 
+
         this.worker = new Worker('Worker.js', { type: 'module' })
 
 
@@ -214,22 +216,26 @@ class App {
         window.addEventListener("click", () => {
             for (let i = 0; i < this.directionToUpdate.length; i++) {
                 if (this.directionToUpdate[i].ray_sw === true) {
-                    if (this.directionToUpdate[i].mesh.name === 'Plane003') {
+                    if (this.directionToUpdate[i].mesh.name === 'directable001') {
                         this.education.classList.remove('hidden');
                         this.overlay.classList.remove('hidden');
 
                     }
-                    else if (this.directionToUpdate[i].mesh.name === 'Cube007')
+                    else if (this.directionToUpdate[i].mesh.name === 'directable002')
                         window.open("mailto:tcm390@nyu.edu")
-                    else if (this.directionToUpdate[i].mesh.name === 'Cube009')
+                    else if (this.directionToUpdate[i].mesh.name === 'directable003')
                         window.open("https://www.linkedin.com/in/ting-chien-meng-b221521a6/")
-                    else if (this.directionToUpdate[i].mesh.name === 'Cube010')
+                    else if (this.directionToUpdate[i].mesh.name === 'directable004')
                         window.open("https://github.com/tcm390")
-                    else if (this.directionToUpdate[i].mesh.name === 'Cube028') {
+                    else if (this.directionToUpdate[i].mesh.name === 'directable005') {
                         this.hadoop.classList.remove('hidden');
                         this.overlay.classList.remove('hidden');
                     }
-                    else if (this.directionToUpdate[i].mesh.name === 'Cube011') {
+                    else if (this.directionToUpdate[i].mesh.name === 'directable006') {
+                        this.hadoop.classList.remove('hidden');
+                        this.overlay.classList.remove('hidden');
+                    }
+                    else if (this.directionToUpdate[i].mesh.name === 'directable007') {
                         this.rubber_toy.classList.remove('hidden');
                         this.overlay.classList.remove('hidden');
                     }
@@ -382,7 +388,7 @@ class App {
                 // poleLightAMesh.material = poleLightMaterial
                 // poleLightBMesh.material = poleLightMaterial
                 gltf.scene.scale.set(10, 10, 10)
-                gltf.scene.position.set(10, 0.1, 10)
+                gltf.scene.position.set(10, 0.01, 10)
                 self.scene.add(gltf.scene)
             },
             (xhr) => {
@@ -424,6 +430,21 @@ class App {
     loadEnvironment() {
         let self = this;
         const gltfLoader = new GLTFLoader(this.loadingManager)
+        const textureLoader = new THREE.TextureLoader()
+        const matcapTexture = textureLoader.load('./assets/textures/matcaps/16.png')
+        const matcapTexture2 = textureLoader.load('./assets/textures/matcaps/11.png')
+        const matcapTexture3 = textureLoader.load('./assets/textures/matcaps/15.png')
+        const matcapTexture4 = textureLoader.load('./assets/textures/matcaps/17.png')
+
+        const material = new THREE.MeshMatcapMaterial()
+        material.matcap = matcapTexture
+        const material2 = new THREE.MeshMatcapMaterial()
+        material2.matcap = matcapTexture2
+        const material3 = new THREE.MeshMatcapMaterial()
+        material3.matcap = matcapTexture3
+        const material4 = new THREE.MeshMatcapMaterial()
+        material4.matcap = matcapTexture4
+
         gltfLoader.load(
             './assets/glTF100/untitled.glb',
             (gltf) => {
@@ -435,41 +456,7 @@ class App {
                     if (child.isMesh) {
                         //child.receiveShadow = true;
                     }
-                    if (child.name === 'Plane003') {
-                        self.directionToUpdate.push({
-                            mesh: child,
-                            ray_sw: false
-                        });
-                    }
-
-                    if (child.name === 'Cube007') {
-                        self.directionToUpdate.push({
-                            mesh: child,
-                            ray_sw: false
-                        });
-                    }
-
-                    if (child.name === 'Cube009') {
-                        self.directionToUpdate.push({
-                            mesh: child,
-                            ray_sw: false
-                        });
-                    }
-                    if (child.name === 'Cube010') {
-                        self.directionToUpdate.push({
-                            mesh: child,
-                            ray_sw: false
-                        });
-                    }
-
-                    if (child.name === 'Cube028') {
-                        self.directionToUpdate.push({
-                            mesh: child,
-                            ray_sw: false
-                        });
-                    }
-
-                    if (child.name === 'Cube011') {
+                    if (child.name.substring(0, 10) === 'directable') {
                         self.directionToUpdate.push({
                             mesh: child,
                             ray_sw: false
@@ -477,7 +464,20 @@ class App {
                     }
 
 
-                    if (child.name.substring(0, 9) === 'shootable') {
+
+
+                    if (child.name.substring(0, 5) === 'trash'
+                        || child.name === 'barrier'
+                        || child.name.substring(0, 4) === 'desk'
+                        || child.name.substring(0, 5) === 'skill'
+                        || child.name.substring(0, 6) === 'dumble'
+
+                        // || child.name.substring(0, 3) === 'ps4'
+                        //|| child.name.substring(0, 4) === 'Xbox'
+                        // || child.name.substring(0, 3) === 'toy'
+                        // || child.name.substring(0, 4) === 'book'
+
+                    ) {
 
                         //this.objectsToUpdate.
                         self.trashcan = child;
@@ -486,15 +486,15 @@ class App {
                         const box = new THREE.Box3().setFromObject(child);
                         //console.log(box.min, box.max, box.getSize(size));
 
-                        // const geometry = new THREE.BoxGeometry(box.getSize().x * 10, box.getSize().y * 5, box.getSize().z * 10);
-                        // const material = new THREE.MeshStandardMaterial({ color: 0xFF0000 });
-                        // self.cubeMesh = new THREE.Mesh(geometry, material);
-                        // self.cubeMesh.position.set(child.position.x * 10 + 10, child.position.y * 10, child.position.z * 10 + 10);
-                        //self.scene.add(self.cubeMesh);
+                        // const geometry = new THREE.BoxGeometry(box.getSize().x * 10, box.getSize().y * 10, box.getSize().z * 10);
+                        // const material1 = new THREE.MeshStandardMaterial({ color: 0xFF0000 });
+                        // const cubeMesh = new THREE.Mesh(geometry, material1);
+                        // cubeMesh.position.set(child.position.x * 10 + 10, child.position.y * 10, child.position.z * 10 + 10);
+                        // self.scene.add(cubeMesh);
                         const data = {
                             type: 'shootable',
                             sizex: box.getSize().x * 10,
-                            sizey: box.getSize().y * 5,
+                            sizey: box.getSize().y * 10,
                             sizez: box.getSize().z * 10,
                             positionx: child.position.x * 10 + 10,
                             positiony: child.position.y * 10,
@@ -512,18 +512,19 @@ class App {
 
                         self.objectsToUpdate.push(child);
                     }
-                    else if (child.name.substring(0, 5) === 'skill') {
-
+                    else if (child.name.substring(0, 8) === 'poolwall') {
                         const box = new THREE.Box3().setFromObject(child);
+                        //console.log(box.min, box.max, box.getSize(size));
+
                         // const geometry = new THREE.BoxGeometry(box.getSize().x * 10, box.getSize().y * 10, box.getSize().z * 10);
-                        // const material = new THREE.MeshStandardMaterial({ color: 0xFF0000 });
-                        // const cubeMesh = new THREE.Mesh(geometry, material);
+                        // const material1 = new THREE.MeshStandardMaterial({ color: 0xFF0000 });
+                        // const cubeMesh = new THREE.Mesh(geometry, material1);
                         // cubeMesh.position.set(child.position.x * 10 + 10, child.position.y * 10, child.position.z * 10 + 10);
-                        //self.scene.add(cubeMesh);
+                        // self.scene.add(cubeMesh);
                         const data = {
-                            type: 'shootable',
+                            type: 'static_object',
                             sizex: box.getSize().x * 10,
-                            sizey: box.getSize().y * 10,
+                            sizey: box.getSize().y * 200,
                             sizez: box.getSize().z * 10,
                             positionx: child.position.x * 10 + 10,
                             positiony: child.position.y * 10,
@@ -532,9 +533,11 @@ class App {
                         self.worker.postMessage(data)
                         self.objectsToUpdate.push(child);
                     }
+
                     else if (child.name.substring(0, 4) === 'Road') {
                         //const size = new THREE.Vector3()
                         const box = new THREE.Box3().setFromObject(child);
+
                         //console.log(box.min, box.max, box.getSize(size));
 
                         // const geometry = new THREE.BoxGeometry(box.getSize().x * 5, box.getSize().y * 10, box.getSize().z * 5);
@@ -543,7 +546,7 @@ class App {
                         // cubeMesh.position.set(child.position.x * 10 + 10, child.position.y * 20, child.position.z * 10 + 10);
                         // self.scene.add(cubeMesh);
                         const data = {
-                            type: 'shootable',
+                            type: 'road',
                             sizex: box.getSize().x * 8,
                             sizey: box.getSize().y * 10,
                             sizez: box.getSize().z * 8,
@@ -554,38 +557,18 @@ class App {
                         self.worker.postMessage(data)
                         self.objectsToUpdate.push(child);
                     }
-                    else if (child.name.substring(0, 4) === 'bike') {
 
-                        const box = new THREE.Box3().setFromObject(child);
-                        //console.log(box.min, box.max, box.getSize(size));
-
-                        // const geometry = new THREE.BoxGeometry(box.getSize().x * 10, box.getSize().y * 10, box.getSize().z * 10);
-                        // const material = new THREE.MeshStandardMaterial({ color: 0xFF0000 });
-                        // const cubeMesh = new THREE.Mesh(geometry, material);
-                        // cubeMesh.position.set(child.position.x * 10 + 10, child.position.y * 10, child.position.z * 10 + 10);
-                        // self.scene.add(cubeMesh);
-                        const data = {
-                            type: 'shootable',
-                            sizex: box.getSize().x * 20,
-                            sizey: box.getSize().y * 10,
-                            sizez: box.getSize().z * 2,
-                            positionx: child.position.x * 10 + 10,
-                            positiony: child.position.y * 10,
-                            positionz: child.position.z * 10 + 10
-                        }
-                        self.worker.postMessage(data)
-                        self.objectsToUpdate.push(child);
-                    }
-                    else if (child.name.substring(0, 11) === 'Basketball0') {
+                    else if (child.name.substring(0, 8) === 'poolball') {
                         const box = new THREE.Box3().setFromObject(child)
+                        //console.log(box.getSize().x * 10)
                         // const geometry = new THREE.SphereGeometry(box.getSize() * 10, 32);
                         // const material = new THREE.MeshStandardMaterial({ color: 0xFF0000 });
                         // const sphereMesh = new THREE.Mesh(geometry, material);
                         // sphereMesh.position.set(child.position.x * 10 + 10, child.position.y * 10 + 1, child.position.z * 10 + 10);
                         // self.scene.add(sphereMesh);
                         const data = {
-                            type: 'basketball',
-                            radius: box.getSize() * 10,
+                            type: 'poolball',
+                            radius: (box.getSize().x * 5),
                             positionx: child.position.x * 10 + 10,
                             positiony: child.position.y * 10 + 1,
                             positionz: child.position.z * 10 + 10
@@ -654,12 +637,37 @@ class App {
 
                         child.material = self.flagmaterial
                     }
-                    if (child instanceof THREE.Mesh && child.material instanceof THREE.MeshStandardMaterial && child.name !== 'Plane') {
-                        // child.material.envMap = self.environmentMap
-                        // child.material.envMapIntensity = 1.5
-                        // child.material.metalness = 0.8
-                        // child.material.roughness = 0.3
+                    else if (child.name === 'chargingbull') {
+                        child.material = material;
                     }
+                    else if (child.name === 'Walls') {
+                        // console.log(child)
+                        //child.material = material3;
+                        // child.material.color = new THREE.Color(0x505070);
+                    }
+                    else if (child.name === 'sofa') {
+                        console.log(child)
+                        child.material = material3;
+                        // child.children[2].material = material2;
+                        //child.material.color = new THREE.Color(0x000000);
+                    }
+                    else if (
+                        child.name === 'Cube012'
+                        || child.name.substring(0, 3) === 'mat'
+                    ) {
+                        //console.log(child)
+                        child.material = material4;
+                        // child.children[2].material = material2;
+                        //child.material.color = new THREE.Color(0x000000);
+                    }
+
+                    else if (child.name.substring(0, 8) === 'poolwall') {
+                        console.log(child)
+                        //child.material = material2;
+                        // child.children[2].material = material2;
+                        //child.material.color = new THREE.Color(0x000000);
+                    }
+
 
                 });
                 self.scene.add(gltf.scene)
@@ -896,7 +904,7 @@ class App {
         if (this.load_ready_sw) {
             this.sphereShadow.position.x = this.fox.position.x
             this.sphereShadow.position.z = this.fox.position.z
-            this.sphereShadow.position.y = 0.1;
+            this.sphereShadow.position.y = 0.2;
             this.sphereShadow.material.opacity = (1 - this.fox.position.y / 3) * 0.4
             this.sphereShadow.scale.set((this.fox.position.y + 1) * 1, (this.fox.position.y + 1) * 1, (this.fox.position.y + 1) * 1)
             this.sphereShadow.rotation.z = this.fox.rotation.y;
@@ -934,16 +942,16 @@ class App {
                         this.bulletToUpdate[i].position.x = (bulletToUpdate2[i * 3 + 0])
                         this.bulletToUpdate[i].position.y = (bulletToUpdate2[i * 3 + 1])
                         this.bulletToUpdate[i].position.z = (bulletToUpdate2[i * 3 + 2])
-                        // if (this.bulletToUpdate[i].position.y <= 1) {
-                        //     this.scene.remove(this.bulletToUpdate[i])
-                        //     this.bulletToUpdate.splice(i, 1)
-                        //     const data = {
-                        //         type: 'clean_bullet',
-                        //         index: i * 3
-                        //     }
-                        //     this.worker.postMessage(data)
-                        //     console.log(this.bulletToUpdate)
-                        // }
+                        if (this.bulletToUpdate[i].position.y <= .2) {
+                            this.scene.remove(this.bulletToUpdate[i])
+                            this.bulletToUpdate.splice(i, 1)
+                            const data = {
+                                type: 'clean_bullet',
+                                index: i
+                            }
+                            this.worker.postMessage(data)
+                            //console.log(this.bulletToUpdate)
+                        }
                     }
 
                 }
@@ -957,11 +965,16 @@ class App {
                         this.objectsToUpdate[i].position.z = (position[i].z - 10) / 10
                         this.objectsToUpdate[i].quaternion.copy(quaternion2[i])
                         if (this.objectsToUpdate[i].name.substring(0, 4) === 'Road') {
-                            this.objectsToUpdate[i].position.y -= .3
+                            this.objectsToUpdate[i].position.y -= .2
                         }
-                        if (this.objectsToUpdate[i].name.substring(0, 4) === 'bike') {
-                            //this.objectsToUpdate[i].rotation.y -= Math.PI / 2
+                        if (this.objectsToUpdate[i].name.substring(0, 6) === 'dumble') {
+                            // this.objectsToUpdate[i].rotation.z += Math.PI / 2
+                            // this.objectsToUpdate[i].rotation.x += Math.PI / 2
+                            //this.objectsToUpdate[i].rotation.y += Math.PI / 2
+                            //this.objectsToUpdate[i].position.y -= .03
                         }
+
+
                     }
 
                 }

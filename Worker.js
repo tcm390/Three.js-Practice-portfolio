@@ -12,14 +12,25 @@ world.gravity.set(0, -982, 0)
 
 const defaultContactMaterial = new CANNON.ContactMaterial(
     defaultMaterial,
-    defaultMaterial,
+
     {
-        friction: 1,
-        restitution: .7
+        friction: .1,
+        restitution: .85
     }
 )
 world.defaultContactMaterial = defaultContactMaterial
 
+const ball_floor = new CANNON.ContactMaterial(
+    defaultMaterial,
+
+    { friction: .1, restitution: 0.1 }
+);
+
+// const ball_wall = new CANNON.ContactMaterial(
+//     Ball.contactMaterial,
+//     Table.wallContactMaterial,
+//     { friction: 0.5, restitution: 0.9 }
+// );
 const foxShape = new CANNON.Box(new CANNON.Vec3(0.9, 1.2, 2.4))
 const foxBody = new CANNON.Body({
     mass: 100,
@@ -33,6 +44,7 @@ const floorShape = new CANNON.Plane()
 const floorBody = new CANNON.Body()
 floorBody.mass = 0
 floorBody.addShape(floorShape)
+floorBody.material = ball_floor;
 floorBody.quaternion.setFromAxisAngle(new CANNON.Vec3(- 1, 0, 0), Math.PI * 0.5)
 world.addBody(floorBody)
 
@@ -55,7 +67,7 @@ self.addEventListener('message', function (e) {
         }, 1000);
     }
     if (e.data.type === 'time') {
-        world.step(1 / 60, e.data.deltaTime, 3)
+        world.step(1 / 60, e.data.deltaTime, 10)
     }
 
     else if (e.data === 'getfox') {
@@ -70,7 +82,7 @@ self.addEventListener('message', function (e) {
     else if (e.data.type === 'shoot') {
         let bull_shape = new CANNON.Sphere(0.2)
         let bull_body = new CANNON.Body({
-            mass: 20,
+            mass: 800,
             shape: bull_shape
         })
         bull_body.position.copy(e.data.foxposition)
@@ -81,7 +93,6 @@ self.addEventListener('message', function (e) {
             dum.z * 100);
 
         bull_body.position.y += 5;
-
         world.addBody(bull_body)
         bulletToUpdate.push(bull_body)
 
@@ -94,9 +105,12 @@ self.addEventListener('message', function (e) {
         //world.bodies[0].position.y += 1;
         let pos = [];
         for (let i = 0; i < bulletToUpdate.length; i++) {
+
             pos.push(bulletToUpdate[i].position.x)
             pos.push(bulletToUpdate[i].position.y)
             pos.push(bulletToUpdate[i].position.z)
+
+
         }
         const test = {
             type: e.data,
@@ -125,10 +139,37 @@ self.addEventListener('message', function (e) {
         world.bodies[0].position.x -= e.data.lx;
     }
     else if (e.data.type === 'clean_bullet') {
-        bulletToUpdate.splice(e.data.index, 3)
-        this.console.log(bulletToUpdate)
+        world.removeBody(bulletToUpdate[e.data.index])
+        bulletToUpdate.splice(e.data.index, 1)
+        //this.console.log(bulletToUpdate)
     }
     else if (e.data.type === 'shootable') {
+        let shape = new CANNON.Box(new CANNON.Vec3(e.data.sizex / 2, e.data.sizey / 2, e.data.sizez / 2))
+        let body = new CANNON.Body({
+            mass: 800,
+            shape: shape,
+            material: defaultMaterial,
+            angularDamping: .4
+        })
+        body.position.set(e.data.positionx, e.data.positiony, e.data.positionz);
+        world.addBody(body)
+        objects_positionToUpdate.push(body.position)
+        objects_quaternionToUpdate.push(body.quaternion)
+    }
+    else if (e.data.type === 'static_object') {
+        let shape = new CANNON.Box(new CANNON.Vec3(e.data.sizex / 2, e.data.sizey / 2, e.data.sizez / 2))
+        let body = new CANNON.Body({
+            mass: 0,
+            shape: shape,
+            material: defaultMaterial,
+            angularDamping: .4
+        })
+        body.position.set(e.data.positionx, e.data.positiony, e.data.positionz);
+        world.addBody(body)
+        objects_positionToUpdate.push(body.position)
+        objects_quaternionToUpdate.push(body.quaternion)
+    }
+    else if (e.data.type === 'road') {
         let shape = new CANNON.Box(new CANNON.Vec3(e.data.sizex / 2, e.data.sizey / 2, e.data.sizez / 2))
         let body = new CANNON.Body({
             mass: 50,
@@ -141,16 +182,24 @@ self.addEventListener('message', function (e) {
         objects_positionToUpdate.push(body.position)
         objects_quaternionToUpdate.push(body.quaternion)
     }
-    else if (e.data.type === 'basketball') {
-        let ball_shape = new CANNON.Sphere(1)
+
+    else if (e.data.type === 'poolball') {
+        let ball_shape = new CANNON.Sphere(e.data.radius)
         let body = new CANNON.Body({
-            mass: 50,
+            mass: 1000,
             shape: ball_shape,
             position: new CANNON.Vec3(e.data.positionx, e.data.positiony, e.data.positionz),
             material: defaultMaterial,
-            angularDamping: .4
+            angularDamping: .2
         })
         //body.position.set(e.data.positionx, e.data.positiony, e.data.positionz);
+        body.collisionResponse = 0.1;
+        body.addEventListener("collide", (co) => {
+            //console.log(co.contact, body.position.y)
+            //co.contact.rj.y = 0;
+            co.contact.ri.y = 5;
+            //body.position.y = 1.8
+        });
         world.addBody(body)
         objects_positionToUpdate.push(body.position)
         objects_quaternionToUpdate.push(body.quaternion)
