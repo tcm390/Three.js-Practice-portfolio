@@ -34,7 +34,7 @@ const ball_floor = new CANNON.ContactMaterial(
 const foxShape = new CANNON.Box(new CANNON.Vec3(0.9, 1.2, 2.4))
 const foxBody = new CANNON.Body({
     mass: 100,
-    position: new CANNON.Vec3(-10, 0, 0),
+    position: new CANNON.Vec3(0, 0, 0),
     shape: foxShape,
     material: defaultMaterial
 })
@@ -87,9 +87,13 @@ self.addEventListener('message', function (e) {
         })
         bull_body.position.copy(e.data.foxposition)
         let dum = e.data.dum;
+        const dir = new THREE.Vector3();
+        dir.subVectors(e.data.shoot_point, e.data.foxposition);
         bull_body.velocity.set(
             dum.x * 100,
             ((Math.sin(mouse.y + 0.15) * Math.abs(dum.z)) + (Math.sin(mouse.y + 0.15) * Math.abs(dum.x))) * 50,
+            //((Math.sin((e.data.shoot_point - 7)) * Math.abs(dum.z)) + (Math.sin((e.data.shoot_point - 7)) * Math.abs(dum.x))) * 100,
+            //dir.y - 5,
             dum.z * 100);
 
         bull_body.position.y += 5;

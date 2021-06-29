@@ -38,6 +38,7 @@ class App {
             //this.world.gravity.set(0, -9.82, 0);
             this.worker.postMessage('ready')
             //console.log(this.renderer.info.render.calls);
+            document.body.style.cursor = "none";
         });
         btnCloseModal2.addEventListener('click', () => {
             this.education.classList.add('hidden');
@@ -68,6 +69,10 @@ class App {
 
         const container = document.createElement('div');
         document.body.appendChild(container);
+
+
+
+
 
         window.addEventListener('resize', this.resize.bind(this));
 
@@ -112,6 +117,11 @@ class App {
 
         this.mouse = new THREE.Vector2();
 
+        this.shoot_point = 5;
+
+        this.mouse_deltax = 0;
+        this.mouse_previousx = 0;
+
         this.textureLoader = new THREE.TextureLoader()
 
 
@@ -120,6 +130,8 @@ class App {
         this.camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 1, 500);
         this.camera.position.set(0, 10, 0);
         this.camera.rotation.y += Math.PI;
+
+
 
 
         //######## scene #########
@@ -194,68 +206,171 @@ class App {
 
 
 
+        //########locker#########
+        // this.canvas = document.querySelector('div')
+        // this.canvas.requestPointerLock = this.canvas.requestPointerLock ||
+        //     this.canvas.mozRequestPointerLock;
+
+        // document.exitPointerLock = document.exitPointerLock ||
+        //     document.mozExitPointerLock;
+
+
+        // const self = this;
+        // document.addEventListener('pointerlockchange', lockChangeAlert, false);
+        // document.addEventListener('mozpointerlockchange', lockChangeAlert, false);
+        // function lockChangeAlert() {
+        //     if (document.pointerLockElement === this.canvas ||
+        //         document.mozPointerLockElement === this.canvas) {
+        //         //console.log('The pointer lock status is now locked');
+        //         document.addEventListener("mousemove", canvasLoop, false);
+        //         self.lock = true;
+
+
+        //     } else {
+        //         //console.log('The pointer lock status is now unlocked');
+        //         document.removeEventListener("mousemove", canvasLoop, false);
+        //         self.lock = false;
+
+        //     }
+        // }
+        // function canvasLoop(e) {
+        //     const movementX = e.movementX ||
+        //         e.mozMovementX ||
+        //         e.webkitMovementX ||
+        //         0;
+
+        //     const movementY = e.movementY ||
+        //         e.mozMovementY ||
+        //         e.webkitMovementY ||
+        //         0;
+
+        //     self.mouse.x = movementX;
+        //     self.mouse.y = movementY;
+        //     //console.log(self.mouse, movementX)
+
+        //     // var animation = requestAnimationFrame(canvasLoop);
+
+        //     // tracker.innerHTML = "X position: " + x + ', Y position: ' + y;
+        //     const worker_mouse = {
+        //         type: 'mouse',
+        //         mouse: self.mouse
+        //     }
+        //     self.worker.postMessage(worker_mouse);
+
+        // }
+
+        const geometry = new THREE.BoxBufferGeometry(.05, .3, .05);
+        const geometry2 = new THREE.BoxBufferGeometry(.3, .05, .05);
+        const material = new THREE.MeshStandardMaterial({ color: 0xFFFFFF });
+        const cube1 = new THREE.Mesh(geometry, material);
+        const cube2 = new THREE.Mesh(geometry, material);
+        const cube3 = new THREE.Mesh(geometry2, material);
+        const cube4 = new THREE.Mesh(geometry2, material);
+        cube1.position.set(0, -.5, 0);
+        cube2.position.set(0, .5, 0);
+        cube3.position.set(.5, 0, 0);
+        cube4.position.set(-.5, 0, 0);
+        this.target = new THREE.Group();
+        this.target.add(cube1);
+        this.target.add(cube2);
+        this.target.add(cube3);
+        this.target.add(cube4);
+        this.scene.add(this.target);
+
+
+
 
 
     }
-
     window_listener() {
         //########### Listener #########
 
 
         window.addEventListener('mousemove', e => {
+
             this.mouse.x = event.clientX / window.innerWidth * 2 - 1
             this.mouse.y = - (event.clientY / window.innerHeight) * 2 + 1
+
+
             //this.fox.rotation.x = 0 - this.mouse.y
             const worker_mouse = {
                 type: 'mouse',
                 mouse: this.mouse
             }
             this.worker.postMessage(worker_mouse);
+            this.mouse_deltax = this.mouse.x - this.mouse_previousx;
+            this.mouse_previousx = this.mouse.x;
         });
 
         window.addEventListener("click", () => {
-            for (let i = 0; i < this.directionToUpdate.length; i++) {
-                if (this.directionToUpdate[i].ray_sw === true) {
-                    if (this.directionToUpdate[i].mesh.name === 'directable001') {
-                        this.education.classList.remove('hidden');
-                        this.overlay.classList.remove('hidden');
 
-                    }
-                    else if (this.directionToUpdate[i].mesh.name === 'directable002')
-                        window.open("mailto:tcm390@nyu.edu")
-                    else if (this.directionToUpdate[i].mesh.name === 'directable003')
-                        window.open("https://www.linkedin.com/in/ting-chien-meng-b221521a6/")
-                    else if (this.directionToUpdate[i].mesh.name === 'directable004')
-                        window.open("https://github.com/tcm390")
-                    else if (this.directionToUpdate[i].mesh.name === 'directable005') {
-                        this.hadoop.classList.remove('hidden');
-                        this.overlay.classList.remove('hidden');
-                    }
-                    else if (this.directionToUpdate[i].mesh.name === 'directable006') {
-                        this.hadoop.classList.remove('hidden');
-                        this.overlay.classList.remove('hidden');
-                    }
-                    else if (this.directionToUpdate[i].mesh.name === 'directable007') {
-                        this.rubber_toy.classList.remove('hidden');
-                        this.overlay.classList.remove('hidden');
-                    }
-
-                }
-            }
+            //this.canvas.requestPointerLock();
             this.shoot_sw = 1;
+
+            // for (let i = 0; i < this.directionToUpdate.length; i++) {
+            //     if (this.directionToUpdate[i].ray_sw === true) {
+            //         this.shoot_sw = 0
+            //         if (this.directionToUpdate[i].mesh.name === 'directable001') {
+            //             this.education.classList.remove('hidden');
+            //             this.overlay.classList.remove('hidden');
+            //             document.exitPointerLock();
+
+            //         }
+            //         else if (this.directionToUpdate[i].mesh.name === 'directable002')
+            //             window.open("mailto:tcm390@nyu.edu")
+            //         else if (this.directionToUpdate[i].mesh.name === 'directable003')
+            //             window.open("https://www.linkedin.com/in/ting-chien-meng-b221521a6/")
+            //         else if (this.directionToUpdate[i].mesh.name === 'directable004')
+            //             window.open("https://github.com/tcm390")
+            //         else if (this.directionToUpdate[i].mesh.name === 'directable005') {
+            //             this.hadoop.classList.remove('hidden');
+            //             this.overlay.classList.remove('hidden');
+            //             const a = 0;
+            //             document.exitPointerLock();
+            //         }
+            //         else if (this.directionToUpdate[i].mesh.name === 'directable006') {
+            //             this.hadoop.classList.remove('hidden');
+            //             this.overlay.classList.remove('hidden');
+            //             document.exitPointerLock();
+            //         }
+            //         else if (this.directionToUpdate[i].mesh.name === 'directable007') {
+            //             this.rubber_toy.classList.remove('hidden');
+            //             this.overlay.classList.remove('hidden');
+            //             document.exitPointerLock();
+            //         }
+
+            //     }
+            // }
+
         })
 
         window.addEventListener('keydown', (e) => {
-            if (e.keyCode === 87 || e.key === 'ArrowUp')
+            if (e.keyCode === 87 || e.key === 'ArrowUp') {
                 this.move_sw = 1;
-            if (e.keyCode === 83 || e.key === 'ArrowDown')
+                //this.canvas.requestPointerLock();
+            }
+
+            if (e.keyCode === 83 || e.key === 'ArrowDown') {
                 this.back_sw = 1;
-            if (e.keyCode === 68 || e.key === 'ArrowRight')
+                //this.canvas.requestPointerLock();
+            }
+
+            if (e.keyCode === 68 || e.key === 'ArrowRight') {
                 this.right_sw = 1;
-            if (e.keyCode === 65 || e.key === 'ArrowLeft')
+                //this.canvas.requestPointerLock();
+            }
+
+            if (e.keyCode === 65 || e.key === 'ArrowLeft') {
                 this.left_sw = 1;
-            if (e.key === ' ' || e.keyCode === 32)
+                //this.canvas.requestPointerLock();
+            }
+
+            if (e.key === ' ' || e.keyCode === 32) {
                 this.shoot_sw = 1;
+                //document.exitPointerLock();
+
+            }
+
 
         });
 
@@ -388,7 +503,7 @@ class App {
                 // poleLightAMesh.material = poleLightMaterial
                 // poleLightBMesh.material = poleLightMaterial
                 gltf.scene.scale.set(10, 10, 10)
-                gltf.scene.position.set(10, 0.01, 10)
+                gltf.scene.position.set(10, 0, 10)
                 self.scene.add(gltf.scene)
             },
             (xhr) => {
@@ -646,7 +761,7 @@ class App {
                         // child.material.color = new THREE.Color(0x505070);
                     }
                     else if (child.name === 'sofa') {
-                        console.log(child)
+                        //console.log(child)
                         child.material = material3;
                         // child.children[2].material = material2;
                         //child.material.color = new THREE.Color(0x000000);
@@ -661,12 +776,7 @@ class App {
                         //child.material.color = new THREE.Color(0x000000);
                     }
 
-                    else if (child.name.substring(0, 8) === 'poolwall') {
-                        console.log(child)
-                        //child.material = material2;
-                        // child.children[2].material = material2;
-                        //child.material.color = new THREE.Color(0x000000);
-                    }
+
 
 
                 });
@@ -706,10 +816,13 @@ class App {
                 //console.log(gltf.scene)
                 //gltf.scene.scale.set(2, 2, 2)
                 object.traverse(function (child) {
-                    if (child.isMesh && child.name == 'spaceman') {
-                        child.material.color = new THREE.Color(0x505050);
 
-                        child.material.shininess = 5
+
+                    if (child.name == 'spaceman') {
+
+                        child.material.color = new THREE.Color(0x60a085);
+
+                        //child.material.shininess = 50
                         //console.log(child);
                     }
                     else if (child.isMesh && child.name === 'polySurface21000') {
@@ -830,7 +943,7 @@ class App {
     shoot() {
         if (this.load_ready_sw) {
 
-
+            console.log(this.shoot_point)
             this.shoot_audio.play();
 
 
@@ -851,10 +964,13 @@ class App {
 
             let dum = new THREE.Vector3();
             this.fox.getWorldDirection(dum)
+            dum = dum.normalize();
+
             const bull = {
                 type: 'shoot',
                 foxposition: this.fox.position,
-                dum: dum
+                dum: dum,
+                shoot_point: this.target.position
 
             }
 
@@ -898,6 +1014,11 @@ class App {
         this.previousTime = elapsedTime
         //this.world.step(1 / 60, deltaTime, 3)
         let block = 0;
+
+        // if (document.pointerLockElement === null || document.mozPointerLockElement === null) {
+        //     this.lock = false;
+        // }
+
         if (this.flagmaterial) {
             this.flagmaterial.uniforms.uTime.value = elapsedTime;
         }
@@ -1027,13 +1148,13 @@ class App {
             raycaster.setFromCamera(this.mouse, this.camera)
             let intersects = raycaster.intersectObjects(testObject)
             if (intersects.length) {
-                document.body.style.cursor = "pointer";
+                //document.body.style.cursor = "pointer";
                 this.directionToUpdate[min_index].ray_sw = true;
             }
 
             else {
                 this.directionToUpdate[min_index].ray_sw = false;
-                document.body.style.cursor = "default";
+                //document.body.style.cursor = "default";
             }
 
 
@@ -1093,20 +1214,48 @@ class App {
 
 
 
-            if (this.mouse.x > 0.3 && this.mouse.y < 0.3) {
+            if (this.mouse.x > 0.9) { //&& this.mouse.y < 0.3) {
                 this.fox.rotation.y -= 0.02 * Math.abs(this.mouse.x);
                 this.camera.rotation.y -= 0.02 * Math.abs(this.mouse.x);
+                this.target.rotation.y -= 0.02 * Math.abs(this.mouse.x);
             }
-            else if (this.mouse.x < -0.3 && this.mouse.y < 0.3) {
+            else if (this.mouse.x < -0.9) { //&& this.mouse.y < 0.3) {
                 this.fox.rotation.y += 0.02 * Math.abs(this.mouse.x);
                 this.camera.rotation.y += 0.02 * Math.abs(this.mouse.x);
+                this.target.rotation.y += 0.02 * Math.abs(this.mouse.x);
             }
+            else {
+                this.fox.rotation.y -= 1 * this.mouse_deltax;
+                this.camera.rotation.y -= 1 * this.mouse_deltax;
+                this.target.rotation.y -= 1 * this.mouse_deltax;
+                this.mouse_deltax = 0;
+            }
+
+            // if (this.lock === true) {
+            //     this.fox.rotation.y += 0.004 * (0 - this.mouse.x);
+            //     this.camera.rotation.y += 0.004 * (0 - this.mouse.x);
+            //     if (this.shoot_point + 0.02 * (0 - this.mouse.y) >= 5 && this.shoot_point + 0.05 * (0 - this.mouse.y) <= 15)
+            //         this.shoot_point += 0.02 * (0 - this.mouse.y) + this.fox.position.y;
+            //     this.target.position.y = this.shoot_point
+
+
+            // }
+
 
             let fox_direction = new THREE.Vector3();
             this.fox.getWorldDirection(fox_direction);
             fox_direction = fox_direction.normalize();
             this.camera.position.x = (this.fox.position.x - fox_direction.x * 20);
             this.camera.position.z = (this.fox.position.z - fox_direction.z * 20);
+            this.target.position.x = (this.fox.position.x + fox_direction.x * 2);
+            this.target.position.z = (this.fox.position.z + fox_direction.z * 2);
+
+
+
+            //if (this.fox.position.y + (this.mouse.y + .95) * 10 > 5)
+            this.target.position.y = this.fox.position.y + (this.mouse.y + .95) * 10;
+            // else
+            //     this.target.position.y = 5;
 
             //this.world.bodies[0].quaternion.setFromAxisAngle(new CANNON.Vec3(0, 1, 0), this.fox.rotation.y)
 
@@ -1116,7 +1265,7 @@ class App {
         }
         if (this.move_sw) {
 
-
+            //console.log(this.mouse.y, this.target.position.y)
             // const raycaster = new THREE.Raycaster();
             // let pos = new THREE.Vector3();
             // let rayDirection = new THREE.Vector3();
@@ -1190,7 +1339,7 @@ class App {
             }
         }
 
-        if (this.right_sw) {
+        if (this.right_sw && block == 0) {
             let data = {
                 type: 'move_right',
                 rz: Math.cos(this.fox.rotation.y + Math.PI / 2) * 0.5,
@@ -1205,7 +1354,7 @@ class App {
             }
         }
 
-        else if (this.left_sw) {
+        else if (this.left_sw && block == 0) {
             let data = {
                 type: 'move_left',
                 lz: Math.cos(this.fox.rotation.y - Math.PI / 2) * 0.5,
