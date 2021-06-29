@@ -943,7 +943,7 @@ class App {
     shoot() {
         if (this.load_ready_sw) {
 
-            console.log(this.shoot_point)
+            //console.log(this.shoot_point)
             this.shoot_audio.play();
 
 
