@@ -87,8 +87,7 @@ self.addEventListener('message', function (e) {
         })
         bull_body.position.copy(e.data.foxposition)
         let dum = e.data.dum;
-        const dir = new THREE.Vector3();
-        dir.subVectors(e.data.shoot_point, e.data.foxposition);
+
         bull_body.velocity.set(
             dum.x * 100,
             ((Math.sin(mouse.y + 0.15) * Math.abs(dum.z)) + (Math.sin(mouse.y + 0.15) * Math.abs(dum.x))) * 50,
