@@ -81,12 +81,12 @@ class App {
 
         const cubeTextureLoader = new THREE.CubeTextureLoader(this.loadingManager)
         this.environmentMap = cubeTextureLoader.load([
-            './assets/textures/environmentMaps/12/px.jpg',
-            './assets/textures/environmentMaps/12/nx.jpg',
-            './assets/textures/environmentMaps/12/py.jpg',
-            './assets/textures/environmentMaps/12/ny.jpg',
-            './assets/textures/environmentMaps/12/pz.jpg',
-            './assets/textures/environmentMaps/12/nz.jpg'
+            './assets/textures/environmentMaps/13/px.png',
+            './assets/textures/environmentMaps/13/nx.png',
+            './assets/textures/environmentMaps/13/py.png',
+            './assets/textures/environmentMaps/13/ny.png',
+            './assets/textures/environmentMaps/13/pz.png',
+            './assets/textures/environmentMaps/13/nz.png'
         ])
 
 
