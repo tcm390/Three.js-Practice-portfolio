@@ -43,14 +43,17 @@ class App {
         btnCloseModal2.addEventListener('click', () => {
             this.education.classList.add('hidden');
             this.overlay.classList.add('hidden');
+            document.body.style.cursor = "none";
         });
         btnCloseModal3.addEventListener('click', () => {
             this.hadoop.classList.add('hidden');
             this.overlay.classList.add('hidden');
+            document.body.style.cursor = "none";
         });
         btnCloseModal4.addEventListener('click', () => {
             this.rubber_toy.classList.add('hidden');
             this.overlay.classList.add('hidden');
+            document.body.style.cursor = "none";
         });
         //######### LoadingManager ###########
         this.loadingManager = new THREE.LoadingManager()
@@ -102,11 +105,15 @@ class App {
         this.clock = new THREE.Clock();
         this.previousTime = 0;
         this.mixer = [];
+        this.mixer2 = [];
+
         this.right_sw = 0;
         this.left_sw = 0;
         this.move_sw = 0;
         this.back_sw = 0;
         this.shoot_sw = 0;
+
+
 
         this.objectsToUpdate = [];
         this.bulletToUpdate = [];
@@ -140,18 +147,7 @@ class App {
         //this.scene.background = new THREE.Color(0xaaaaff);
 
 
-        const simpleShadow = this.textureLoader.load('./assets/glTF100/simpleShadow3.jpeg')
-        this.sphereShadow = new THREE.Mesh(
-            new THREE.PlaneGeometry(2, 5),
-            new THREE.MeshBasicMaterial({
-                color: 0x000000,
-                transparent: true,
-                alphaMap: simpleShadow
-            })
-        )
-        this.sphereShadow.rotation.x = - Math.PI * 0.5
 
-        this.scene.add(this.sphereShadow);
 
         //########## LIGHT ###########
         const hemisphereLight = new THREE.HemisphereLight(0xffffff, 0xbbbbff, 1.5);
@@ -192,6 +188,7 @@ class App {
 
 
         this.loadPointer();
+        this.loadPointer2();
         this.create_physics_world();
         this.loadFox();
         this.loadEnvironment();
@@ -259,23 +256,9 @@ class App {
 
         // }
 
-        const geometry = new THREE.BoxBufferGeometry(.05, .3, .05);
-        const geometry2 = new THREE.BoxBufferGeometry(.3, .05, .05);
-        const material = new THREE.MeshStandardMaterial({ color: 0xFFFFFF });
-        const cube1 = new THREE.Mesh(geometry, material);
-        const cube2 = new THREE.Mesh(geometry, material);
-        const cube3 = new THREE.Mesh(geometry2, material);
-        const cube4 = new THREE.Mesh(geometry2, material);
-        cube1.position.set(0, -.5, 0);
-        cube2.position.set(0, .5, 0);
-        cube3.position.set(.5, 0, 0);
-        cube4.position.set(-.5, 0, 0);
-        this.target = new THREE.Group();
-        this.target.add(cube1);
-        this.target.add(cube2);
-        this.target.add(cube3);
-        this.target.add(cube4);
-        this.scene.add(this.target);
+
+
+
 
 
 
@@ -307,40 +290,7 @@ class App {
             //this.canvas.requestPointerLock();
             this.shoot_sw = 1;
 
-            // for (let i = 0; i < this.directionToUpdate.length; i++) {
-            //     if (this.directionToUpdate[i].ray_sw === true) {
-            //         this.shoot_sw = 0
-            //         if (this.directionToUpdate[i].mesh.name === 'directable001') {
-            //             this.education.classList.remove('hidden');
-            //             this.overlay.classList.remove('hidden');
-            //             document.exitPointerLock();
 
-            //         }
-            //         else if (this.directionToUpdate[i].mesh.name === 'directable002')
-            //             window.open("mailto:tcm390@nyu.edu")
-            //         else if (this.directionToUpdate[i].mesh.name === 'directable003')
-            //             window.open("https://www.linkedin.com/in/ting-chien-meng-b221521a6/")
-            //         else if (this.directionToUpdate[i].mesh.name === 'directable004')
-            //             window.open("https://github.com/tcm390")
-            //         else if (this.directionToUpdate[i].mesh.name === 'directable005') {
-            //             this.hadoop.classList.remove('hidden');
-            //             this.overlay.classList.remove('hidden');
-            //             const a = 0;
-            //             document.exitPointerLock();
-            //         }
-            //         else if (this.directionToUpdate[i].mesh.name === 'directable006') {
-            //             this.hadoop.classList.remove('hidden');
-            //             this.overlay.classList.remove('hidden');
-            //             document.exitPointerLock();
-            //         }
-            //         else if (this.directionToUpdate[i].mesh.name === 'directable007') {
-            //             this.rubber_toy.classList.remove('hidden');
-            //             this.overlay.classList.remove('hidden');
-            //             document.exitPointerLock();
-            //         }
-
-            //     }
-            // }
 
         })
 
@@ -370,6 +320,42 @@ class App {
                 //document.exitPointerLock();
 
             }
+            if (e.keyCode === 13) {
+                console.log('hehe')
+                for (let i = 0; i < this.directionToUpdate.length; i++) {
+                    if (this.directionToUpdate[i].ray_sw === true) {
+
+                        if (this.directionToUpdate[i].mesh.name === 'directable001') {
+                            this.education.classList.remove('hidden');
+                            this.overlay.classList.remove('hidden');
+                            document.body.style.cursor = "default";
+                        }
+                        else if (this.directionToUpdate[i].mesh.name === 'directable002')
+                            window.open("mailto:tcm390@nyu.edu")
+                        else if (this.directionToUpdate[i].mesh.name === 'directable003')
+                            window.open("https://www.linkedin.com/in/ting-chien-meng-b221521a6/")
+                        else if (this.directionToUpdate[i].mesh.name === 'directable004')
+                            window.open("https://github.com/tcm390")
+                        else if (this.directionToUpdate[i].mesh.name === 'directable005') {
+                            this.hadoop.classList.remove('hidden');
+                            this.overlay.classList.remove('hidden');
+                            const a = 0;
+                            document.body.style.cursor = "default";
+                        }
+                        else if (this.directionToUpdate[i].mesh.name === 'directable006') {
+                            this.hadoop.classList.remove('hidden');
+                            this.overlay.classList.remove('hidden');
+                            document.body.style.cursor = "default";
+                        }
+                        else if (this.directionToUpdate[i].mesh.name === 'directable007') {
+                            this.rubber_toy.classList.remove('hidden');
+                            this.overlay.classList.remove('hidden');
+                            document.body.style.cursor = "default";
+                        }
+
+                    }
+                }
+            }
 
 
         });
@@ -385,6 +371,7 @@ class App {
                 this.left_sw = 0;
             if (e.key === ' ' || e.keyCode === 32)
                 this.shoot_sw = 0;
+
         });
 
     }
@@ -430,6 +417,21 @@ class App {
         // floorBody.quaternion.setFromAxisAngle(new CANNON.Vec3(- 1, 0, 0), Math.PI * 0.5)
         // this.world.addBody(floorBody)
 
+        //######## shadow ############
+        const simpleShadow = this.textureLoader.load('./assets/glTF100/simpleShadow3.jpeg')
+        this.sphereShadow = new THREE.Mesh(
+            new THREE.PlaneGeometry(2, 5),
+            new THREE.MeshBasicMaterial({
+                color: 0x000000,
+                transparent: true,
+                alphaMap: simpleShadow
+            })
+        )
+        this.sphereShadow.rotation.x = - Math.PI * 0.5
+
+        this.scene.add(this.sphereShadow);
+
+        //######## set entrance for project ###############
         const geometry = new THREE.BoxBufferGeometry(13, 13, 13);
         const material = new THREE.MeshStandardMaterial({ color: 0xFF0000, transparent: true, opacity: 0 });
         this.rubberEntrance = new THREE.Mesh(geometry, material);
@@ -440,6 +442,123 @@ class App {
         this.hadoopEntrance.position.set(133, 1, 83);
         this.scene.add(this.hadoopEntrance);
 
+        //############# front sight #############
+        const geometry1 = new THREE.BoxBufferGeometry(.05, .3, .05);
+        const geometry2 = new THREE.BoxBufferGeometry(.3, .05, .05);
+        const material1 = new THREE.MeshStandardMaterial({ color: 0xFFFFFF });
+        const cube1 = new THREE.Mesh(geometry1, material1);
+        const cube2 = new THREE.Mesh(geometry1, material1);
+        const cube3 = new THREE.Mesh(geometry2, material1);
+        const cube4 = new THREE.Mesh(geometry2, material1);
+        cube1.position.set(0, -.5, 0);
+        cube2.position.set(0, .5, 0);
+        cube3.position.set(.5, 0, 0);
+        cube4.position.set(-.5, 0, 0);
+        this.target = new THREE.Group();
+        this.target.add(cube1);
+        this.target.add(cube2);
+        this.target.add(cube3);
+        this.target.add(cube4);
+        this.scene.add(this.target);
+
+        //###### 
+        // const firefliesGeometry = new THREE.BufferGeometry()
+        // const firefliesCount = 50
+        // const positionArray = new Float32Array(firefliesCount * 3)
+        // const scaleArray = new Float32Array(firefliesCount)
+
+        // for (let i = 0; i < firefliesCount; i++) {
+        //     positionArray[i * 3 + 0] = (Math.random() - 0.5) * 7
+        //     positionArray[i * 3 + 1] = Math.random() * 5.5
+        //     positionArray[i * 3 + 2] = (Math.random() - 0.5) * 7
+        //     scaleArray[i] = Math.random()
+        // }
+
+        // firefliesGeometry.setAttribute('position', new THREE.BufferAttribute(positionArray, 3))
+        // firefliesGeometry.setAttribute('aScale', new THREE.BufferAttribute(scaleArray, 1))
+        // this.firefliesMaterial = new THREE.RawShaderMaterial({
+        //     vertexShader: `
+        //         uniform mat4 projectionMatrix;
+        //         uniform mat4 viewMatrix;
+        //         uniform mat4 modelMatrix;
+        //         uniform float uTime;
+        //         uniform float uPixelRatio;
+
+
+        //         attribute float aScale;
+        //         attribute vec2 uv;
+        //         varying vec2 vUv;
+
+        //         attribute vec3 position;
+
+        //         void main(){
+        //             vec4 modelPosition = modelMatrix * vec4(position, 1.0);
+        //             modelPosition.y += sin(uTime*2. + modelPosition.x * 100.0) * aScale * 0.2;
+        //             vec4 viewPosition = viewMatrix * modelPosition;
+        //             vec4 projectionPosition = projectionMatrix * viewPosition;
+
+        //             gl_Position = projectionPosition;
+        //             gl_PointSize = 400. * aScale * uPixelRatio;
+        //             gl_PointSize *= (1.0 / - viewPosition.z);
+        //         }
+        //     `,
+        //     fragmentShader: `
+        //         precision mediump float;
+        //         uniform sampler2D uTexture;
+
+        //         varying vec2 vUv;               
+
+        //         void main(){
+        //             float distanceToCenter = distance(gl_PointCoord, vec2(0.5));
+        //             float strength = 0.05 / distanceToCenter - 0.1;
+
+        //             gl_FragColor = vec4(1.0, 1.0, 1.0, strength);
+        //         }
+        //     `,
+        //     uniforms: {
+        //         uTime: { value: 0 },
+        //         uPixelRatio: { value: Math.min(window.devicePixelRatio, 2) }
+        //     },
+        //     transparent: true,
+        //     blending: THREE.AdditiveBlending,
+        //     depthWrite: false
+
+        // })
+        // this.fireflies = new THREE.Points(firefliesGeometry, this.firefliesMaterial)
+        // this.scene.add(this.fireflies)
+
+
+        // this.pointer2 = new THREE.Group();
+        // const simpleShadow2 = this.textureLoader.load('./assets/glTF100/simpleShadow4.jpeg')
+        // this.recall1 = new THREE.Mesh(
+        //     new THREE.PlaneGeometry(8, 8),
+        //     new THREE.MeshBasicMaterial({
+        //         color: 0x55ff55,
+        //         transparent: true,
+        //         opacity: 0.9,
+        //         alphaMap: simpleShadow2
+        //     })
+        // )
+        // this.recall1.rotation.x = - Math.PI * 0.5
+
+
+        // this.pointer2.add(this.recall1);
+        // const geometry3 = new THREE.CylinderGeometry(3, 3, 10, 32, 1);
+        // const material3 = new THREE.MeshBasicMaterial({ color: 0x55ff55, transparent: true, opacity: .1 });
+        // //const textureLoader = new THREE.TextureLoader()
+        // //const matcapTexture = textureLoader.load('./assets/textures/matcaps/13.png')
+
+        // //const material3 = new THREE.MeshMatcapMaterial({ transparent: true, opacity: 0.5 })
+        // //material3.matcap = matcapTexture
+        // this.recall2 = new THREE.Mesh(geometry3, material3);
+        // //recall2.rotation.x = Math.PI / 2
+        // //0.01:0.2
+        // //1:5
+        // this.recall2.scale.set(1.2, .05, 1.2)
+        // this.recall2.position.y = 0.2
+        // this.pointer2.add(this.recall2);
+        // this.pointer2.scale.set(0.8, 0.8, 0.8)
+        // this.scene.add(this.pointer2)
 
 
         // for (let i = 0; i < 100; i++) {
@@ -542,6 +661,41 @@ class App {
         )
 
     }
+    loadPointer2() {
+        let self = this;
+        const gltfLoader = new GLTFLoader(this.loadingManager)
+        gltfLoader.load(
+            './assets/glTF300/enter.glb',
+            (gltf) => {
+                self.pointer2 = gltf.scene;
+                console.log(gltf)
+                self.pointer2.scale.set(1.8, 1.8, 1.8)
+
+                self.scene.add(gltf.scene)
+                gltf.scene.traverse(function (child) {
+                    if (child.isMesh) {
+                        //child.material.color = new THREE.Color(0xff3322);
+                        // child.material.transparent = true;
+                        // child.material.opacity = 0.65
+
+
+                    }
+                })
+
+            },
+            (x) => {
+            },
+            // called when loading has errors
+            (error) => {
+
+                console.log('An error happened');
+                console.log(error);
+
+            }
+        )
+
+    }
+
     loadEnvironment() {
         let self = this;
         const gltfLoader = new GLTFLoader(this.loadingManager)
@@ -938,6 +1092,7 @@ class App {
         this.camera.updateProjectionMatrix();
         this.renderer.setSize(window.innerWidth, window.innerHeight);
         this.renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2))
+        // firefliesMaterial.uniforms.uPixelRatio.value = Math.min(window.devicePixelRatio, 2)
 
     }
     shoot() {
@@ -1022,7 +1177,15 @@ class App {
         if (this.flagmaterial) {
             this.flagmaterial.uniforms.uTime.value = elapsedTime;
         }
+        if (this.firefliesMaterial) {
+            this.firefliesMaterial.uniforms.uTime.value = elapsedTime
+        }
         if (this.load_ready_sw) {
+
+
+
+
+
             this.sphereShadow.position.x = this.fox.position.x
             this.sphereShadow.position.z = this.fox.position.z
             this.sphereShadow.position.y = 0.2;
@@ -1138,26 +1301,34 @@ class App {
                 if (this.fox.position.distanceTo(pointer_position) < min) {
                     min = this.fox.position.distanceTo(pointer_position);
                     this.pointer.position.copy(pointer_position);
+                    this.pointer2.position.copy(pointer_position);
+                    this.pointer2.position.y += 4;
+
+
                     min_index = i;
                 }
 
             }
-            testObject.push(this.directionToUpdate[min_index].mesh)
+
+
+
+            // testObject.push(this.directionToUpdate[min_index].mesh)
+
+            // 
+            // raycaster.setFromCamera(this.mouse, this.camera)
+            // let intersects = raycaster.intersectObjects(testObject)
+            // if (intersects.length) {
+            //     //document.body.style.cursor = "pointer";
+            //     this.directionToUpdate[min_index].ray_sw = true;
+
+            // }
+
+            // else {
+            //     this.directionToUpdate[min_index].ray_sw = false;
+            //     //document.body.style.cursor = "default";
+            // }
 
             const raycaster = new THREE.Raycaster()
-            raycaster.setFromCamera(this.mouse, this.camera)
-            let intersects = raycaster.intersectObjects(testObject)
-            if (intersects.length) {
-                //document.body.style.cursor = "pointer";
-                this.directionToUpdate[min_index].ray_sw = true;
-            }
-
-            else {
-                this.directionToUpdate[min_index].ray_sw = false;
-                //document.body.style.cursor = "default";
-            }
-
-
             let pos = new THREE.Vector3();
             let rayDirection = new THREE.Vector3();
             this.fox.getWorldPosition(pos);
@@ -1177,6 +1348,21 @@ class App {
 
                 }
             }
+
+            if (this.fox.position.distanceTo(this.pointer.position) < 30.6) {
+
+                this.pointer2.visible = true;
+                this.pointer.visible = false;
+                this.directionToUpdate[min_index].ray_sw = true;
+            }
+            else {
+                //this.pointer.position.y = this.pointer2.position.y;
+                this.pointer.visible = true;
+                this.pointer2.visible = false;
+                this.directionToUpdate[min_index].ray_sw = false;
+            }
+
+
 
 
 
@@ -1261,7 +1447,8 @@ class App {
 
             this.pointer.position.y += Math.sin(elapsedTime * 4)
             this.pointer.rotation.y = elapsedTime * 2
-
+            this.pointer2.position.y += Math.sin(elapsedTime * 4)
+            this.pointer2.rotation.y = elapsedTime * 2
         }
         if (this.move_sw) {
 
