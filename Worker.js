@@ -12,10 +12,9 @@ world.gravity.set(0, -982, 0)
 
 const defaultContactMaterial = new CANNON.ContactMaterial(
     defaultMaterial,
-
     {
         friction: .1,
-        restitution: .85
+        restitution: 1
     }
 )
 world.defaultContactMaterial = defaultContactMaterial
@@ -23,7 +22,7 @@ world.defaultContactMaterial = defaultContactMaterial
 const ball_floor = new CANNON.ContactMaterial(
     defaultMaterial,
 
-    { friction: .1, restitution: 0.1 }
+    { friction: .1, restitution: 0.7 }
 );
 
 // const ball_wall = new CANNON.ContactMaterial(
@@ -31,9 +30,9 @@ const ball_floor = new CANNON.ContactMaterial(
 //     Table.wallContactMaterial,
 //     { friction: 0.5, restitution: 0.9 }
 // );
-const foxShape = new CANNON.Box(new CANNON.Vec3(0.9, 1.2, 2.4))
+const foxShape = new CANNON.Box(new CANNON.Vec3(0.9, 2, 2.4))
 const foxBody = new CANNON.Body({
-    mass: 100,
+    mass: 10000,
     position: new CANNON.Vec3(0, 0, 0),
     shape: foxShape,
     material: defaultMaterial
@@ -89,11 +88,11 @@ self.addEventListener('message', function (e) {
         let dum = e.data.dum;
 
         bull_body.velocity.set(
-            dum.x * 100,
-            ((Math.sin(mouse.y + 0.15) * Math.abs(dum.z)) + (Math.sin(mouse.y + 0.15) * Math.abs(dum.x))) * 50,
+            dum.x * 110,
+            ((Math.sin(mouse.y + 0.15) * Math.abs(dum.z)) + (Math.sin(mouse.y + 0.15) * Math.abs(dum.x))) * 55,
             //((Math.sin((e.data.shoot_point - 7)) * Math.abs(dum.z)) + (Math.sin((e.data.shoot_point - 7)) * Math.abs(dum.x))) * 100,
             //dir.y - 5,
-            dum.z * 100);
+            dum.z * 110);
 
         bull_body.position.y += 5;
         world.addBody(bull_body)
@@ -160,22 +159,27 @@ self.addEventListener('message', function (e) {
         objects_quaternionToUpdate.push(body.quaternion)
     }
     else if (e.data.type === 'static_object') {
-        let shape = new CANNON.Box(new CANNON.Vec3(e.data.sizex / 2, e.data.sizey / 2, e.data.sizez / 2))
+        let shape = new CANNON.Box(new CANNON.Vec3(e.data.sizex / 1.9, e.data.sizey / 1.9, e.data.sizez / 1.9))
         let body = new CANNON.Body({
             mass: 0,
             shape: shape,
-            material: defaultMaterial,
-            angularDamping: .4
+            material: defaultMaterial
         })
+
         body.position.set(e.data.positionx, e.data.positiony, e.data.positionz);
+        if (e.data.quaternionx)
+            body.quaternion.setFromAxisAngle(new CANNON.Vec3(1, 0, 0), e.data.quaternionx);
+        if (e.data.quaterniony)
+            body.quaternion.setFromAxisAngle(new CANNON.Vec3(0, 1, 0), e.data.quaterniony);
+        if (e.data.quaternionz)
+            body.quaternion.setFromAxisAngle(new CANNON.Vec3(0, 0, 1), e.data.quaternionz);
         world.addBody(body)
-        objects_positionToUpdate.push(body.position)
-        objects_quaternionToUpdate.push(body.quaternion)
+
     }
     else if (e.data.type === 'road') {
         let shape = new CANNON.Box(new CANNON.Vec3(e.data.sizex / 2, e.data.sizey / 2, e.data.sizez / 2))
         let body = new CANNON.Body({
-            mass: 50,
+            mass: 500,
             shape: shape,
             material: defaultMaterial,
             angularDamping: .4

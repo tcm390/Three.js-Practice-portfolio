@@ -118,6 +118,7 @@ class App {
         this.objectsToUpdate = [];
         this.bulletToUpdate = [];
         this.directionToUpdate = [];
+        this.shadowToUpdate = [];
 
 
         this.loadingBar = new LoadingBar();
@@ -186,6 +187,8 @@ class App {
 
 
 
+        this.worker = new Worker('Worker.js', { type: 'module' })
+
 
         this.loadPointer();
         this.loadPointer2();
@@ -199,7 +202,7 @@ class App {
 
 
 
-        this.worker = new Worker('Worker.js', { type: 'module' })
+
 
 
 
@@ -417,14 +420,16 @@ class App {
         // floorBody.quaternion.setFromAxisAngle(new CANNON.Vec3(- 1, 0, 0), Math.PI * 0.5)
         // this.world.addBody(floorBody)
 
-        //######## shadow ############
+        //######## fox shadow ############
         const simpleShadow = this.textureLoader.load('./assets/glTF100/simpleShadow3.jpeg')
         this.sphereShadow = new THREE.Mesh(
-            new THREE.PlaneGeometry(2, 5),
+            new THREE.PlaneGeometry(1.8, 4),
             new THREE.MeshBasicMaterial({
                 color: 0x000000,
                 transparent: true,
-                alphaMap: simpleShadow
+                alphaMap: simpleShadow,
+                depthWrite: false,
+                depthTest: true
             })
         )
         this.sphereShadow.rotation.x = - Math.PI * 0.5
@@ -432,8 +437,8 @@ class App {
         this.scene.add(this.sphereShadow);
 
         //######## set entrance for project ###############
-        const geometry = new THREE.BoxBufferGeometry(13, 13, 13);
-        const material = new THREE.MeshStandardMaterial({ color: 0xFF0000, transparent: true, opacity: 0 });
+        let geometry = new THREE.BoxBufferGeometry(13, 13, 13);
+        let material = new THREE.MeshStandardMaterial({ color: 0xFF0000, transparent: true, opacity: 0 });
         this.rubberEntrance = new THREE.Mesh(geometry, material);
         this.rubberEntrance.position.set(133, 1, 11);
         this.scene.add(this.rubberEntrance);
@@ -460,6 +465,392 @@ class App {
         this.target.add(cube3);
         this.target.add(cube4);
         this.scene.add(this.target);
+
+        geometry = new THREE.BoxBufferGeometry(0.5, 20, 0.5);
+        material = new THREE.MeshStandardMaterial({ color: 0xFF0000 });
+        let test = new THREE.Mesh(geometry, material);
+        let data;
+
+
+
+        //######### arc ###########
+        // geometry = new THREE.BoxBufferGeometry(13, 60, 17);
+        // material = new THREE.MeshStandardMaterial({ color: 0xFF0000 });
+        // test = new THREE.Mesh(geometry, material);
+        // test.position.set(-12.5, 1, 114.3);
+        // this.scene.add(test);
+
+        data = {
+            type: 'static_object',
+            sizex: 13,
+            sizey: 60,
+            sizez: 17,
+            positionx: -12.5,
+            positiony: 1,
+            positionz: 114.3,
+        }
+        this.worker.postMessage(data)
+
+        // geometry = new THREE.BoxBufferGeometry(13, 60, 17);
+        // material = new THREE.MeshStandardMaterial({ color: 0xFF0000 });
+        // test = new THREE.Mesh(geometry, material);
+        // test.position.set(12.3, 1, 114.3);
+        // this.scene.add(test);
+
+        data = {
+            type: 'static_object',
+            sizex: 13,
+            sizey: 60,
+            sizez: 17,
+            positionx: 12.3,
+            positiony: 1,
+            positionz: 114.3,
+        }
+        this.worker.postMessage(data)
+
+        // geometry = new THREE.BoxBufferGeometry(38, 17, 17);
+        // material = new THREE.MeshStandardMaterial({ color: 0xFF0000 });
+        // test = new THREE.Mesh(geometry, material);
+        // test.position.set(0, 33, 114.3);
+        // this.scene.add(test);
+
+        data = {
+            type: 'static_object',
+            sizex: 38,
+            sizey: 17,
+            sizez: 17,
+            positionx: 0,
+            positiony: 34,
+            positionz: 114.3,
+        }
+        this.worker.postMessage(data)
+
+        //######### park light ########
+        // geometry = new THREE.BoxBufferGeometry(0.5, 20, 0.5);
+        // material = new THREE.MeshStandardMaterial({ color: 0xFF0000 });
+        // test = new THREE.Mesh(geometry, material);
+        // test.position.set(-47.2, 1, 48.8);
+        // this.scene.add(test);
+
+        data = {
+            type: 'static_object',
+            sizex: 0.5,
+            sizey: 20,
+            sizez: 0.5,
+            positionx: -47.2,
+            positiony: 1,
+            positionz: 48.8,
+        }
+        this.worker.postMessage(data)
+
+        // geometry = new THREE.BoxBufferGeometry(1.5, 2.6, 1.5);
+        // test = new THREE.Mesh(geometry, material);
+        // test.position.set(-47.2, 11, 48.8);
+        // this.scene.add(test);
+        data = {
+            type: 'static_object',
+            sizex: 1.5,
+            sizey: 2.6,
+            sizez: 1.5,
+            positionx: -47.2,
+            positiony: 11,
+            positionz: 48.8,
+        }
+        this.worker.postMessage(data)
+
+
+        // geometry = new THREE.BoxBufferGeometry(0.5, 20, 0.5);
+        // test = new THREE.Mesh(geometry, material);
+        // test.position.set(24.5, 1, 61.5);
+        // this.scene.add(test);
+
+        data = {
+            type: 'static_object',
+            sizex: 0.5,
+            sizey: 20,
+            sizez: 0.5,
+            positionx: 24.5,
+            positiony: 1,
+            positionz: 61.5,
+        }
+        this.worker.postMessage(data)
+
+        // geometry = new THREE.BoxBufferGeometry(1.5, 2.6, 1.5);
+        // test = new THREE.Mesh(geometry, material);
+        // test.position.set(24.5, 11, 61.5);
+        // this.scene.add(test);
+
+        data = {
+            type: 'static_object',
+            sizex: 1.5,
+            sizey: 2.6,
+            sizez: 1.5,
+            positionx: 24.5,
+            positiony: 11,
+            positionz: 61.5,
+        }
+        this.worker.postMessage(data)
+
+        // geometry = new THREE.BoxBufferGeometry(0.5, 20, 0.5);
+        // test = new THREE.Mesh(geometry, material);
+        // test.position.set(34.1, 1, 81.5);
+        // this.scene.add(test);
+
+        data = {
+            type: 'static_object',
+            sizex: 0.5,
+            sizey: 20,
+            sizez: 0.5,
+            positionx: 34.1,
+            positiony: 1,
+            positionz: 81.5,
+        }
+        this.worker.postMessage(data)
+
+        // geometry = new THREE.BoxBufferGeometry(1.5, 2.6, 1.5);
+        // test = new THREE.Mesh(geometry, material);
+        // test.position.set(34.1, 11, 81.5);
+        // this.scene.add(test);
+
+        data = {
+            type: 'static_object',
+            sizex: 1.5,
+            sizey: 2.6,
+            sizez: 1.5,
+            positionx: 34.1,
+            positiony: 11,
+            positionz: 81.5,
+        }
+        this.worker.postMessage(data)
+
+
+        //######### sign #########
+
+
+        // test.rotation.x = 0.1
+        // test.position.set(-8.5, 1, 30);
+        // this.scene.add(test);
+
+        data = {
+            type: 'static_object',
+            sizex: 1,
+            sizey: 55,
+            sizez: 1,
+            positionx: -8.5,
+            positiony: 1,
+            positionz: 30,
+            quaternionx: 0.1
+        }
+        this.worker.postMessage(data)
+
+        // geometry = new THREE.BoxBufferGeometry(11, 3, 1.5);
+        // test = new THREE.Mesh(geometry, material);
+        // test.position.set(-7.4, 16, 30);
+        // this.scene.add(test);
+
+        data = {
+            type: 'static_object',
+            sizex: 11,
+            sizey: 3,
+            sizez: 1.5,
+            positionx: -7.4,
+            positiony: 16,
+            positionz: 30
+        }
+        this.worker.postMessage(data)
+
+        // geometry = new THREE.BoxBufferGeometry(15, 3, 2);
+        // test = new THREE.Mesh(geometry, material);
+        // test.position.set(-12.5, 21, 32);
+        // this.scene.add(test);
+
+        data = {
+            type: 'static_object',
+            sizex: 15,
+            sizey: 3,
+            sizez: 2,
+            positionx: -12.5,
+            positiony: 21,
+            positionz: 32
+        }
+        this.worker.postMessage(data)
+
+
+        //########### chair ###########
+        // geometry = new THREE.BoxBufferGeometry(2, 1.8, 6.7);
+        // test = new THREE.Mesh(geometry, material);
+        // test.position.set(-42.7, 0.7, 42.7);
+        // test.rotation.y = -0.55
+        // this.scene.add(test);
+        data = {
+            type: 'static_object',
+            sizex: 2,
+            sizey: 1.8,
+            sizez: 6.7,
+            positionx: -42.7,
+            positiony: 0.7,
+            positionz: 42.7,
+            quaterniony: -0.55
+        }
+        this.worker.postMessage(data)
+
+        // geometry = new THREE.BoxBufferGeometry(2, 1.8, 6.7);
+        // test = new THREE.Mesh(geometry, material);
+        // test.scale.set(0.3, 1, 1)
+        // test.position.set(-43.9, 3, 41.5);
+        // test.rotation.y = -0.55
+        // this.scene.add(test);
+        data = {
+            type: 'static_object',
+            sizex: 0.6,
+            sizey: 1.8,
+            sizez: 6.7,
+            positionx: -43.9,
+            positiony: 3,
+            positionz: 41.5,
+            quaterniony: -0.55
+        }
+        this.worker.postMessage(data)
+
+        // geometry = new THREE.BoxBufferGeometry(2, 1.8, 6.7);
+        // test = new THREE.Mesh(geometry, material);
+        // test.position.set(24.7, 0.7, 55.5);
+        // this.scene.add(test);
+
+        data = {
+            type: 'static_object',
+            sizex: 2,
+            sizey: 1.8,
+            sizez: 6.7,
+            positionx: 24.7,
+            positiony: 0.7,
+            positionz: 55.5,
+
+        }
+        this.worker.postMessage(data)
+
+        // geometry = new THREE.BoxBufferGeometry(2, 1.8, 6.7);
+        // test = new THREE.Mesh(geometry, material);
+        // test.scale.set(0.3, 1, 1)
+        // test.position.set(23.5, 3, 55.5);
+        // this.scene.add(test);
+
+        data = {
+            type: 'static_object',
+            sizex: 0.6,
+            sizey: 1.8,
+            sizez: 6.7,
+            positionx: 23.5,
+            positiony: 3,
+            positionz: 55.5,
+
+        }
+        this.worker.postMessage(data)
+
+        // geometry = new THREE.BoxBufferGeometry(2, 1.8, 6.7);
+        // test = new THREE.Mesh(geometry, material);
+        // test.position.set(33.5, 0.7, 55.5);
+        // this.scene.add(test);
+
+        data = {
+            type: 'static_object',
+            sizex: 2,
+            sizey: 1.8,
+            sizez: 6.7,
+            positionx: 33.5,
+            positiony: 0.7,
+            positionz: 55.5,
+
+        }
+        this.worker.postMessage(data)
+
+        // geometry = new THREE.BoxBufferGeometry(2, 1.8, 6.7);
+        // test = new THREE.Mesh(geometry, material);
+        // test.scale.set(0.3, 1, 1)
+        // test.position.set(34.7, 3, 55.5);
+        // this.scene.add(test);
+
+        data = {
+            type: 'static_object',
+            sizex: 0.6,
+            sizey: 1.8,
+            sizez: 6.7,
+            positionx: 34.7,
+            positiony: 3,
+            positionz: 55.5,
+
+        }
+        this.worker.postMessage(data)
+
+        // geometry = new THREE.BoxBufferGeometry(2, 1.8, 6.7);
+        // test = new THREE.Mesh(geometry, material);
+        // test.position.set(24.7, 0.7, 88);
+        // this.scene.add(test);
+
+        data = {
+            type: 'static_object',
+            sizex: 2,
+            sizey: 1.8,
+            sizez: 6.7,
+            positionx: 24.7,
+            positiony: 0.7,
+            positionz: 88,
+
+        }
+        this.worker.postMessage(data)
+
+        // geometry = new THREE.BoxBufferGeometry(2, 1.8, 6.7);
+        // test = new THREE.Mesh(geometry, material);
+        // test.scale.set(0.3, 1, 1)
+        // test.position.set(23.5, 3, 88);
+        // this.scene.add(test);
+
+        data = {
+            type: 'static_object',
+            sizex: 0.6,
+            sizey: 1.8,
+            sizez: 6.7,
+            positionx: 23.5,
+            positiony: 3,
+            positionz: 88,
+
+        }
+        this.worker.postMessage(data)
+
+        // geometry = new THREE.BoxBufferGeometry(2, 1.8, 6.7);
+        // test = new THREE.Mesh(geometry, material);
+        // test.position.set(33.5, 0.7, 88);
+        // this.scene.add(test);
+        data = {
+            type: 'static_object',
+            sizex: 2,
+            sizey: 1.8,
+            sizez: 6.7,
+            positionx: 33.5,
+            positiony: 0.7,
+            positionz: 88,
+
+        }
+        this.worker.postMessage(data)
+
+        // geometry = new THREE.BoxBufferGeometry(2, 1.8, 6.7);
+        // test = new THREE.Mesh(geometry, material);
+        // test.scale.set(0.3, 1, 1)
+        // test.position.set(34.7, 3, 88);
+        // this.scene.add(test);
+        data = {
+            type: 'static_object',
+            sizex: 0.6,
+            sizey: 1.8,
+            sizez: 6.7,
+            positionx: 34.7,
+            positiony: 3,
+            positionz: 88,
+
+        }
+        this.worker.postMessage(data)
+
+
 
         //###### 
         // const firefliesGeometry = new THREE.BufferGeometry()
@@ -731,12 +1122,18 @@ class App {
                             ray_sw: false
                         });
                     }
-
+                    // if (child.name.substring(0, 4) === 'Cube') {
+                    //     const materiall = new THREE.MeshStandardMaterial({ color: 0xFF0000 });
+                    //     const box = new THREE.Box3().setFromObject(child);
+                    //     const geometry = new THREE.BoxBufferGeometry(box.min.x / 2.5, box.getSize().y * 10, box.min.z / 2.5);
+                    //     let test = new THREE.Mesh(geometry, materiall);
+                    //     test.position.set(child.position.x * 10 + 10, child.position.y, child.position.z * 10 + 10);
+                    //     self.scene.add(test);
+                    // }
 
 
 
                     if (child.name.substring(0, 5) === 'trash'
-                        || child.name === 'barrier'
                         || child.name.substring(0, 4) === 'desk'
                         || child.name.substring(0, 5) === 'skill'
                         || child.name.substring(0, 6) === 'dumble'
@@ -748,8 +1145,8 @@ class App {
 
                     ) {
 
-                        //this.objectsToUpdate.
-                        self.trashcan = child;
+
+
 
                         //wconst size = new THREE.Vector3()
                         const box = new THREE.Box3().setFromObject(child);
@@ -779,7 +1176,28 @@ class App {
                         // body.position.set(child.position.x * 10 + 10, child.position.y * 10, child.position.z * 10 + 10);
                         // self.world.addBody(body)
 
+
                         self.objectsToUpdate.push(child);
+
+                        const simpleShadow = self.textureLoader.load('./assets/glTF100/simpleShadow.jpg')
+                        const sphereShadow = new THREE.Mesh(
+                            new THREE.PlaneGeometry(box.getSize().x * 10, box.getSize().z * 10),
+                            new THREE.MeshBasicMaterial({
+                                color: 0x000000,
+                                transparent: true,
+                                alphaMap: simpleShadow,
+                                // opacity: 0.1,
+                                depthWrite: false,
+                                depthTest: true
+                            })
+                        )
+                        sphereShadow.rotation.x = - Math.PI * 0.5
+                        self.shadowToUpdate.push({
+                            mesh: child,
+                            shadow: sphereShadow
+                        });
+
+                        self.scene.add(sphereShadow);
                     }
                     else if (child.name.substring(0, 8) === 'poolwall') {
                         const box = new THREE.Box3().setFromObject(child);
@@ -793,14 +1211,36 @@ class App {
                         const data = {
                             type: 'static_object',
                             sizex: box.getSize().x * 10,
-                            sizey: box.getSize().y * 200,
+                            sizey: box.getSize().y * 80,
                             sizez: box.getSize().z * 10,
                             positionx: child.position.x * 10 + 10,
                             positiony: child.position.y * 10,
                             positionz: child.position.z * 10 + 10
                         }
                         self.worker.postMessage(data)
-                        self.objectsToUpdate.push(child);
+
+                    }
+                    else if (child.name === 'barrier') {
+                        const box = new THREE.Box3().setFromObject(child);
+                        //console.log(box.min, box.max, box.getSize(size));
+
+                        // const geometry = new THREE.BoxGeometry(box.getSize().x * 10, box.getSize().y * 10, box.getSize().z * 10);
+                        // const material1 = new THREE.MeshStandardMaterial({ color: 0xFF0000 });
+                        // const cubeMesh = new THREE.Mesh(geometry, material1);
+                        // cubeMesh.position.set(child.position.x * 10 + 10, child.position.y * 10, child.position.z * 10 + 10);
+                        // self.scene.add(cubeMesh);
+                        const data = {
+                            type: 'static_object',
+                            sizex: box.getSize().x * 10,
+                            sizey: box.getSize().y * 10,
+                            sizez: box.getSize().z * 10,
+                            positionx: child.position.x * 10 + 10,
+                            positiony: child.position.y * 10,
+                            positionz: child.position.z * 10 + 10
+                        }
+                        self.worker.postMessage(data)
+
+
                     }
 
                     else if (child.name.substring(0, 4) === 'Road') {
@@ -825,6 +1265,25 @@ class App {
                         }
                         self.worker.postMessage(data)
                         self.objectsToUpdate.push(child);
+                        const simpleShadow = self.textureLoader.load('./assets/glTF100/simpleShadow.jpg')
+                        const sphereShadow = new THREE.Mesh(
+                            new THREE.PlaneGeometry(box.getSize().x * 10, box.getSize().z * 10),
+                            new THREE.MeshBasicMaterial({
+                                color: 0x000000,
+                                transparent: true,
+                                alphaMap: simpleShadow,
+                                // opacity: 0.1,
+                                depthWrite: false,
+                                depthTest: true
+                            })
+                        )
+                        sphereShadow.rotation.x = - Math.PI * 0.5
+                        self.shadowToUpdate.push({
+                            mesh: child,
+                            shadow: sphereShadow
+                        });
+
+                        self.scene.add(sphereShadow);
                     }
 
                     else if (child.name.substring(0, 8) === 'poolball') {
@@ -844,6 +1303,25 @@ class App {
                         }
                         self.worker.postMessage(data)
                         self.objectsToUpdate.push(child);
+                        const simpleShadow = self.textureLoader.load('./assets/glTF100/simpleShadow.jpg')
+                        const sphereShadow = new THREE.Mesh(
+                            new THREE.PlaneGeometry(box.getSize().x * 13, box.getSize().z * 13),
+                            new THREE.MeshBasicMaterial({
+                                color: 0x000000,
+                                transparent: true,
+                                alphaMap: simpleShadow,
+                                // opacity: 0.1,
+                                depthWrite: false,
+                                depthTest: true
+                            })
+                        )
+                        sphereShadow.rotation.x = - Math.PI * 0.5
+                        self.shadowToUpdate.push({
+                            mesh: child,
+                            shadow: sphereShadow
+                        });
+
+                        self.scene.add(sphereShadow);
                     }
 
                     if (child.isMesh && child.name === 'Plane001') {
@@ -1218,7 +1696,7 @@ class App {
             this.worker.onmessage = (e) => {
                 if (e.data.type === 'getfox') {
                     this.fox.position.copy(e.data.pos)
-                    this.fox.position.y -= 1;
+                    this.fox.position.y -= 1.5;
                 }
                 if (e.data.type === 'getbullet') {
                     bulletToUpdate2 = e.data.bulletToUpdate;
@@ -1251,6 +1729,7 @@ class App {
                         if (this.objectsToUpdate[i].name.substring(0, 4) === 'Road') {
                             this.objectsToUpdate[i].position.y -= .2
                         }
+
                         if (this.objectsToUpdate[i].name.substring(0, 6) === 'dumble') {
                             // this.objectsToUpdate[i].rotation.z += Math.PI / 2
                             // this.objectsToUpdate[i].rotation.x += Math.PI / 2
@@ -1263,6 +1742,14 @@ class App {
 
                 }
 
+            }
+            for (let i = 0; i < this.shadowToUpdate.length; i++) {
+                this.shadowToUpdate[i].shadow.position.x = (this.shadowToUpdate[i].mesh.position.x) * 10 + 10
+                this.shadowToUpdate[i].shadow.position.z = (this.shadowToUpdate[i].mesh.position.z) * 10 + 10
+                this.shadowToUpdate[i].shadow.position.y = 0.2
+                this.shadowToUpdate[i].shadow.material.opacity = (1 - this.shadowToUpdate[i].mesh.position.y / 5) * 0.07
+                this.shadowToUpdate[i].shadow.scale.set((this.shadowToUpdate[i].mesh.position.y + .8) * 1, (this.shadowToUpdate[i].mesh.position.y + .8) * 1, (this.shadowToUpdate[i].mesh.position.y + .8) * 1)
+                //this.shadowToUpdate[i].shadow.quaternion.y = (this.shadowToUpdate[i].mesh.quaternion.y)
             }
 
             // for (let i = 0; i < this.objectsToUpdate.length; i++) {
