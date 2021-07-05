@@ -565,9 +565,9 @@ class App {
 
         data = {
             type: 'static_object',
-            sizex: 0.5,
+            sizex: 1,
             sizey: 20,
-            sizez: 0.5,
+            sizez: 1,
             positionx: -47.2,
             positiony: 1,
             positionz: 48.8,
@@ -597,9 +597,9 @@ class App {
 
         data = {
             type: 'static_object',
-            sizex: 0.5,
+            sizex: 1,
             sizey: 20,
-            sizez: 0.5,
+            sizez: 1,
             positionx: 24.5,
             positiony: 1,
             positionz: 61.5,
@@ -629,9 +629,9 @@ class App {
 
         data = {
             type: 'static_object',
-            sizex: 0.5,
+            sizex: 1,
             sizey: 20,
-            sizez: 0.5,
+            sizez: 1,
             positionx: 34.1,
             positiony: 1,
             positionz: 81.5,
@@ -664,9 +664,9 @@ class App {
 
         data = {
             type: 'static_object',
-            sizex: 1,
+            sizex: 2,
             sizey: 55,
-            sizez: 1,
+            sizez: 2,
             positionx: -8.5,
             positiony: 1,
             positionz: 30,

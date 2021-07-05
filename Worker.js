@@ -160,7 +160,7 @@ self.addEventListener('message', function (e) {
         objects_quaternionToUpdate.push(body.quaternion)
     }
     else if (e.data.type === 'static_object') {
-        let shape = new CANNON.Box(new CANNON.Vec3(e.data.sizex / 1.9, e.data.sizey / 1.9, e.data.sizez / 1.9))
+        let shape = new CANNON.Box(new CANNON.Vec3(e.data.sizex / 2, e.data.sizey / 2, e.data.sizez / 2))
         let body = new CANNON.Body({
             mass: 0,
             shape: shape,
