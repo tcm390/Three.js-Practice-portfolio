@@ -89,10 +89,11 @@ self.addEventListener('message', function (e) {
 
         bull_body.velocity.set(
             dum.x * 110,
-            ((Math.sin(mouse.y + 0.15) * Math.abs(dum.z)) + (Math.sin(mouse.y + 0.15) * Math.abs(dum.x))) * 55,
+            ((Math.sin(e.data.shoot_point + 0.15) * Math.abs(dum.z)) + (Math.sin(e.data.shoot_point + 0.15) * Math.abs(dum.x))) * 55,
             //((Math.sin((e.data.shoot_point - 7)) * Math.abs(dum.z)) + (Math.sin((e.data.shoot_point - 7)) * Math.abs(dum.x))) * 100,
-            //dir.y - 5,
+            //e.data.shoot_point.y - 5,
             dum.z * 110);
+
 
         bull_body.position.y += 5;
         world.addBody(bull_body)

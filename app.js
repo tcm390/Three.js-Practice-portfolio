@@ -38,22 +38,26 @@ class App {
             //this.world.gravity.set(0, -9.82, 0);
             this.worker.postMessage('ready')
             //console.log(this.renderer.info.render.calls);
-            document.body.style.cursor = "none";
+            //document.body.style.cursor = "none";
+            this.stop_everything = false;
         });
         btnCloseModal2.addEventListener('click', () => {
             this.education.classList.add('hidden');
             this.overlay.classList.add('hidden');
-            document.body.style.cursor = "none";
+            //document.body.style.cursor = "none";
+            this.stop_everything = false;
         });
         btnCloseModal3.addEventListener('click', () => {
             this.hadoop.classList.add('hidden');
             this.overlay.classList.add('hidden');
-            document.body.style.cursor = "none";
+            //document.body.style.cursor = "none";
+            this.stop_everything = false;
         });
         btnCloseModal4.addEventListener('click', () => {
             this.rubber_toy.classList.add('hidden');
             this.overlay.classList.add('hidden');
-            document.body.style.cursor = "none";
+            //document.body.style.cursor = "none";
+            this.stop_everything = false;
         });
         //######### LoadingManager ###########
         this.loadingManager = new THREE.LoadingManager()
@@ -113,7 +117,7 @@ class App {
         this.back_sw = 0;
         this.shoot_sw = 0;
 
-
+        this.stop_everything = false;
 
         this.objectsToUpdate = [];
         this.bulletToUpdate = [];
@@ -128,6 +132,7 @@ class App {
         this.shoot_point = 5;
 
         this.mouse_deltax = 0;
+        this.mouse_deltay = 0;
         this.mouse_previousx = 0;
 
         this.textureLoader = new THREE.TextureLoader()
@@ -207,57 +212,59 @@ class App {
 
 
         //########locker#########
-        // this.canvas = document.querySelector('div')
-        // this.canvas.requestPointerLock = this.canvas.requestPointerLock ||
-        //     this.canvas.mozRequestPointerLock;
+        this.canvas = document.querySelector('div')
+        this.canvas.requestPointerLock = this.canvas.requestPointerLock ||
+            this.canvas.mozRequestPointerLock;
 
-        // document.exitPointerLock = document.exitPointerLock ||
-        //     document.mozExitPointerLock;
-
-
-        // const self = this;
-        // document.addEventListener('pointerlockchange', lockChangeAlert, false);
-        // document.addEventListener('mozpointerlockchange', lockChangeAlert, false);
-        // function lockChangeAlert() {
-        //     if (document.pointerLockElement === this.canvas ||
-        //         document.mozPointerLockElement === this.canvas) {
-        //         //console.log('The pointer lock status is now locked');
-        //         document.addEventListener("mousemove", canvasLoop, false);
-        //         self.lock = true;
+        document.exitPointerLock = document.exitPointerLock ||
+            document.mozExitPointerLock;
 
 
-        //     } else {
-        //         //console.log('The pointer lock status is now unlocked');
-        //         document.removeEventListener("mousemove", canvasLoop, false);
-        //         self.lock = false;
+        const self = this;
+        document.addEventListener('pointerlockchange', lockChangeAlert, false);
+        document.addEventListener('mozpointerlockchange', lockChangeAlert, false);
+        function lockChangeAlert() {
+            if (document.pointerLockElement === this.canvas ||
+                document.mozPointerLockElement === this.canvas) {
+                //console.log('The pointer lock status is now locked');
+                document.addEventListener("mousemove", canvasLoop, false);
+                self.lock = true;
 
-        //     }
-        // }
-        // function canvasLoop(e) {
-        //     const movementX = e.movementX ||
-        //         e.mozMovementX ||
-        //         e.webkitMovementX ||
-        //         0;
 
-        //     const movementY = e.movementY ||
-        //         e.mozMovementY ||
-        //         e.webkitMovementY ||
-        //         0;
+            } else {
+                //console.log('The pointer lock status is now unlocked');
+                document.removeEventListener("mousemove", canvasLoop, false);
+                self.lock = false;
 
-        //     self.mouse.x = movementX;
-        //     self.mouse.y = movementY;
-        //     //console.log(self.mouse, movementX)
+            }
+        }
+        function canvasLoop(e) {
+            const movementX = e.movementX ||
+                e.mozMovementX ||
+                e.webkitMovementX ||
+                0;
 
-        //     // var animation = requestAnimationFrame(canvasLoop);
+            const movementY = e.movementY ||
+                e.mozMovementY ||
+                e.webkitMovementY ||
+                0;
 
-        //     // tracker.innerHTML = "X position: " + x + ', Y position: ' + y;
-        //     const worker_mouse = {
-        //         type: 'mouse',
-        //         mouse: self.mouse
-        //     }
-        //     self.worker.postMessage(worker_mouse);
+            self.mouse.x = movementX;
+            self.mouse.y = movementY;
 
-        // }
+
+            //console.log(self.mouse, movementX)
+
+            // var animation = requestAnimationFrame(canvasLoop);
+
+            // tracker.innerHTML = "X position: " + x + ', Y position: ' + y;
+            const worker_mouse = {
+                type: 'mouse',
+                mouse: self.mouse
+            }
+            self.worker.postMessage(worker_mouse);
+
+        }
 
 
 
@@ -272,25 +279,25 @@ class App {
         //########### Listener #########
 
 
-        window.addEventListener('mousemove', e => {
+        // window.addEventListener('mousemove', e => {
 
-            this.mouse.x = event.clientX / window.innerWidth * 2 - 1
-            this.mouse.y = - (event.clientY / window.innerHeight) * 2 + 1
+        //     this.mouse.x = event.clientX / window.innerWidth * 2 - 1
+        //     this.mouse.y = - (event.clientY / window.innerHeight) * 2 + 1
 
 
-            //this.fox.rotation.x = 0 - this.mouse.y
-            const worker_mouse = {
-                type: 'mouse',
-                mouse: this.mouse
-            }
-            this.worker.postMessage(worker_mouse);
-            this.mouse_deltax = this.mouse.x - this.mouse_previousx;
-            this.mouse_previousx = this.mouse.x;
-        });
+        //     //this.fox.rotation.x = 0 - this.mouse.y
+        //     const worker_mouse = {
+        //         type: 'mouse',
+        //         mouse: this.mouse
+        //     }
+        //     this.worker.postMessage(worker_mouse);
+        //     this.mouse_deltax = this.mouse.x - this.mouse_previousx;
+        //     this.mouse_previousx = this.mouse.x;
+        // });
 
         window.addEventListener("click", () => {
 
-            //this.canvas.requestPointerLock();
+            this.canvas.requestPointerLock();
             this.shoot_sw = 1;
 
 
@@ -331,29 +338,52 @@ class App {
                         if (this.directionToUpdate[i].mesh.name === 'directable001') {
                             this.education.classList.remove('hidden');
                             this.overlay.classList.remove('hidden');
-                            document.body.style.cursor = "default";
+                            //document.body.style.cursor = "default";
+                            document.exitPointerLock();
+                            this.stop_everything = true;
                         }
-                        else if (this.directionToUpdate[i].mesh.name === 'directable002')
+                        else if (this.directionToUpdate[i].mesh.name === 'directable002') {
                             window.open("mailto:tcm390@nyu.edu")
-                        else if (this.directionToUpdate[i].mesh.name === 'directable003')
+                            this.modal.classList.remove('hidden');
+                            this.overlay.classList.remove('hidden');
+                            this.stop_everything = true;
+                        }
+
+                        else if (this.directionToUpdate[i].mesh.name === 'directable003') {
                             window.open("https://www.linkedin.com/in/ting-chien-meng-b221521a6/")
-                        else if (this.directionToUpdate[i].mesh.name === 'directable004')
+                            this.modal.classList.remove('hidden');
+                            this.overlay.classList.remove('hidden');
+                            this.stop_everything = true;
+                        }
+
+                        else if (this.directionToUpdate[i].mesh.name === 'directable004') {
                             window.open("https://github.com/tcm390")
+                            this.modal.classList.remove('hidden');
+                            this.overlay.classList.remove('hidden');
+                            this.stop_everything = true;
+                        }
+
                         else if (this.directionToUpdate[i].mesh.name === 'directable005') {
                             this.hadoop.classList.remove('hidden');
                             this.overlay.classList.remove('hidden');
                             const a = 0;
-                            document.body.style.cursor = "default";
+                            //document.body.style.cursor = "default";
+                            document.exitPointerLock();
+                            this.stop_everything = true;
                         }
                         else if (this.directionToUpdate[i].mesh.name === 'directable006') {
                             this.hadoop.classList.remove('hidden');
                             this.overlay.classList.remove('hidden');
-                            document.body.style.cursor = "default";
+                            //document.body.style.cursor = "default";
+                            document.exitPointerLock();
+                            this.stop_everything = true;
                         }
                         else if (this.directionToUpdate[i].mesh.name === 'directable007') {
                             this.rubber_toy.classList.remove('hidden');
                             this.overlay.classList.remove('hidden');
-                            document.body.style.cursor = "default";
+                            //document.body.style.cursor = "default";
+                            document.exitPointerLock();
+                            this.stop_everything = true;
                         }
 
                     }
@@ -448,8 +478,8 @@ class App {
         this.scene.add(this.hadoopEntrance);
 
         //############# front sight #############
-        const geometry1 = new THREE.BoxBufferGeometry(.05, .3, .05);
-        const geometry2 = new THREE.BoxBufferGeometry(.3, .05, .05);
+        const geometry1 = new THREE.BoxBufferGeometry(.1, .3, .1);
+        const geometry2 = new THREE.BoxBufferGeometry(.3, .1, .1);
         const material1 = new THREE.MeshStandardMaterial({ color: 0xFFFFFF });
         const cube1 = new THREE.Mesh(geometry1, material1);
         const cube2 = new THREE.Mesh(geometry1, material1);
@@ -464,6 +494,7 @@ class App {
         this.target.add(cube2);
         this.target.add(cube3);
         this.target.add(cube4);
+        this.target.position.set(0, 5, 0);
         this.scene.add(this.target);
 
         geometry = new THREE.BoxBufferGeometry(0.5, 20, 0.5);
@@ -1199,6 +1230,46 @@ class App {
 
                         self.scene.add(sphereShadow);
                     }
+                    else if (child.name.substring(0, 6) === 'dumble') {
+
+
+
+
+
+                        const box = new THREE.Box3().setFromObject(child);
+
+                        const data = {
+                            type: 'shootable',
+                            sizex: box.getSize().x * 11,
+                            sizey: box.getSize().y * 10,
+                            sizez: box.getSize().z * 11,
+                            positionx: child.position.x * 10 + 10,
+                            positiony: child.position.y * 10,
+                            positionz: child.position.z * 10 + 10
+                        }
+                        self.worker.postMessage(data)
+                        self.objectsToUpdate.push(child);
+
+                        const simpleShadow = self.textureLoader.load('./assets/glTF100/simpleShadow.jpg')
+                        const sphereShadow = new THREE.Mesh(
+                            new THREE.PlaneGeometry(box.getSize().x * 10, box.getSize().z * 10),
+                            new THREE.MeshBasicMaterial({
+                                color: 0x000000,
+                                transparent: true,
+                                alphaMap: simpleShadow,
+                                // opacity: 0.1,
+                                depthWrite: false,
+                                depthTest: true
+                            })
+                        )
+                        sphereShadow.rotation.x = - Math.PI * 0.5
+                        self.shadowToUpdate.push({
+                            mesh: child,
+                            shadow: sphereShadow
+                        });
+
+                        self.scene.add(sphereShadow);
+                    }
                     else if (child.name.substring(0, 8) === 'poolwall') {
                         const box = new THREE.Box3().setFromObject(child);
                         //console.log(box.min, box.max, box.getSize(size));
@@ -1598,12 +1669,15 @@ class App {
             let dum = new THREE.Vector3();
             this.fox.getWorldDirection(dum)
             dum = dum.normalize();
+            let dum2 = new THREE.Vector3();
+            this.target.getWorldDirection(dum2)
+            //dum2 = dum2.normalize();
 
             const bull = {
                 type: 'shoot',
                 foxposition: this.fox.position,
                 dum: dum,
-                shoot_point: this.target.position
+                shoot_point: this.shoot_point
 
             }
 
@@ -1648,415 +1722,425 @@ class App {
         //this.world.step(1 / 60, deltaTime, 3)
         let block = 0;
 
-        // if (document.pointerLockElement === null || document.mozPointerLockElement === null) {
-        //     this.lock = false;
-        // }
-
-        if (this.flagmaterial) {
-            this.flagmaterial.uniforms.uTime.value = elapsedTime;
-        }
-        if (this.firefliesMaterial) {
-            this.firefliesMaterial.uniforms.uTime.value = elapsedTime
-        }
-        if (this.load_ready_sw) {
-
-
-
-
-
-            this.sphereShadow.position.x = this.fox.position.x
-            this.sphereShadow.position.z = this.fox.position.z
-            this.sphereShadow.position.y = 0.2;
-            this.sphereShadow.material.opacity = (1 - this.fox.position.y / 3) * 0.4
-            this.sphereShadow.scale.set((this.fox.position.y + 1) * 1, (this.fox.position.y + 1) * 1, (this.fox.position.y + 1) * 1)
-            this.sphereShadow.rotation.z = this.fox.rotation.y;
-            // this.sphereShadow.position.x = this.trashcan.position.x * 10 + 10
-            // this.sphereShadow.position.z = this.trashcan.position.z * 10 + 10
-            // this.sphereShadow.position.y = -.5;
-            // this.sphereShadow.material.opacity = (1 - this.trashcan.position.y * 10 / 3) * 0.4
-            // this.sphereShadow.scale.set((this.trashcan.position.y * 10 + 1) * 1, (this.trashcan.position.y * 10 + 1) * 1, (this.trashcan.position.y * 10 + 1) * 1)
-            // this.sphereShadow.rotation.z = this.trashcan.rotation.y;
-            const dt = {
-                type: 'time',
-                deltaTime: deltaTime
-            }
-            this.worker.postMessage(dt);
-
-            let quaternion = {
-                type: 'quaternion',
-                quaternion: this.fox.rotation.y
-            }
-            this.worker.postMessage(quaternion)
-
-            this.worker.postMessage('getfox')
-            this.worker.postMessage('getbullet')
-            this.worker.postMessage('getshootable')
-            let bulletToUpdate2;
-
-            this.worker.onmessage = (e) => {
-                if (e.data.type === 'getfox') {
-                    this.fox.position.copy(e.data.pos)
-                    this.fox.position.y -= 1.5;
-                }
-                if (e.data.type === 'getbullet') {
-                    bulletToUpdate2 = e.data.bulletToUpdate;
-                    for (let i = 0; i < this.bulletToUpdate.length; i++) {
-                        this.bulletToUpdate[i].position.x = (bulletToUpdate2[i * 3 + 0])
-                        this.bulletToUpdate[i].position.y = (bulletToUpdate2[i * 3 + 1])
-                        this.bulletToUpdate[i].position.z = (bulletToUpdate2[i * 3 + 2])
-                        if (this.bulletToUpdate[i].position.y <= .2) {
-                            this.scene.remove(this.bulletToUpdate[i])
-                            this.bulletToUpdate.splice(i, 1)
-                            const data = {
-                                type: 'clean_bullet',
-                                index: i
-                            }
-                            this.worker.postMessage(data)
-                            //console.log(this.bulletToUpdate)
-                        }
-                    }
-
-                }
-                if (e.data.type === 'getshootable') {
-                    let position = e.data.position;
-                    let quaternion2 = e.data.quaternion;
-                    //console.log(objectsToUpdate2)
-                    for (let i = 0; i < this.objectsToUpdate.length; i++) {
-                        this.objectsToUpdate[i].position.x = (position[i].x - 10) / 10
-                        this.objectsToUpdate[i].position.y = (position[i].y) / 10
-                        this.objectsToUpdate[i].position.z = (position[i].z - 10) / 10
-                        this.objectsToUpdate[i].quaternion.copy(quaternion2[i])
-                        if (this.objectsToUpdate[i].name.substring(0, 4) === 'Road') {
-                            this.objectsToUpdate[i].position.y -= .2
-                        }
-
-                        if (this.objectsToUpdate[i].name.substring(0, 6) === 'dumble') {
-                            // this.objectsToUpdate[i].rotation.z += Math.PI / 2
-                            // this.objectsToUpdate[i].rotation.x += Math.PI / 2
-                            //this.objectsToUpdate[i].rotation.y += Math.PI / 2
-                            //this.objectsToUpdate[i].position.y -= .03
-                        }
-
-
-                    }
-
-                }
-
-            }
-            for (let i = 0; i < this.shadowToUpdate.length; i++) {
-                this.shadowToUpdate[i].shadow.position.x = (this.shadowToUpdate[i].mesh.position.x) * 10 + 10
-                this.shadowToUpdate[i].shadow.position.z = (this.shadowToUpdate[i].mesh.position.z) * 10 + 10
-                this.shadowToUpdate[i].shadow.position.y = 0.2
-                this.shadowToUpdate[i].shadow.material.opacity = (1 - this.shadowToUpdate[i].mesh.position.y / 5) * 0.07
-                this.shadowToUpdate[i].shadow.scale.set((this.shadowToUpdate[i].mesh.position.y + .8) * 1, (this.shadowToUpdate[i].mesh.position.y + .8) * 1, (this.shadowToUpdate[i].mesh.position.y + .8) * 1)
-                //this.shadowToUpdate[i].shadow.quaternion.y = (this.shadowToUpdate[i].mesh.quaternion.y)
-            }
-
-            // for (let i = 0; i < this.objectsToUpdate.length; i++) {
-            //     // this.objectsToUpdate[i].mesh.position.copy(this.objectsToUpdate[i].body.position)
-            //     // this.objectsToUpdate[i].mesh.quaternion.copy(this.objectsToUpdate[i].body.quaternion)
-            //     this.objectsToUpdate[i].mesh.position.copy(this.objectsToUpdate[i].body.position)
-            //     this.objectsToUpdate[i].mesh.quaternion.copy(this.objectsToUpdate[i].body.quaternion)
-            //     this.objectsToUpdate[i].mesh.position.x = (this.objectsToUpdate[i].mesh.position.x - 10) / 10
-            //     this.objectsToUpdate[i].mesh.position.z = (this.objectsToUpdate[i].mesh.position.z - 10) / 10
-            //     this.objectsToUpdate[i].mesh.position.y = this.objectsToUpdate[i].mesh.position.y / 10
-
-            // }
-
-
-
-            // for (let i = 0; i < this.bulletToUpdate.length; i++) {
-            //     this.bulletToUpdate[i].mesh.position.copy(this.bulletToUpdate[i].body.position)
-            //     this.bulletToUpdate[i].mesh.quaternion.copy(this.bulletToUpdate[i].body.quaternion)
-            //     if (this.bulletToUpdate[i].body.position.y <= 1) {
-            //         this.scene.remove(this.bulletToUpdate[i].mesh)
-            //         this.world.removeBody(this.bulletToUpdate[i].body)
-            //         this.bulletToUpdate.splice(i, 1)
-
-            //     }
-            // }
-            let min = 9999;
-            let min_index = -10;
-            let testObject = []
-            for (let i = 0; i < this.directionToUpdate.length; i++) {
-                let pointer_position = new THREE.Vector3();
-                this.directionToUpdate[i].ray_sw = false;
-                pointer_position.copy(this.directionToUpdate[i].mesh.position);
-                pointer_position.x = pointer_position.x * 10 + 10;
-                pointer_position.y = pointer_position.y * 10 + 7;
-                pointer_position.z = pointer_position.z * 10 + 10;
-                if (this.fox.position.distanceTo(pointer_position) < min) {
-                    min = this.fox.position.distanceTo(pointer_position);
-                    this.pointer.position.copy(pointer_position);
-                    this.pointer2.position.copy(pointer_position);
-                    this.pointer2.position.y += 4;
-
-
-                    min_index = i;
-                }
-
-            }
-
-
-
-            // testObject.push(this.directionToUpdate[min_index].mesh)
-
-            // 
-            // raycaster.setFromCamera(this.mouse, this.camera)
-            // let intersects = raycaster.intersectObjects(testObject)
-            // if (intersects.length) {
-            //     //document.body.style.cursor = "pointer";
-            //     this.directionToUpdate[min_index].ray_sw = true;
-
-            // }
-
-            // else {
-            //     this.directionToUpdate[min_index].ray_sw = false;
-            //     //document.body.style.cursor = "default";
-            // }
-
-            const raycaster = new THREE.Raycaster()
-            let pos = new THREE.Vector3();
-            let rayDirection = new THREE.Vector3();
-            this.fox.getWorldPosition(pos);
-            this.fox.getWorldDirection(rayDirection);
-            raycaster.set(pos, rayDirection.normalize());
-            let intersect = raycaster.intersectObject(this.rubberEntrance)
-            if (intersect.length > 0) {
-                if (intersect[0].distance < 1.6) {
-                    window.location.assign('https://tcm390.github.io/rubbertoy_courage_the_cowardly_dog/')
-
-                }
-            }
-            intersect = raycaster.intersectObject(this.hadoopEntrance)
-            if (intersect.length > 0) {
-                if (intersect[0].distance < 1.6) {
-                    window.location.assign('https://www.google.com/')
-
-                }
-            }
-
-            if (this.fox.position.distanceTo(this.pointer.position) < 30.6) {
-
-                this.pointer2.visible = true;
-                this.pointer.visible = false;
-                this.directionToUpdate[min_index].ray_sw = true;
-            }
-            else {
-                //this.pointer.position.y = this.pointer2.position.y;
-                this.pointer.visible = true;
-                this.pointer2.visible = false;
-                this.directionToUpdate[min_index].ray_sw = false;
-            }
-
-
-
-
-
-            // for (const intersect of intersects) {
-            //     if (intersect.distance < 1.6) {
-            //         console.log('enter')
-            //     }
-
-            // }
-
-
-            // const screenPosition = this.pointer.position.clone()
-            // screenPosition.y = 0;
-            // screenPosition.project(this.camera)
-            // raycaster.setFromCamera(screenPosition, this.camera)
-            // const intersects = raycaster.intersectObjects(this.scene.children, true)
-            // if (intersects.length === 0) {
-            //     modal.classList.add('hidden');
-            // }
-            // else {
-            //     const intersectionDistance = intersects[0].distance
-            //     const pointDistance = this.pointer.position.distanceTo(this.camera.position)
-
-            //     if (intersectionDistance < pointDistance) {
-            //         modal.classList.remove('hidden');
-            //     }
-            //     else {
-            //         modal.classList.add('hidden');
-            //     }
-
-            // }
-            // const translateX = screenPosition.x * window.innerWidth * 0.3
-            // const translateY = -screenPosition.y * window.innerHeight * 0.3
-            // modal.style.transform = `translateX(${translateX}px) translateY(${translateY}px)`
-
-
-
-            if (this.mouse.x > 0.9) { //&& this.mouse.y < 0.3) {
-                this.fox.rotation.y -= 0.02 * Math.abs(this.mouse.x);
-                this.camera.rotation.y -= 0.02 * Math.abs(this.mouse.x);
-                this.target.rotation.y -= 0.02 * Math.abs(this.mouse.x);
-            }
-            else if (this.mouse.x < -0.9) { //&& this.mouse.y < 0.3) {
-                this.fox.rotation.y += 0.02 * Math.abs(this.mouse.x);
-                this.camera.rotation.y += 0.02 * Math.abs(this.mouse.x);
-                this.target.rotation.y += 0.02 * Math.abs(this.mouse.x);
-            }
-            else {
-                this.fox.rotation.y -= 1 * this.mouse_deltax;
-                this.camera.rotation.y -= 1 * this.mouse_deltax;
-                this.target.rotation.y -= 1 * this.mouse_deltax;
-                this.mouse_deltax = 0;
-            }
-
-            // if (this.lock === true) {
-            //     this.fox.rotation.y += 0.004 * (0 - this.mouse.x);
-            //     this.camera.rotation.y += 0.004 * (0 - this.mouse.x);
-            //     if (this.shoot_point + 0.02 * (0 - this.mouse.y) >= 5 && this.shoot_point + 0.05 * (0 - this.mouse.y) <= 15)
-            //         this.shoot_point += 0.02 * (0 - this.mouse.y) + this.fox.position.y;
-            //     this.target.position.y = this.shoot_point
-
-
-            // }
-
-
-            let fox_direction = new THREE.Vector3();
-            this.fox.getWorldDirection(fox_direction);
-            fox_direction = fox_direction.normalize();
-            this.camera.position.x = (this.fox.position.x - fox_direction.x * 20);
-            this.camera.position.z = (this.fox.position.z - fox_direction.z * 20);
-            this.target.position.x = (this.fox.position.x + fox_direction.x * 2);
-            this.target.position.z = (this.fox.position.z + fox_direction.z * 2);
-
-
-
-            //if (this.fox.position.y + (this.mouse.y + .95) * 10 > 5)
-            this.target.position.y = this.fox.position.y + (this.mouse.y + .95) * 10;
-            // else
-            //     this.target.position.y = 5;
-
-            //this.world.bodies[0].quaternion.setFromAxisAngle(new CANNON.Vec3(0, 1, 0), this.fox.rotation.y)
-
-            this.pointer.position.y += Math.sin(elapsedTime * 4)
-            this.pointer.rotation.y = elapsedTime * 2
-            this.pointer2.position.y += Math.sin(elapsedTime * 4)
-            this.pointer2.rotation.y = elapsedTime * 2
-        }
-        if (this.move_sw) {
-
-            //console.log(this.mouse.y, this.target.position.y)
-            // const raycaster = new THREE.Raycaster();
-            // let pos = new THREE.Vector3();
-            // let rayDirection = new THREE.Vector3();
-            // this.fox.getWorldPosition(pos);
-            // this.fox.getWorldDirection(rayDirection);
-            // raycaster.set(pos, rayDirection.normalize());
-            // const intersects = raycaster.intersectObjects(this.env.children, true);
-
-            // for (const intersect of intersects) {
-            //     if (intersect.distance < 1.6) {
-            //         block = 1;
-            //         break;
-            //     }
-
-            // }
-
-            if (block === 0) {
-                let data = {
-                    type: 'move_forward',
-                    z: Math.cos(this.fox.rotation.y) * 0.5,
-                    x: Math.sin(this.fox.rotation.y) * 0.5
-                }
-                this.worker.postMessage(data);
-                // this.world.bodies[0].position.z += Math.cos(this.fox.rotation.y) * 0.5;
-                // this.world.bodies[0].position.x += Math.sin(this.fox.rotation.y) * 0.5;
-            }
-
-            if (this.mixer[3]) {
-                this.mixer[3].update(deltaTime)
-            }
-        }
-        else if (this.back_sw) {
-            // const raycaster = new THREE.Raycaster();
-            // let pos = new THREE.Vector3();
-            // let rayDirection = new THREE.Vector3();
-            // this.fox.getWorldPosition(pos);
-            // this.fox.getWorldDirection(rayDirection);
-            // rayDirection.x = 0 - rayDirection.x;
-            // rayDirection.y = 0 - rayDirection.y;
-            // rayDirection.z = 0 - rayDirection.z;
-            // raycaster.set(pos, rayDirection.normalize());
-            // const intersects = raycaster.intersectObjects(this.env.children, true);
-
-            // for (const intersect of intersects) {
-            //     if (intersect.distance < 1.6) {
-            //         block = 1;
-            //         break;
-            //     }
-
-            // }
-            if (block === 0) {
-
-                let data = {
-                    type: 'move_backward',
-                    z: Math.cos(this.fox.rotation.y) * 0.5,
-                    x: Math.sin(this.fox.rotation.y) * 0.5
-                }
-                this.worker.postMessage(data);
-                // this.world.bodies[0].position.z -= Math.cos(this.fox.rotation.y) * 0.5;
-                // this.world.bodies[0].position.x -= Math.sin(this.fox.rotation.y) * 0.5;
-            }
-
-            if (this.mixer[2]) {
-                this.mixer[2].update(deltaTime)
-            }
+        if (document.pointerLockElement === null || document.mozPointerLockElement === null) {
+            this.stop_everything = true;
         }
         else {
-            if (this.mixer[1]) {
-                this.mixer[1].update(deltaTime)
+            this.stop_everything = false;
+        }
+        if (this.stop_everything === false) {
+            if (this.flagmaterial) {
+                this.flagmaterial.uniforms.uTime.value = elapsedTime;
+            }
+            if (this.firefliesMaterial) {
+                this.firefliesMaterial.uniforms.uTime.value = elapsedTime
+            }
 
+            if (this.load_ready_sw) {
+
+
+
+
+
+                this.sphereShadow.position.x = this.fox.position.x
+                this.sphereShadow.position.z = this.fox.position.z
+                this.sphereShadow.position.y = 0.2;
+                this.sphereShadow.material.opacity = (1 - this.fox.position.y / 3) * 0.4
+                this.sphereShadow.scale.set((this.fox.position.y + 1) * 1, (this.fox.position.y + 1) * 1, (this.fox.position.y + 1) * 1)
+                this.sphereShadow.rotation.z = this.fox.rotation.y;
+                // this.sphereShadow.position.x = this.trashcan.position.x * 10 + 10
+                // this.sphereShadow.position.z = this.trashcan.position.z * 10 + 10
+                // this.sphereShadow.position.y = -.5;
+                // this.sphereShadow.material.opacity = (1 - this.trashcan.position.y * 10 / 3) * 0.4
+                // this.sphereShadow.scale.set((this.trashcan.position.y * 10 + 1) * 1, (this.trashcan.position.y * 10 + 1) * 1, (this.trashcan.position.y * 10 + 1) * 1)
+                // this.sphereShadow.rotation.z = this.trashcan.rotation.y;
+                const dt = {
+                    type: 'time',
+                    deltaTime: deltaTime
+                }
+                this.worker.postMessage(dt);
+
+                let quaternion = {
+                    type: 'quaternion',
+                    quaternion: this.fox.rotation.y
+                }
+                this.worker.postMessage(quaternion)
+
+                this.worker.postMessage('getfox')
+                this.worker.postMessage('getbullet')
+                this.worker.postMessage('getshootable')
+                let bulletToUpdate2;
+
+                this.worker.onmessage = (e) => {
+                    if (e.data.type === 'getfox') {
+                        this.fox.position.copy(e.data.pos)
+                        this.fox.position.y -= 1.5;
+                    }
+                    if (e.data.type === 'getbullet') {
+                        bulletToUpdate2 = e.data.bulletToUpdate;
+                        for (let i = 0; i < this.bulletToUpdate.length; i++) {
+                            this.bulletToUpdate[i].position.x = (bulletToUpdate2[i * 3 + 0])
+                            this.bulletToUpdate[i].position.y = (bulletToUpdate2[i * 3 + 1])
+                            this.bulletToUpdate[i].position.z = (bulletToUpdate2[i * 3 + 2])
+                            if (this.bulletToUpdate[i].position.y <= .2) {
+                                this.scene.remove(this.bulletToUpdate[i])
+                                this.bulletToUpdate.splice(i, 1)
+                                const data = {
+                                    type: 'clean_bullet',
+                                    index: i
+                                }
+                                this.worker.postMessage(data)
+                                //console.log(this.bulletToUpdate)
+                            }
+                        }
+
+                    }
+                    if (e.data.type === 'getshootable') {
+                        let position = e.data.position;
+                        let quaternion2 = e.data.quaternion;
+                        //console.log(objectsToUpdate2)
+                        for (let i = 0; i < this.objectsToUpdate.length; i++) {
+                            this.objectsToUpdate[i].position.x = (position[i].x - 10) / 10
+                            this.objectsToUpdate[i].position.y = (position[i].y) / 10
+                            this.objectsToUpdate[i].position.z = (position[i].z - 10) / 10
+                            this.objectsToUpdate[i].quaternion.copy(quaternion2[i])
+                            if (this.objectsToUpdate[i].name.substring(0, 4) === 'Road') {
+                                this.objectsToUpdate[i].position.y -= .2
+                            }
+
+                            if (this.objectsToUpdate[i].name.substring(0, 6) === 'dumble') {
+                                // this.objectsToUpdate[i].rotation.z += Math.PI / 2
+                                // this.objectsToUpdate[i].rotation.x += Math.PI / 2
+                                //this.objectsToUpdate[i].rotation.y += Math.PI / 2
+                                //this.objectsToUpdate[i].position.y -= .03
+                            }
+
+
+                        }
+
+                    }
+
+                }
+                for (let i = 0; i < this.shadowToUpdate.length; i++) {
+                    this.shadowToUpdate[i].shadow.position.x = (this.shadowToUpdate[i].mesh.position.x) * 10 + 10
+                    this.shadowToUpdate[i].shadow.position.z = (this.shadowToUpdate[i].mesh.position.z) * 10 + 10
+                    this.shadowToUpdate[i].shadow.position.y = 0.2
+                    this.shadowToUpdate[i].shadow.material.opacity = (1 - this.shadowToUpdate[i].mesh.position.y / 5) * 0.07
+                    this.shadowToUpdate[i].shadow.scale.set((this.shadowToUpdate[i].mesh.position.y + .8) * 1, (this.shadowToUpdate[i].mesh.position.y + .8) * 1, (this.shadowToUpdate[i].mesh.position.y + .8) * 1)
+                    //this.shadowToUpdate[i].shadow.quaternion.y = (this.shadowToUpdate[i].mesh.quaternion.y)
+                }
+
+                // for (let i = 0; i < this.objectsToUpdate.length; i++) {
+                //     // this.objectsToUpdate[i].mesh.position.copy(this.objectsToUpdate[i].body.position)
+                //     // this.objectsToUpdate[i].mesh.quaternion.copy(this.objectsToUpdate[i].body.quaternion)
+                //     this.objectsToUpdate[i].mesh.position.copy(this.objectsToUpdate[i].body.position)
+                //     this.objectsToUpdate[i].mesh.quaternion.copy(this.objectsToUpdate[i].body.quaternion)
+                //     this.objectsToUpdate[i].mesh.position.x = (this.objectsToUpdate[i].mesh.position.x - 10) / 10
+                //     this.objectsToUpdate[i].mesh.position.z = (this.objectsToUpdate[i].mesh.position.z - 10) / 10
+                //     this.objectsToUpdate[i].mesh.position.y = this.objectsToUpdate[i].mesh.position.y / 10
+
+                // }
+
+
+
+                // for (let i = 0; i < this.bulletToUpdate.length; i++) {
+                //     this.bulletToUpdate[i].mesh.position.copy(this.bulletToUpdate[i].body.position)
+                //     this.bulletToUpdate[i].mesh.quaternion.copy(this.bulletToUpdate[i].body.quaternion)
+                //     if (this.bulletToUpdate[i].body.position.y <= 1) {
+                //         this.scene.remove(this.bulletToUpdate[i].mesh)
+                //         this.world.removeBody(this.bulletToUpdate[i].body)
+                //         this.bulletToUpdate.splice(i, 1)
+
+                //     }
+                // }
+                let min = 9999;
+                let min_index = -10;
+                let testObject = []
+                for (let i = 0; i < this.directionToUpdate.length; i++) {
+                    let pointer_position = new THREE.Vector3();
+                    this.directionToUpdate[i].ray_sw = false;
+                    pointer_position.copy(this.directionToUpdate[i].mesh.position);
+                    pointer_position.x = pointer_position.x * 10 + 10;
+                    pointer_position.y = pointer_position.y * 10 + 7;
+                    pointer_position.z = pointer_position.z * 10 + 10;
+                    if (this.fox.position.distanceTo(pointer_position) < min) {
+                        min = this.fox.position.distanceTo(pointer_position);
+                        this.pointer.position.copy(pointer_position);
+                        this.pointer2.position.copy(pointer_position);
+                        this.pointer2.position.y += 4;
+
+
+                        min_index = i;
+                    }
+
+                }
+
+
+
+                // testObject.push(this.directionToUpdate[min_index].mesh)
+
+                // 
+                // raycaster.setFromCamera(this.mouse, this.camera)
+                // let intersects = raycaster.intersectObjects(testObject)
+                // if (intersects.length) {
+                //     //document.body.style.cursor = "pointer";
+                //     this.directionToUpdate[min_index].ray_sw = true;
+
+                // }
+
+                // else {
+                //     this.directionToUpdate[min_index].ray_sw = false;
+                //     //document.body.style.cursor = "default";
+                // }
+
+                const raycaster = new THREE.Raycaster()
+                let pos = new THREE.Vector3();
+                let rayDirection = new THREE.Vector3();
+                this.fox.getWorldPosition(pos);
+                this.fox.getWorldDirection(rayDirection);
+                raycaster.set(pos, rayDirection.normalize());
+                let intersect = raycaster.intersectObject(this.rubberEntrance)
+                if (intersect.length > 0) {
+                    if (intersect[0].distance < 1.6) {
+                        window.location.assign('https://tcm390.github.io/rubbertoy_courage_the_cowardly_dog/')
+
+                    }
+                }
+                intersect = raycaster.intersectObject(this.hadoopEntrance)
+                if (intersect.length > 0) {
+                    if (intersect[0].distance < 1.6) {
+                        window.location.assign('https://www.google.com/')
+
+                    }
+                }
+
+                if (this.fox.position.distanceTo(this.pointer.position) < 30.6) {
+
+                    this.pointer2.visible = true;
+                    this.pointer.visible = false;
+                    this.directionToUpdate[min_index].ray_sw = true;
+                }
+                else {
+                    //this.pointer.position.y = this.pointer2.position.y;
+                    this.pointer.visible = true;
+                    this.pointer2.visible = false;
+                    this.directionToUpdate[min_index].ray_sw = false;
+                }
+
+
+
+
+
+                // for (const intersect of intersects) {
+                //     if (intersect.distance < 1.6) {
+                //         console.log('enter')
+                //     }
+
+                // }
+
+
+                // const screenPosition = this.pointer.position.clone()
+                // screenPosition.y = 0;
+                // screenPosition.project(this.camera)
+                // raycaster.setFromCamera(screenPosition, this.camera)
+                // const intersects = raycaster.intersectObjects(this.scene.children, true)
+                // if (intersects.length === 0) {
+                //     modal.classList.add('hidden');
+                // }
+                // else {
+                //     const intersectionDistance = intersects[0].distance
+                //     const pointDistance = this.pointer.position.distanceTo(this.camera.position)
+
+                //     if (intersectionDistance < pointDistance) {
+                //         modal.classList.remove('hidden');
+                //     }
+                //     else {
+                //         modal.classList.add('hidden');
+                //     }
+
+                // }
+                // const translateX = screenPosition.x * window.innerWidth * 0.3
+                // const translateY = -screenPosition.y * window.innerHeight * 0.3
+                // modal.style.transform = `translateX(${translateX}px) translateY(${translateY}px)`
+
+
+
+                // if (this.mouse.x > .99) { //&& this.mouse.y < 0.3) {
+                //     this.fox.rotation.y -= 0.02 * Math.abs(this.mouse.x);
+                //     this.camera.rotation.y -= 0.02 * Math.abs(this.mouse.x);
+                //     this.target.rotation.y -= 0.02 * Math.abs(this.mouse.x);
+                // }
+                // else if (this.mouse.x < -.99999) { //&& this.mouse.y < 0.3) {
+                //     this.fox.rotation.y += 0.02 * Math.abs(this.mouse.x);
+                //     this.camera.rotation.y += 0.02 * Math.abs(this.mouse.x);
+                //     this.target.rotation.y += 0.02 * Math.abs(this.mouse.x);
+                // }
+                // else {
+                this.fox.rotation.y -= .004 * this.mouse.x;
+                this.camera.rotation.y -= .004 * this.mouse.x;
+                this.target.rotation.y -= .004 * this.mouse.x;
+                this.mouse.x = 0;
+                //}
+
+                // if (this.lock === true) {
+                //     this.fox.rotation.y += 0.004 * (0 - this.mouse.x);
+                //     this.camera.rotation.y += 0.004 * (0 - this.mouse.x);
+                //     if (this.shoot_point + 0.02 * (0 - this.mouse.y) >= 5 && this.shoot_point + 0.05 * (0 - this.mouse.y) <= 15)
+                //         this.shoot_point += 0.02 * (0 - this.mouse.y) + this.fox.position.y;
+                //     this.target.position.y = this.shoot_point
+
+
+                // }
+
+
+                let fox_direction = new THREE.Vector3();
+                this.fox.getWorldDirection(fox_direction);
+                fox_direction = fox_direction.normalize();
+                this.camera.position.x = (this.fox.position.x - fox_direction.x * 20);
+                this.camera.position.z = (this.fox.position.z - fox_direction.z * 20);
+                this.target.position.x = (this.fox.position.x + fox_direction.x * 2);
+                this.target.position.z = (this.fox.position.z + fox_direction.z * 2);
+
+
+
+                //if (this.fox.position.y + (this.mouse.y + .95) * 10 > 5)
+                if (this.target.position.y - this.mouse.y * 0.04 < 15
+                    && this.target.position.y - this.mouse.y * 0.04 > 5) {
+                    this.target.position.y -= this.mouse.y * 0.04;
+                    this.mouse.y = 0;
+                    this.shoot_point = ((this.target.position.y - this.fox.position.y) / 10) - .95
+                }
+
+                // else
+                //     this.target.position.y = 5;
+
+                //this.world.bodies[0].quaternion.setFromAxisAngle(new CANNON.Vec3(0, 1, 0), this.fox.rotation.y)
+
+                this.pointer.position.y += Math.sin(elapsedTime * 4)
+                this.pointer.rotation.y = elapsedTime * 2
+                this.pointer2.position.y += Math.sin(elapsedTime * 4)
+                this.pointer2.rotation.y = elapsedTime * 2
+            }
+            if (this.move_sw) {
+
+                //console.log(this.deltay, this.target.position)
+                // const raycaster = new THREE.Raycaster();
+                // let pos = new THREE.Vector3();
+                // let rayDirection = new THREE.Vector3();
+                // this.fox.getWorldPosition(pos);
+                // this.fox.getWorldDirection(rayDirection);
+                // raycaster.set(pos, rayDirection.normalize());
+                // const intersects = raycaster.intersectObjects(this.env.children, true);
+
+                // for (const intersect of intersects) {
+                //     if (intersect.distance < 1.6) {
+                //         block = 1;
+                //         break;
+                //     }
+
+                // }
+
+                if (block === 0) {
+                    let data = {
+                        type: 'move_forward',
+                        z: Math.cos(this.fox.rotation.y) * 0.5,
+                        x: Math.sin(this.fox.rotation.y) * 0.5
+                    }
+                    this.worker.postMessage(data);
+                    // this.world.bodies[0].position.z += Math.cos(this.fox.rotation.y) * 0.5;
+                    // this.world.bodies[0].position.x += Math.sin(this.fox.rotation.y) * 0.5;
+                }
+
+                if (this.mixer[3]) {
+                    this.mixer[3].update(deltaTime)
+                }
+            }
+            else if (this.back_sw) {
+                // const raycaster = new THREE.Raycaster();
+                // let pos = new THREE.Vector3();
+                // let rayDirection = new THREE.Vector3();
+                // this.fox.getWorldPosition(pos);
+                // this.fox.getWorldDirection(rayDirection);
+                // rayDirection.x = 0 - rayDirection.x;
+                // rayDirection.y = 0 - rayDirection.y;
+                // rayDirection.z = 0 - rayDirection.z;
+                // raycaster.set(pos, rayDirection.normalize());
+                // const intersects = raycaster.intersectObjects(this.env.children, true);
+
+                // for (const intersect of intersects) {
+                //     if (intersect.distance < 1.6) {
+                //         block = 1;
+                //         break;
+                //     }
+
+                // }
+                if (block === 0) {
+
+                    let data = {
+                        type: 'move_backward',
+                        z: Math.cos(this.fox.rotation.y) * 0.5,
+                        x: Math.sin(this.fox.rotation.y) * 0.5
+                    }
+                    this.worker.postMessage(data);
+                    // this.world.bodies[0].position.z -= Math.cos(this.fox.rotation.y) * 0.5;
+                    // this.world.bodies[0].position.x -= Math.sin(this.fox.rotation.y) * 0.5;
+                }
+
+                if (this.mixer[2]) {
+                    this.mixer[2].update(deltaTime)
+                }
+            }
+            else {
+                if (this.mixer[1]) {
+                    this.mixer[1].update(deltaTime)
+
+                }
+            }
+
+            if (this.right_sw && block == 0) {
+                let data = {
+                    type: 'move_right',
+                    rz: Math.cos(this.fox.rotation.y + Math.PI / 2) * 0.5,
+                    rx: Math.sin(this.fox.rotation.y + Math.PI / 2) * 0.5
+                }
+                this.worker.postMessage(data);
+
+                // this.world.bodies[0].position.z -= Math.cos(this.fox.rotation.y + Math.PI / 2) * 0.5;
+                // this.world.bodies[0].position.x -= Math.sin(this.fox.rotation.y + Math.PI / 2) * 0.5;
+                if (this.mixer[2] && !this.move_sw) {
+                    this.mixer[2].update(deltaTime)
+                }
+            }
+
+            else if (this.left_sw && block == 0) {
+                let data = {
+                    type: 'move_left',
+                    lz: Math.cos(this.fox.rotation.y - Math.PI / 2) * 0.5,
+                    lx: Math.sin(this.fox.rotation.y - Math.PI / 2) * 0.5
+                }
+                this.worker.postMessage(data);
+                // this.world.bodies[0].position.z -= Math.cos(this.fox.rotation.y - Math.PI / 2) * 0.5;
+                // this.world.bodies[0].position.x -= Math.sin(this.fox.rotation.y - Math.PI / 2) * 0.5;
+                if (this.mixer[2] && !this.move_sw) {
+                    this.mixer[2].update(deltaTime)
+                }
+
+            }
+            if (this.shoot_sw) {
+
+                this.shoot_audio.pause();
+                this.shoot_audio.currentTime = 0;
+
+
+                this.start_shoot_time = elapsedTime;
+                this.shoot();
+            }
+            if (elapsedTime - this.start_shoot_time < 1) {
+                if (this.mixer[0]) {
+                    this.mixer[0].update(deltaTime);
+                }
             }
         }
-
-        if (this.right_sw && block == 0) {
-            let data = {
-                type: 'move_right',
-                rz: Math.cos(this.fox.rotation.y + Math.PI / 2) * 0.5,
-                rx: Math.sin(this.fox.rotation.y + Math.PI / 2) * 0.5
-            }
-            this.worker.postMessage(data);
-
-            // this.world.bodies[0].position.z -= Math.cos(this.fox.rotation.y + Math.PI / 2) * 0.5;
-            // this.world.bodies[0].position.x -= Math.sin(this.fox.rotation.y + Math.PI / 2) * 0.5;
-            if (this.mixer[2] && !this.move_sw) {
-                this.mixer[2].update(deltaTime)
-            }
-        }
-
-        else if (this.left_sw && block == 0) {
-            let data = {
-                type: 'move_left',
-                lz: Math.cos(this.fox.rotation.y - Math.PI / 2) * 0.5,
-                lx: Math.sin(this.fox.rotation.y - Math.PI / 2) * 0.5
-            }
-            this.worker.postMessage(data);
-            // this.world.bodies[0].position.z -= Math.cos(this.fox.rotation.y - Math.PI / 2) * 0.5;
-            // this.world.bodies[0].position.x -= Math.sin(this.fox.rotation.y - Math.PI / 2) * 0.5;
-            if (this.mixer[2] && !this.move_sw) {
-                this.mixer[2].update(deltaTime)
-            }
-
-        }
-        if (this.shoot_sw) {
-
-            this.shoot_audio.pause();
-            this.shoot_audio.currentTime = 0;
-
-
-            this.start_shoot_time = elapsedTime;
-            this.shoot();
-        }
-        if (elapsedTime - this.start_shoot_time < 1) {
-            if (this.mixer[0]) {
-                this.mixer[0].update(deltaTime);
-            }
-        }
-
 
 
         this.renderer.render(this.scene, this.camera);
