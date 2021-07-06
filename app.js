@@ -2146,10 +2146,10 @@ class App {
                 //     this.target.rotation.y += 0.02 * Math.abs(this.mouse.x);
                 // }
                 // else {
-                this.fox.rotation.y -= .004 * this.mouse.x;
-                this.camera.rotation.y -= .004 * this.mouse.x;
-                this.target.rotation.y -= .004 * this.mouse.x;
-                this.text.rotation.y -= 0.004 * this.mouse.x;
+                this.fox.rotation.y -= .003 * this.mouse.x;
+                this.camera.rotation.y -= .003 * this.mouse.x;
+                this.target.rotation.y -= .003 * this.mouse.x;
+                this.text.rotation.y -= 0.003 * this.mouse.x;
                 this.mouse.x = 0;
                 //}
 
