@@ -63,7 +63,7 @@ self.addEventListener('message', function (e) {
     if (e.data === 'ready') {
         setTimeout(() => {
             world.gravity.set(0, -9.82, 0);
-        }, 1000);
+        }, 3000);
     }
     if (e.data.type === 'time') {
         world.step(1 / 60, e.data.deltaTime, 10)

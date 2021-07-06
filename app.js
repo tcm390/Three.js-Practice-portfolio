@@ -23,14 +23,21 @@ class App {
         //###### close instruction #########
         this.education = document.querySelector('.education');
         this.hadoop = document.querySelector('.hadoop');
+        this.source = document.querySelector('.source');
         this.rubber_toy = document.querySelector('.rubber_toy');
+        this.threejs = document.querySelector('.threejs');
         this.modal = document.querySelector('.modal');
+        this.resume = document.querySelector('.resume');
         this.overlay = document.querySelector('.overlay');
         const btnCloseModal = document.querySelector('.start_icon');
         const btnCloseModal2 = document.querySelector('.close-modal2');
         const btnCloseModal3 = document.querySelector('.close-modal3');
         const btnCloseModal4 = document.querySelector('.close-modal4');
+        const btnCloseModal5 = document.querySelector('.close-modal5');
+        const btnCloseModal6 = document.querySelector('.close-modal6');
+
         btnCloseModal.addEventListener('click', () => {
+
             this.modal.classList.add('hidden');
             this.overlay.classList.add('hidden');
             this.load_ready_sw = 1;
@@ -40,24 +47,48 @@ class App {
             //console.log(this.renderer.info.render.calls);
             //document.body.style.cursor = "none";
             this.stop_everything = false;
+            this.canvas.requestPointerLock();
         });
+
         btnCloseModal2.addEventListener('click', () => {
+            this.canvas.requestPointerLock();
             this.education.classList.add('hidden');
             this.overlay.classList.add('hidden');
             //document.body.style.cursor = "none";
             this.stop_everything = false;
+
         });
         btnCloseModal3.addEventListener('click', () => {
+            this.canvas.requestPointerLock();
             this.hadoop.classList.add('hidden');
             this.overlay.classList.add('hidden');
             //document.body.style.cursor = "none";
             this.stop_everything = false;
+
         });
         btnCloseModal4.addEventListener('click', () => {
+            this.canvas.requestPointerLock();
             this.rubber_toy.classList.add('hidden');
             this.overlay.classList.add('hidden');
             //document.body.style.cursor = "none";
             this.stop_everything = false;
+
+        });
+        btnCloseModal5.addEventListener('click', () => {
+            this.canvas.requestPointerLock();
+            this.source.classList.add('hidden');
+            this.overlay.classList.add('hidden');
+            //document.body.style.cursor = "none";
+            this.stop_everything = false;
+
+        });
+        btnCloseModal6.addEventListener('click', () => {
+            this.canvas.requestPointerLock();
+            this.threejs.classList.add('hidden');
+            this.overlay.classList.add('hidden');
+            //document.body.style.cursor = "none";
+            this.stop_everything = false;
+
         });
         //######### LoadingManager ###########
         this.loadingManager = new THREE.LoadingManager()
@@ -116,8 +147,11 @@ class App {
         this.move_sw = 0;
         this.back_sw = 0;
         this.shoot_sw = 0;
+        this.goto_web_sw = 0;
 
         this.stop_everything = false;
+        this.resume_sw = true;
+
 
         this.objectsToUpdate = [];
         this.bulletToUpdate = [];
@@ -220,51 +254,51 @@ class App {
             document.mozExitPointerLock;
 
 
-        const self = this;
-        document.addEventListener('pointerlockchange', lockChangeAlert, false);
-        document.addEventListener('mozpointerlockchange', lockChangeAlert, false);
-        function lockChangeAlert() {
-            if (document.pointerLockElement === this.canvas ||
-                document.mozPointerLockElement === this.canvas) {
-                //console.log('The pointer lock status is now locked');
-                document.addEventListener("mousemove", canvasLoop, false);
-                self.lock = true;
+        // const self = this;
+        // document.addEventListener('pointerlockchange', lockChangeAlert, false);
+        // document.addEventListener('mozpointerlockchange', lockChangeAlert, false);
+        // function lockChangeAlert() {
+        //     if (document.pointerLockElement === this.canvas ||
+        //         document.mozPointerLockElement === this.canvas) {
+        //         console.log('The pointer lock status is now locked');
+        //         document.addEventListener("mousemove", canvasLoop, false);
+        //         self.lock = true;
 
 
-            } else {
-                //console.log('The pointer lock status is now unlocked');
-                document.removeEventListener("mousemove", canvasLoop, false);
-                self.lock = false;
+        //     } else {
+        //         console.log('nono');
+        //         document.removeEventListener("mousemove", canvasLoop, false);
+        //         self.lock = false;
 
-            }
-        }
-        function canvasLoop(e) {
-            const movementX = e.movementX ||
-                e.mozMovementX ||
-                e.webkitMovementX ||
-                0;
+        //     }
+        // }
+        // function canvasLoop(e) {
+        //     const movementX = e.movementX ||
+        //         e.mozMovementX ||
+        //         e.webkitMovementX ||
+        //         0;
 
-            const movementY = e.movementY ||
-                e.mozMovementY ||
-                e.webkitMovementY ||
-                0;
+        //     const movementY = e.movementY ||
+        //         e.mozMovementY ||
+        //         e.webkitMovementY ||
+        //         0;
 
-            self.mouse.x = movementX;
-            self.mouse.y = movementY;
+        //     self.mouse.x = movementX;
+        //     self.mouse.y = movementY;
 
 
-            //console.log(self.mouse, movementX)
+        //     //console.log(self.mouse, movementX)
 
-            // var animation = requestAnimationFrame(canvasLoop);
+        //     // var animation = requestAnimationFrame(canvasLoop);
 
-            // tracker.innerHTML = "X position: " + x + ', Y position: ' + y;
-            const worker_mouse = {
-                type: 'mouse',
-                mouse: self.mouse
-            }
-            self.worker.postMessage(worker_mouse);
+        //     // tracker.innerHTML = "X position: " + x + ', Y position: ' + y;
+        //     const worker_mouse = {
+        //         type: 'mouse',
+        //         mouse: self.mouse
+        //     }
+        //     self.worker.postMessage(worker_mouse);
 
-        }
+        // }
 
 
 
@@ -278,7 +312,26 @@ class App {
     window_listener() {
         //########### Listener #########
 
+        window.addEventListener('mousemove', e => {
+            const movementX = e.movementX ||
+                e.mozMovementX ||
+                e.webkitMovementX ||
+                0;
 
+            const movementY = e.movementY ||
+                e.mozMovementY ||
+                e.webkitMovementY ||
+                0;
+
+            this.mouse.x = movementX;
+            this.mouse.y = movementY;
+
+            const worker_mouse = {
+                type: 'mouse',
+                mouse: self.mouse
+            }
+            this.worker.postMessage(worker_mouse);
+        })
         // window.addEventListener('mousemove', e => {
 
         //     this.mouse.x = event.clientX / window.innerWidth * 2 - 1
@@ -296,15 +349,24 @@ class App {
         // });
 
         window.addEventListener("click", () => {
+            if (document.pointerLockElement === null || document.mozPointerLockElement === null) {
+                if (this.resume_sw === true && this.stop_everything === true) {
+                    this.canvas.requestPointerLock();
+                    // this.overlay.classList.add('hidden');
+                    // this.resume.classList.add('hidden');
+                    this.stop_everything = false;
+                    this.resume_sw = false;
+                    this.text.visible = false;
 
-            this.canvas.requestPointerLock();
-            this.shoot_sw = 1;
-
-
+                }
+            }
+            else
+                this.shoot_sw = 1;
 
         })
 
         window.addEventListener('keydown', (e) => {
+            //console.log(e.keyCode)
             if (e.keyCode === 87 || e.key === 'ArrowUp') {
                 this.move_sw = 1;
                 //this.canvas.requestPointerLock();
@@ -331,64 +393,10 @@ class App {
 
             }
             if (e.keyCode === 13) {
-                console.log('hehe')
-                for (let i = 0; i < this.directionToUpdate.length; i++) {
-                    if (this.directionToUpdate[i].ray_sw === true) {
+                this.goto_web_sw = 1;
 
-                        if (this.directionToUpdate[i].mesh.name === 'directable001') {
-                            this.education.classList.remove('hidden');
-                            this.overlay.classList.remove('hidden');
-                            //document.body.style.cursor = "default";
-                            document.exitPointerLock();
-                            this.stop_everything = true;
-                        }
-                        else if (this.directionToUpdate[i].mesh.name === 'directable002') {
-                            window.open("mailto:tcm390@nyu.edu")
-                            this.modal.classList.remove('hidden');
-                            this.overlay.classList.remove('hidden');
-                            this.stop_everything = true;
-                        }
-
-                        else if (this.directionToUpdate[i].mesh.name === 'directable003') {
-                            window.open("https://www.linkedin.com/in/ting-chien-meng-b221521a6/")
-                            this.modal.classList.remove('hidden');
-                            this.overlay.classList.remove('hidden');
-                            this.stop_everything = true;
-                        }
-
-                        else if (this.directionToUpdate[i].mesh.name === 'directable004') {
-                            window.open("https://github.com/tcm390")
-                            this.modal.classList.remove('hidden');
-                            this.overlay.classList.remove('hidden');
-                            this.stop_everything = true;
-                        }
-
-                        else if (this.directionToUpdate[i].mesh.name === 'directable005') {
-                            this.hadoop.classList.remove('hidden');
-                            this.overlay.classList.remove('hidden');
-                            const a = 0;
-                            //document.body.style.cursor = "default";
-                            document.exitPointerLock();
-                            this.stop_everything = true;
-                        }
-                        else if (this.directionToUpdate[i].mesh.name === 'directable006') {
-                            this.hadoop.classList.remove('hidden');
-                            this.overlay.classList.remove('hidden');
-                            //document.body.style.cursor = "default";
-                            document.exitPointerLock();
-                            this.stop_everything = true;
-                        }
-                        else if (this.directionToUpdate[i].mesh.name === 'directable007') {
-                            this.rubber_toy.classList.remove('hidden');
-                            this.overlay.classList.remove('hidden');
-                            //document.body.style.cursor = "default";
-                            document.exitPointerLock();
-                            this.stop_everything = true;
-                        }
-
-                    }
-                }
             }
+
 
 
         });
@@ -404,9 +412,94 @@ class App {
                 this.left_sw = 0;
             if (e.key === ' ' || e.keyCode === 32)
                 this.shoot_sw = 0;
+            if (e.keyCode === 13)
+                this.goto_web_sw = 0;
 
         });
 
+        // document.addEventListener('visibilitychange', () => {
+        //     this.modal.classList.remove('hidden');
+        //     this.overlay.classList.remove('hidden');
+        //     this.stop_everything = true;
+        // });
+
+
+    }
+    goto_web() {
+        for (let i = 0; i < this.directionToUpdate.length; i++) {
+            if (this.directionToUpdate[i].ray_sw === true) {
+
+                this.goto_web_sw = 0;
+                document.exitPointerLock();
+                if (this.directionToUpdate[i].mesh.name === 'directable001') {
+                    this.education.classList.remove('hidden');
+                    this.overlay.classList.remove('hidden');
+                    //document.body.style.cursor = "default";
+                    this.stop_everything = true;
+
+                }
+                else if (this.directionToUpdate[i].mesh.name === 'directable002') {
+                    window.open("mailto:tcm390@nyu.edu")
+                    // this.resume.classList.remove('hidden');
+                    // this.overlay.classList.remove('hidden');
+                    //this.text.position.set(this.fox.position.x, 15, this.fox.position.z)
+                    this.text.visible = true;
+
+                }
+
+                else if (this.directionToUpdate[i].mesh.name === 'directable003') {
+                    window.open("https://www.linkedin.com/in/ting-chien-meng-b221521a6/")
+                    // this.resume.classList.remove('hidden');
+                    // this.overlay.classList.remove('hidden');
+                    //this.text.position.set(this.fox.position.x, 15, this.fox.position.z)
+                    this.text.visible = true;
+
+                }
+
+                else if (this.directionToUpdate[i].mesh.name === 'directable004') {
+                    window.open("https://github.com/tcm390")
+                    // this.resume.classList.remove('hidden');
+                    // this.overlay.classList.remove('hidden');
+                    // this.text.position.set(this.fox.position.x, 15, this.fox.position.z)
+                    this.text.visible = true;
+
+                }
+
+                else if (this.directionToUpdate[i].mesh.name === 'directable005') {
+                    this.threejs.classList.remove('hidden');
+                    this.overlay.classList.remove('hidden');
+                    //document.body.style.cursor = "default";
+                    //document.exitPointerLock();
+                    this.stop_everything = true;
+
+                }
+                else if (this.directionToUpdate[i].mesh.name === 'directable006') {
+                    this.hadoop.classList.remove('hidden');
+                    this.overlay.classList.remove('hidden');
+                    //document.body.style.cursor = "default";
+                    //document.exitPointerLock();
+                    this.stop_everything = true;
+
+                }
+                else if (this.directionToUpdate[i].mesh.name === 'directable007') {
+                    this.rubber_toy.classList.remove('hidden');
+                    this.overlay.classList.remove('hidden');
+                    //document.body.style.cursor = "default";
+                    //document.exitPointerLock();
+                    this.stop_everything = true;
+
+                }
+                else if (this.directionToUpdate[i].mesh.name === 'directable008') {
+                    this.source.classList.remove('hidden');
+                    this.overlay.classList.remove('hidden');
+                    //document.body.style.cursor = "default";
+                    //document.exitPointerLock();
+                    this.stop_everything = true;
+
+                }
+
+            }
+        }
     }
     create_physics_world() {
         // this.world = new CANNON.World()
@@ -449,6 +542,37 @@ class App {
         // floorBody.addShape(floorShape)
         // floorBody.quaternion.setFromAxisAngle(new CANNON.Vec3(- 1, 0, 0), Math.PI * 0.5)
         // this.world.addBody(floorBody)
+        //######## resume text ##########
+        const fontLoader = new THREE.FontLoader()
+        fontLoader.load(
+            './assets/fonts/helvetiker_regular.typeface.json',
+            (font) => {
+                const textGeometry = new THREE.TextGeometry(
+                    'Click to Resume',
+                    {
+                        font: font,
+                        size: 0.5,
+                        height: 0.2,
+                        curveSegments: 1,
+                        bevelEnabled: true,
+                        bevelThickness: 0.03,
+                        bevelSize: 0.02,
+                        bevelOffset: 0,
+                        bevelSegments: 2
+                    }
+                )
+                textGeometry.center()
+                const matcapTexture = this.textureLoader.load('./assets/textures/matcaps/27.png')
+                const textMaterial = new THREE.MeshMatcapMaterial({ matcap: matcapTexture })
+                this.text = new THREE.Mesh(textGeometry, textMaterial)
+                this.text.scale.set(4, 4, 4)
+                this.text.rotation.y = Math.PI;
+                this.text.visible = false;
+
+
+                this.scene.add(this.text)
+            }
+        )
 
         //######## fox shadow ############
         const simpleShadow = this.textureLoader.load('./assets/glTF100/simpleShadow3.jpeg')
@@ -476,6 +600,10 @@ class App {
         this.hadoopEntrance = new THREE.Mesh(geometry, material);
         this.hadoopEntrance.position.set(133, 1, 83);
         this.scene.add(this.hadoopEntrance);
+
+        this.threejsEntrance = new THREE.Mesh(geometry, material);
+        this.threejsEntrance.position.set(133, 1, 145);
+        this.scene.add(this.threejsEntrance);
 
         //############# front sight #############
         const geometry1 = new THREE.BoxBufferGeometry(.1, .3, .1);
@@ -1523,7 +1651,7 @@ class App {
 
                     if (child.name == 'spaceman') {
 
-                        child.material.color = new THREE.Color(0x60a085);
+                        child.material.color = new THREE.Color(0xf0a085);
 
                         //child.material.shininess = 50
                         //console.log(child);
@@ -1721,14 +1849,21 @@ class App {
         this.previousTime = elapsedTime
         //this.world.step(1 / 60, deltaTime, 3)
         let block = 0;
+        // if (this.stop_everything === true) {
+        //     if (document.pointerLockElement === this.canvas || document.mozPointerLockElement === this.canvas) {
+        //         console.log('yes')
 
-        if (document.pointerLockElement === null || document.mozPointerLockElement === null) {
-            this.stop_everything = true;
-        }
-        else {
-            this.stop_everything = false;
+        //     } this.stop_everything = false
+        // }
+        if (this.text) {
+            this.text.position.y = 15 + Math.sin(elapsedTime)
+            //this.text.scale.x = 3 + Math.sin(0.5 * Math.PI * elapsedTime)
+            //this.text.position.y = 10 + Math.sin(6 * Math.PI * elapsedTime)
+            //this.text.scale.z = 3 + Math.sin(0.5 * Math.PI * elapsedTime)
+            //this.text.rotation.y = Math.sin(elapsedTime) + Math.PI
         }
         if (this.stop_everything === false) {
+
             if (this.flagmaterial) {
                 this.flagmaterial.uniforms.uTime.value = elapsedTime;
             }
@@ -1738,7 +1873,35 @@ class App {
 
             if (this.load_ready_sw) {
 
+                if (document.pointerLockElement === null || document.mozPointerLockElement === null) {
 
+                    this.resume_sw = true;
+                    this.stop_everything = true;
+                    document.exitPointerLock();
+                    document.body.style.cursor = "pointer";
+
+                    this.text.visible = true;
+                    //setTimeout(() => {
+
+                    // this.overlay.classList.remove('hidden');
+                    // this.resume.classList.remove('hidden');
+                    //}, 2000);
+
+
+
+
+                }
+                else {
+                    if (this.goto_web_sw === 1) {
+                        this.goto_web();
+                    }
+                    // else {
+                    //     this.overlay.classList.add('hidden');
+                    //     this.resume.classList.add('hidden');
+                    // }
+
+
+                }
 
 
 
@@ -1913,6 +2076,13 @@ class App {
 
                     }
                 }
+                intersect = raycaster.intersectObject(this.threejsEntrance)
+                if (intersect.length > 0) {
+                    if (intersect[0].distance < 1.6) {
+                        window.location.assign('https://www.nyu.edu/')
+
+                    }
+                }
 
                 if (this.fox.position.distanceTo(this.pointer.position) < 30.6) {
 
@@ -1979,6 +2149,7 @@ class App {
                 this.fox.rotation.y -= .004 * this.mouse.x;
                 this.camera.rotation.y -= .004 * this.mouse.x;
                 this.target.rotation.y -= .004 * this.mouse.x;
+                this.text.rotation.y -= 0.004 * this.mouse.x;
                 this.mouse.x = 0;
                 //}
 
@@ -2000,8 +2171,8 @@ class App {
                 this.camera.position.z = (this.fox.position.z - fox_direction.z * 20);
                 this.target.position.x = (this.fox.position.x + fox_direction.x * 2);
                 this.target.position.z = (this.fox.position.z + fox_direction.z * 2);
-
-
+                this.text.position.x = (this.fox.position.x - fox_direction.x * 5);
+                this.text.position.z = (this.fox.position.z - fox_direction.z * 5);
 
                 //if (this.fox.position.y + (this.mouse.y + .95) * 10 > 5)
                 if (this.target.position.y - this.mouse.y * 0.04 < 15
@@ -2020,7 +2191,9 @@ class App {
                 this.pointer.rotation.y = elapsedTime * 2
                 this.pointer2.position.y += Math.sin(elapsedTime * 4)
                 this.pointer2.rotation.y = elapsedTime * 2
+
             }
+
             if (this.move_sw) {
 
                 //console.log(this.deltay, this.target.position)

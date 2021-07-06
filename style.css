@@ -77,7 +77,59 @@
     border: none;
     background: none;
   }
-
+  .source{
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 70%;
+    height: 38%;
+    background:linear-gradient(to top left, rgba(41, 6, 238, 0.1), rgb(172, 176, 179,0.8));
+    padding: 8rem;
+    border-radius: 10px;
+    box-shadow: 0 30rem 5rem rgba(0, 0, 0, 0.3);
+    z-index: 10;
+    color: aliceblue;
+    opacity: 1;
+    
+}
+.close-modal5 {
+    position: absolute;
+    top: 1.2rem;
+    right: 2rem;
+    font-size: 5rem;
+    color: #333;
+    cursor: pointer;
+    border: none;
+    background: none;
+  }
+  .threejs{
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 70%;
+    height: 38%;
+    background:linear-gradient(to top left, rgba(41, 6, 238, 0.1), rgb(172, 176, 179,0.8));
+    padding: 8rem;
+    border-radius: 10px;
+    box-shadow: 0 30rem 5rem rgba(0, 0, 0, 0.3);
+    z-index: 10;
+    color: aliceblue;
+    opacity: 1;
+    
+}
+.close-modal6 {
+    position: absolute;
+    top: 1.2rem;
+    right: 2rem;
+    font-size: 5rem;
+    color: #333;
+    cursor: pointer;
+    border: none;
+    background: none;
+  }
+  
 
 .modal {
     position: absolute;
@@ -181,6 +233,13 @@
     left: 50%;
     -ms-transform: translate(-50%, -50%);
     transform: translate(-50%, -50%);
+    cursor: pointer;
+    border: none;
+    background: none;
+}
+.resume_icon {
+    height: 100%;
+    width: 100%;
     cursor: pointer;
     border: none;
     background: none;
