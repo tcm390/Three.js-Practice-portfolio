@@ -1418,6 +1418,198 @@ class App {
         }
         this.worker.postMessage(data)
 
+        //######### basketball #########
+
+        // geometry = new THREE.BoxBufferGeometry(2, 6, 10);
+        // test = new THREE.Mesh(geometry, material);
+        // test.position.set(43.7, 21, 260.2);
+        //this.scene.add(test);
+
+        data = {
+            type: 'static_object',
+            sizex: 2,
+            sizey: 6,
+            sizez: 10,
+            positionx: 43.7,
+            positiony: 21,
+            positionz: 260.2
+
+        }
+        this.worker.postMessage(data)
+
+        // geometry = new THREE.BoxBufferGeometry(2, 6, 10);
+        // test = new THREE.Mesh(geometry, material);
+        // test.position.set(126.7, 21, 260.2);
+        // this.scene.add(test);
+
+        data = {
+            type: 'static_object',
+            sizex: 2,
+            sizey: 6,
+            sizez: 10,
+            positionx: 126.7,
+            positiony: 21,
+            positionz: 260.2
+
+        }
+        this.worker.postMessage(data)
+
+
+        //######### entrance ########
+
+        // geometry = new THREE.BoxBufferGeometry(39, 18, 2);
+        // test = new THREE.Mesh(geometry, material);
+        // test.position.set(136, 1, 154);
+        // this.scene.add(test);
+
+        data = {
+            type: 'static_object',
+            sizex: 39,
+            sizey: 18,
+            sizez: 2,
+            positionx: 136,
+            positiony: 1,
+            positionz: 154
+
+        }
+        this.worker.postMessage(data)
+
+        // geometry = new THREE.BoxBufferGeometry(39, 18, 2);
+        // test = new THREE.Mesh(geometry, material);
+        // test.position.set(136, 1, 135);
+        // this.scene.add(test);
+
+        data = {
+            type: 'static_object',
+            sizex: 39,
+            sizey: 18,
+            sizez: 2,
+            positionx: 136,
+            positiony: 1,
+            positionz: 135
+
+        }
+        this.worker.postMessage(data)
+
+        // geometry = new THREE.BoxBufferGeometry(2, 18, 16);
+        // test = new THREE.Mesh(geometry, material);
+        // test.position.set(156, 1, 145);
+        // this.scene.add(test);
+
+        data = {
+            type: 'static_object',
+            sizex: 2,
+            sizey: 18,
+            sizez: 16,
+            positionx: 156,
+            positiony: 1,
+            positionz: 145
+
+        }
+        this.worker.postMessage(data)
+
+        // geometry = new THREE.BoxBufferGeometry(39, 18, 2);
+        // test = new THREE.Mesh(geometry, material);
+        // test.position.set(136, 1, 91.5);
+        // this.scene.add(test);
+
+        data = {
+            type: 'static_object',
+            sizex: 39,
+            sizey: 18,
+            sizez: 2,
+            positionx: 136,
+            positiony: 1,
+            positionz: 91.5
+
+        }
+        this.worker.postMessage(data)
+
+        // geometry = new THREE.BoxBufferGeometry(39, 18, 2);
+        // test = new THREE.Mesh(geometry, material);
+        // test.position.set(136, 1, 72.5);
+        // this.scene.add(test);
+
+        data = {
+            type: 'static_object',
+            sizex: 39,
+            sizey: 18,
+            sizez: 2,
+            positionx: 136,
+            positiony: 1,
+            positionz: 72.5
+
+        }
+        this.worker.postMessage(data)
+
+        // geometry = new THREE.BoxBufferGeometry(2, 18, 16);
+        // test = new THREE.Mesh(geometry, material);
+        // test.position.set(156, 1, 82.5);
+        // this.scene.add(test);
+
+        data = {
+            type: 'static_object',
+            sizex: 2,
+            sizey: 18,
+            sizez: 16,
+            positionx: 156,
+            positiony: 1,
+            positionz: 82.5
+
+        }
+        this.worker.postMessage(data)
+
+
+        // geometry = new THREE.BoxBufferGeometry(39, 18, 2);
+        // test = new THREE.Mesh(geometry, material);
+        // test.position.set(136, 1, 20.5);
+        // this.scene.add(test);
+        data = {
+            type: 'static_object',
+            sizex: 39,
+            sizey: 18,
+            sizez: 2,
+            positionx: 136,
+            positiony: 1,
+            positionz: 20.5
+
+        }
+        this.worker.postMessage(data)
+
+        // geometry = new THREE.BoxBufferGeometry(39, 18, 2);
+        // test = new THREE.Mesh(geometry, material);
+        // test.position.set(136, 1, 1.5);
+        // this.scene.add(test);
+        data = {
+            type: 'static_object',
+            sizex: 39,
+            sizey: 18,
+            sizez: 2,
+            positionx: 136,
+            positiony: 1,
+            positionz: 1.5
+
+        }
+        this.worker.postMessage(data)
+
+        // geometry = new THREE.BoxBufferGeometry(2, 18, 16);
+        // test = new THREE.Mesh(geometry, material);
+        // test.position.set(156, 1, 11.5);
+        // this.scene.add(test);
+
+        data = {
+            type: 'static_object',
+            sizex: 2,
+            sizey: 18,
+            sizez: 16,
+            positionx: 156,
+            positiony: 1,
+            positionz: 11.5
+
+        }
+        this.worker.postMessage(data)
+
+
 
 
 
@@ -1699,6 +1891,7 @@ class App {
                         || child.name === 'unshootable'
                         || child.name === 'unshootable003'
                         || child.name === 'Cube160'
+                        || child.name === 'ATM'
 
                     ) {
 
