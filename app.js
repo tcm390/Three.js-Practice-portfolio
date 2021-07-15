@@ -1009,6 +1009,416 @@ class App {
         }
         this.worker.postMessage(data)
 
+        //######## fountain ########
+        let basex = -21;
+        let basez = 48;
+        let base_rotatey = 0.2;
+        for (let i = 0; i < 16; i++) {
+            // geometry = new THREE.BoxBufferGeometry(12, 8.5, 1.8);
+            // test = new THREE.Mesh(geometry, material);
+            // test.rotation.y = base_rotatey;
+            // test.position.set(basex, 1, basez);
+
+            // this.scene.add(test);
+
+            data = {
+                type: 'static_object',
+                sizex: 12,
+                sizey: 8.5,
+                sizez: 1.8,
+                positionx: basex,
+                positiony: 1,
+                positionz: basez,
+                quaterniony: base_rotatey
+
+            }
+            this.worker.postMessage(data)
+
+            base_rotatey += Math.PI / 8
+            basex -= Math.cos(base_rotatey - 0.2) * 9;
+            basez += Math.sin(base_rotatey - 0.2) * 9;
+
+        }
+
+        // geometry = new THREE.BoxBufferGeometry(7.2, 16, 7.2);
+        // test = new THREE.Mesh(geometry, material);
+        // test.position.set(-16.6, 1, 69.9);
+        // this.scene.add(test);
+        data = {
+            type: 'static_object',
+            sizex: 7.2,
+            sizey: 16,
+            sizez: 7.2,
+            positionx: -16.6,
+            positiony: 1,
+            positionz: 69.9
+
+        }
+        this.worker.postMessage(data)
+
+        // geometry = new THREE.BoxBufferGeometry(18, 4, 18);
+        // test = new THREE.Mesh(geometry, material);
+        // test.position.set(-16.6, 9, 69.9);
+        // this.scene.add(test);
+
+        data = {
+            type: 'static_object',
+            sizex: 18,
+            sizey: 4,
+            sizez: 18,
+            positionx: -16.6,
+            positiony: 9,
+            positionz: 69.9
+
+        }
+        this.worker.postMessage(data)
+
+
+
+
+        //########## park rock ################
+
+        // geometry = new THREE.SphereBufferGeometry(7);
+        // test = new THREE.Mesh(geometry, material);
+        // test.position.set(41.6, 0, 43.9);
+        // this.scene.add(test);
+
+        data = {
+            type: 'static_object_sphere',
+            radius: 7,
+            positionx: 41.6,
+            positiony: 0,
+            positionz: 43.9
+
+        }
+        this.worker.postMessage(data)
+
+        // geometry = new THREE.SphereBufferGeometry(3);
+        // test = new THREE.Mesh(geometry, material);
+        // test.position.set(43.6, 5, 42.9);
+        // this.scene.add(test);
+
+        data = {
+            type: 'static_object_sphere',
+            radius: 3,
+            positionx: 43.6,
+            positiony: 5,
+            positionz: 42.9
+
+        }
+        this.worker.postMessage(data)
+
+
+
+        // geometry = new THREE.BoxBufferGeometry(10, 3, 12);
+        // test = new THREE.Mesh(geometry, material);
+        // test.position.set(42, 2, 58.8);
+        // test.rotation.x = -0.1
+        // this.scene.add(test);
+        data = {
+            type: 'static_object',
+            sizex: 10,
+            sizey: 3,
+            sizez: 12,
+            positionx: 42.2,
+            positiony: 2,
+            positionz: 58.8,
+            quaternionx: -0.1
+
+        }
+        this.worker.postMessage(data)
+
+
+        //################ park tree #############
+        // geometry = new THREE.BoxBufferGeometry(7, 9, 7);
+        // test = new THREE.Mesh(geometry, material);
+        // test.position.set(43.5, -1, 92.8);
+        // test.rotation.x = 0.1
+        // test.rotation.y = 0.1
+        // this.scene.add(test);
+
+        data = {
+            type: 'static_object',
+            sizex: 7,
+            sizey: 9,
+            sizez: 7,
+            positionx: 43.5,
+            positiony: -1,
+            positionz: 92.8,
+            quaternionx: 0.1,
+            quaterniony: 0.1
+
+        }
+        this.worker.postMessage(data)
+
+        // geometry = new THREE.BoxBufferGeometry(5, 11, 5);
+        // test = new THREE.Mesh(geometry, material);
+        // test.position.set(43.5, 3, 93.8);
+        // test.rotation.x = 0.1
+        // this.scene.add(test);
+
+        data = {
+            type: 'static_object',
+            sizex: 5,
+            sizey: 11,
+            sizez: 5,
+            positionx: 43.5,
+            positiony: 3,
+            positionz: 93.8,
+            quaternionx: 0.1
+
+        }
+        this.worker.postMessage(data)
+
+        // geometry = new THREE.BoxBufferGeometry(3, 10, 3);
+        // test = new THREE.Mesh(geometry, material);
+        // test.position.set(45.5, 14, 94.8);
+        // test.rotation.x = 0.25
+        // test.rotation.z = -0.3
+        // this.scene.add(test);
+
+        data = {
+            type: 'static_object',
+            sizex: 3,
+            sizey: 10,
+            sizez: 3,
+            positionx: 45.5,
+            positiony: 14,
+            positionz: 94.8,
+            quaternionx: 0.25,
+            quaternionz: -0.3
+
+        }
+        this.worker.postMessage(data)
+
+        // geometry = new THREE.BoxBufferGeometry(2.5, 50, 2.5);
+        // test = new THREE.Mesh(geometry, material);
+        // test.position.set(-57, 1, 97.8);
+        //this.scene.add(test);
+
+        data = {
+            type: 'static_object',
+            sizex: 2.5,
+            sizey: 50,
+            sizez: 2.5,
+            positionx: -57,
+            positiony: 1,
+            positionz: 97.8
+
+        }
+        this.worker.postMessage(data)
+
+        // geometry = new THREE.BoxBufferGeometry(2.5, 50, 2.5);
+        // test = new THREE.Mesh(geometry, material);
+        // test.position.set(-56, 1, 72.8);
+        // this.scene.add(test);
+
+        data = {
+            type: 'static_object',
+            sizex: 2.5,
+            sizey: 50,
+            sizez: 2.5,
+            positionx: -56,
+            positiony: 1,
+            positionz: 72.8
+
+        }
+        this.worker.postMessage(data)
+
+        // geometry = new THREE.BoxBufferGeometry(2.5, 50, 2.5);
+        // test = new THREE.Mesh(geometry, material);
+        // test.position.set(-57.5, 1, 52.8);
+        // this.scene.add(test);
+
+        data = {
+            type: 'static_object',
+            sizex: 2.5,
+            sizey: 50,
+            sizez: 2.5,
+            positionx: -57.5,
+            positiony: 1,
+            positionz: 52.8
+
+        }
+        this.worker.postMessage(data)
+
+        //########## pizza #########
+        // geometry = new THREE.BoxBufferGeometry(48, 65, 30);
+        // test = new THREE.Mesh(geometry, material);
+        // test.position.set(-83, 1, -77.9);
+        // this.scene.add(test);
+
+        data = {
+            type: 'static_object',
+            sizex: 48,
+            sizey: 65,
+            sizez: 30,
+            positionx: -83,
+            positiony: 1,
+            positionz: -77.9
+
+        }
+        this.worker.postMessage(data)
+
+        //####### hotdog ############
+        // geometry = new THREE.BoxBufferGeometry(38, 60, 30);
+        // test = new THREE.Mesh(geometry, material);
+        // test.position.set(-20.3, 1, -77.9);
+        // this.scene.add(test);
+
+        data = {
+            type: 'static_object',
+            sizex: 38,
+            sizey: 60,
+            sizez: 30,
+            positionx: -20.3,
+            positiony: 1,
+            positionz: -77.9
+
+        }
+        this.worker.postMessage(data)
+
+        // geometry = new THREE.BoxBufferGeometry(35, 10, 15);
+        // test = new THREE.Mesh(geometry, material);
+        // test.position.set(-20.3, 32, -70.9);
+        // this.scene.add(test);
+
+        data = {
+            type: 'static_object',
+            sizex: 35,
+            sizey: 10,
+            sizez: 15,
+            positionx: -20.3,
+            positiony: 32,
+            positionz: -70.9
+
+        }
+        this.worker.postMessage(data)
+
+        // geometry = new THREE.BoxBufferGeometry(40, 60, 28);
+        // test = new THREE.Mesh(geometry, material);
+        // test.position.set(35.3, 1, -71.9);
+        // this.scene.add(test);
+
+        data = {
+            type: 'static_object',
+            sizex: 40,
+            sizey: 60,
+            sizez: 28,
+            positionx: 35.3,
+            positiony: 1,
+            positionz: -71.9
+
+        }
+        this.worker.postMessage(data)
+
+        // geometry = new THREE.BoxBufferGeometry(30, 60, 20);
+        // test = new THREE.Mesh(geometry, material);
+        // test.position.set(77.3, 1, -66.9);
+        // this.scene.add(test);
+
+        data = {
+            type: 'static_object',
+            sizex: 30,
+            sizey: 60,
+            sizez: 20,
+            positionx: 77.3,
+            positiony: 1,
+            positionz: -66.9
+
+        }
+        this.worker.postMessage(data)
+
+        //########## building behind contact information ##############
+
+        // geometry = new THREE.BoxBufferGeometry(55, 230, 52);
+        // test = new THREE.Mesh(geometry, material);
+        // test.position.set(-92, 1, 265);
+        // this.scene.add(test);
+
+        data = {
+            type: 'static_object',
+            sizex: 55,
+            sizey: 230,
+            sizez: 52,
+            positionx: -92,
+            positiony: 1,
+            positionz: 265
+
+        }
+        this.worker.postMessage(data)
+
+        //########### room #########
+
+        // geometry = new THREE.BoxBufferGeometry(2, 47, 45);
+        // test = new THREE.Mesh(geometry, material);
+        // test.position.set(-54, 1, 245);
+        // this.scene.add(test);
+
+        data = {
+            type: 'static_object',
+            sizex: 2,
+            sizey: 47,
+            sizez: 45,
+            positionx: -54,
+            positiony: 1,
+            positionz: 245
+
+        }
+        this.worker.postMessage(data)
+
+        // geometry = new THREE.BoxBufferGeometry(40, 47, 2);
+        // test = new THREE.Mesh(geometry, material);
+        // test.position.set(-34, 1, 266.5);
+        // this.scene.add(test);
+
+        data = {
+            type: 'static_object',
+            sizex: 40,
+            sizey: 47,
+            sizez: 2,
+            positionx: -34,
+            positiony: 1,
+            positionz: 266.5
+
+        }
+        this.worker.postMessage(data)
+
+        // geometry = new THREE.BoxBufferGeometry(5, 6, 26);
+        // test = new THREE.Mesh(geometry, material);
+        // test.position.set(-51, 1, 244);
+        // this.scene.add(test);
+
+        data = {
+            type: 'static_object',
+            sizex: 5,
+            sizey: 6,
+            sizez: 26,
+            positionx: -51,
+            positiony: 1,
+            positionz: 244
+
+        }
+        this.worker.postMessage(data)
+
+        // geometry = new THREE.BoxBufferGeometry(5, 6, 23);
+        // test = new THREE.Mesh(geometry, material);
+        // test.position.set(-21, 1, 241);
+        // this.scene.add(test);
+
+        data = {
+            type: 'static_object',
+            sizex: 5,
+            sizey: 6,
+            sizez: 23,
+            positionx: -21,
+            positiony: 1,
+            positionz: 241
+
+        }
+        this.worker.postMessage(data)
+
+
 
 
         //###### 
@@ -1280,6 +1690,38 @@ class App {
                             mesh: child,
                             ray_sw: false
                         });
+
+
+                    }
+
+                    if (child.name.substring(0, 10) === 'directable'
+                        || child.name.substring(0, 17) === 'unshootable012001'
+                        || child.name === 'unshootable'
+                        || child.name === 'unshootable003'
+                        || child.name === 'Cube160'
+
+                    ) {
+
+                        const box = new THREE.Box3().setFromObject(child);
+                        // const geometry = new THREE.BoxGeometry(box.getSize().x * 10, box.getSize().y * 12, box.getSize().z * 10);
+                        // const material1 = new THREE.MeshStandardMaterial({ color: 0xFF0000 });
+                        // const cubeMesh = new THREE.Mesh(geometry, material1);
+                        // cubeMesh.position.set(child.position.x * 10 + 10, child.position.y * 10, child.position.z * 10 + 10);
+                        // self.scene.add(cubeMesh);
+
+                        const data = {
+                            type: 'static_object',
+                            sizex: box.getSize().x * 10,
+                            sizey: box.getSize().y * 12,
+                            sizez: box.getSize().z * 10,
+                            positionx: child.position.x * 10 + 10,
+                            positiony: child.position.y * 10,
+                            positionz: child.position.z * 10 + 10
+                        }
+                        self.worker.postMessage(data)
+
+
+
                     }
                     // if (child.name.substring(0, 4) === 'Cube') {
                     //     const materiall = new THREE.MeshStandardMaterial({ color: 0xFF0000 });
@@ -1945,7 +2387,7 @@ class App {
                             this.bulletToUpdate[i].position.x = (bulletToUpdate2[i * 3 + 0])
                             this.bulletToUpdate[i].position.y = (bulletToUpdate2[i * 3 + 1])
                             this.bulletToUpdate[i].position.z = (bulletToUpdate2[i * 3 + 2])
-                            if (this.bulletToUpdate[i].position.y <= .2) {
+                            if (this.bulletToUpdate[i].position.y <= .4) {
                                 this.scene.remove(this.bulletToUpdate[i])
                                 this.bulletToUpdate.splice(i, 1)
                                 const data = {
@@ -2168,6 +2610,7 @@ class App {
                 this.fox.getWorldDirection(fox_direction);
                 fox_direction = fox_direction.normalize();
                 this.camera.position.x = (this.fox.position.x - fox_direction.x * 20);
+                //this.camera.position.y = (this.fox.position.y + 10);
                 this.camera.position.z = (this.fox.position.z - fox_direction.z * 20);
                 this.target.position.x = (this.fox.position.x + fox_direction.x * 2);
                 this.target.position.z = (this.fox.position.z + fox_direction.z * 2);

@@ -30,7 +30,7 @@ const ball_floor = new CANNON.ContactMaterial(
 //     Table.wallContactMaterial,
 //     { friction: 0.5, restitution: 0.9 }
 // );
-const foxShape = new CANNON.Box(new CANNON.Vec3(0.9, 2, 2.4))
+const foxShape = new CANNON.Box(new CANNON.Vec3(1.5, 2, 2.4))
 const foxBody = new CANNON.Body({
     mass: 10000,
     position: new CANNON.Vec3(0, 0, 0),
@@ -79,7 +79,7 @@ self.addEventListener('message', function (e) {
 
     }
     else if (e.data.type === 'shoot') {
-        let bull_shape = new CANNON.Sphere(0.2)
+        let bull_shape = new CANNON.Sphere(0.4)
         let bull_body = new CANNON.Body({
             mass: 800,
             shape: bull_shape
@@ -89,7 +89,7 @@ self.addEventListener('message', function (e) {
 
         bull_body.velocity.set(
             dum.x * 110,
-            ((Math.sin(e.data.shoot_point + 0.15) * Math.abs(dum.z)) + (Math.sin(e.data.shoot_point + 0.15) * Math.abs(dum.x))) * 55,
+            ((Math.sin(e.data.shoot_point + 0.18) * Math.abs(dum.z)) + (Math.sin(e.data.shoot_point + 0.18) * Math.abs(dum.x))) * 55,
             //((Math.sin((e.data.shoot_point - 7)) * Math.abs(dum.z)) + (Math.sin((e.data.shoot_point - 7)) * Math.abs(dum.x))) * 100,
             //e.data.shoot_point.y - 5,
             dum.z * 110);
@@ -174,6 +174,36 @@ self.addEventListener('message', function (e) {
             body.quaternion.setFromAxisAngle(new CANNON.Vec3(0, 1, 0), e.data.quaterniony);
         if (e.data.quaternionz)
             body.quaternion.setFromAxisAngle(new CANNON.Vec3(0, 0, 1), e.data.quaternionz);
+        world.addBody(body)
+
+    }
+    else if (e.data.type === 'static_object_cylinder') {
+        let shape = new CANNON.Cylinder(e.data.size_b, e.data.size_t, e.data.height, e.data.segment)
+        let body = new CANNON.Body({
+            mass: 0,
+            shape: shape,
+            material: defaultMaterial
+        })
+
+        body.position.set(e.data.positionx, e.data.positiony, e.data.positionz);
+        if (e.data.quaternionx)
+            body.quaternion.setFromAxisAngle(new CANNON.Vec3(1, 0, 0), e.data.quaternionx);
+        if (e.data.quaterniony)
+            body.quaternion.setFromAxisAngle(new CANNON.Vec3(0, 1, 0), e.data.quaterniony);
+        if (e.data.quaternionz)
+            body.quaternion.setFromAxisAngle(new CANNON.Vec3(0, 0, 1), e.data.quaternionz);
+        world.addBody(body)
+
+    }
+    else if (e.data.type === 'static_object_sphere') {
+        let shape = new CANNON.Sphere(e.data.radius)
+        let body = new CANNON.Body({
+            mass: 0,
+            shape: shape,
+            material: defaultMaterial
+        })
+
+        body.position.set(e.data.positionx, e.data.positiony, e.data.positionz);
         world.addBody(body)
 
     }
