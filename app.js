@@ -150,7 +150,7 @@ class App {
         this.goto_web_sw = 0;
 
         this.stop_everything = false;
-        this.resume_sw = true;
+        this.resume_sw = false;
 
 
         this.objectsToUpdate = [];
@@ -2707,14 +2707,14 @@ class App {
                 intersect = raycaster.intersectObject(this.hadoopEntrance)
                 if (intersect.length > 0) {
                     if (intersect[0].distance < 1.6) {
-                        window.location.assign('https://www.google.com/')
+                        window.location.assign('https://github.com/tcm390/Hadoop_Project')
 
                     }
                 }
                 intersect = raycaster.intersectObject(this.threejsEntrance)
                 if (intersect.length > 0) {
                     if (intersect[0].distance < 1.6) {
-                        window.location.assign('https://www.nyu.edu/')
+                        window.location.assign('https://kidown.io')
 
                     }
                 }
