@@ -591,7 +591,7 @@ class App {
         this.scene.add(this.sphereShadow);
 
         //######## set entrance for project ###############
-        let geometry = new THREE.BoxBufferGeometry(13, 13, 13);
+        let geometry = new THREE.BoxBufferGeometry(16, 16, 16);
         let material = new THREE.MeshStandardMaterial({ color: 0xFF0000, transparent: true, opacity: 0 });
         this.rubberEntrance = new THREE.Mesh(geometry, material);
         this.rubberEntrance.position.set(133, 1, 11);
