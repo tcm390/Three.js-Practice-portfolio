@@ -2286,7 +2286,7 @@ class App {
 
                     if (child.name == 'spaceman') {
 
-                        child.material.color = new THREE.Color(0xf0a085);
+                        child.material.color = new THREE.Color(0x999999);
 
                         //child.material.shininess = 50
                         //console.log(child);
