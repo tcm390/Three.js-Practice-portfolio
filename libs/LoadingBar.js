@@ -1,5 +1,5 @@
-class LoadingBar{
-	constructor(options){
+class LoadingBar {
+	constructor(options) {
 		this.domElement = document.createElement("div");
 		this.domElement.style.position = 'fixed';
 		this.domElement.style.top = '0';
@@ -7,7 +7,7 @@ class LoadingBar{
 		this.domElement.style.width = '100%';
 		this.domElement.style.height = '100%';
 		this.domElement.style.background = '#000';
-		this.domElement.style.opacity = '0.7';
+		this.domElement.style.opacity = '1';
 		this.domElement.style.display = 'flex';
 		this.domElement.style.alignItems = 'center';
 		this.domElement.style.justifyContent = 'center';
@@ -27,24 +27,24 @@ class LoadingBar{
 		bar.style.width = '0';
 		barBase.appendChild(bar);
 		this.progressBar = bar;
-		
+
 		document.body.appendChild(this.domElement);
-		
-		function onprogress(delta){
-			const progress = delta*100;
+
+		function onprogress(delta) {
+			const progress = delta * 100;
 			loader.progressBar.style.width = `${progress}%`;
 		}
 	}
-	
-	set progress(delta){
-		const percent = delta*100;
+
+	set progress(delta) {
+		const percent = delta * 100;
 		this.progressBar.style.width = `${percent}%`;
 	}
-	
-	set visible(value){
-		if (value){
+
+	set visible(value) {
+		if (value) {
 			this.domElement.style.display = 'flex';
-		}else{
+		} else {
 			this.domElement.style.display = 'none';
 		}
 	}
