@@ -2700,7 +2700,7 @@ class App {
                 let intersect = raycaster.intersectObject(this.rubberEntrance)
                 if (intersect.length > 0) {
                     if (intersect[0].distance < 1.6) {
-                        window.location.assign('https://tcm390.github.io/rubbertoy_courage_the_cowardly_dog/')
+                        window.location.assign('https://www.newgrounds.com/portal/view/814405')
 
                     }
                 }
