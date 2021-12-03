@@ -21,6 +21,8 @@
     </audio>
     <script type="module">
         import { App } from './app.js';
+        import './libs/cannon.min.js';
+        import * as THREE from './libs/three/three.module.js';
 
         document.addEventListener("DOMContentLoaded", function () {
             const app = new App();
@@ -30,7 +32,7 @@
     <script type="module" src='./Worker.js'></script>
 
     <script type="module" src='./libs/cannon.min.js'></script>
-    <script type="module" src='./libs/three/three.module.js'></script>
+
     <div class="modal hidden">
         <div class="mparent">
             <div class="mitem1">
