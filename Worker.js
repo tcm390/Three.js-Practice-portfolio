@@ -1,5 +1,6 @@
 
-
+import './libs/cannon.min.js';
+import * as THREE from './libs/three/three.module.js';
 let mouse = new THREE.Vector2();
 let bulletToUpdate = [];
 let objects_positionToUpdate = [];

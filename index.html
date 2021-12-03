@@ -29,7 +29,8 @@
             window.app = app;
         });
     </script>
-    <script type="module" src='./Worker.js'>
+    <script type="module">
+        import { Worker } from './Worker.js';
         import './libs/cannon.min.js';
         import * as THREE from './libs/three/three.module.js';
     </script>
