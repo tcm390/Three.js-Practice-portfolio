@@ -1,4 +1,6 @@
-# portfolio
+# Three.js-Practice-portfolio
+
+Demo: https://tcm-portfolio.netlify.app/
 
 sound
 
